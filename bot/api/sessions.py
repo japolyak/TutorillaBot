@@ -1,6 +1,6 @@
 import requests
-from ..config import api_link
 import logging
+from ..config import api_link
 
 
 class SessionApi:
@@ -19,3 +19,12 @@ class SessionApi:
         except requests.RequestException as e:
             logging.error(e)
             return {}
+
+    @staticmethod
+    def set_session(session: dict):
+        url = f"{api_link}{SessionApi.base_url}"
+
+        response = requests.post(url, json=session)
+        response.raise_for_status()
+
+        return response
