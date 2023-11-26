@@ -1,18 +1,17 @@
 from telebot import types
 import types as tp
-from .api.sessions import SessionApi
-from .temporary_session_store import session_store
+from .redis_client import r
 
 
-# Change after Redis will be implemented
 def session_checker(func: tp.FunctionType):
     def wrapper(message: types.Message):
-        session = session_store.get_session(message.from_user.id)
+        language = r.hget(f"{message.from_user.id}", "language")
 
-        if session:
-            return func(message)
+        if language is None:
+            user_default_session: dict = {"user_id": message.from_user.id, "language": "en"}
+            r.hset(f"{message.from_user.id}", mapping=user_default_session)
+            return func(message, "en")
 
-        data = SessionApi.get_session(message.from_user.id)
-        session_store.set_session(message.from_user.id, data)
+        return func(message, language)
 
     return wrapper

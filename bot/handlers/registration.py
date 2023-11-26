@@ -1,11 +1,8 @@
-import requests
 from telebot import types
 from ..bot_token import bot
 from ..i18n.i18n import t
-from ..api.sessions import SessionApi
-import logging
-from ..temporary_session_store import session_store
 from ..markups import MarkupCreator
+from ..redis_client import r
 
 
 @bot.message_handler(commands=['start'])
@@ -17,22 +14,17 @@ def send_welcome(message: types.Message):
                      reply_markup=markup)
 
 
-# Rewrite after redis implementation
-@bot.callback_query_handler(func=lambda call: (call.data == "set ua" or
-                                               call.data == "set ru" or
-                                               call.data == "set pl" or
-                                               call.data == "set en"))
+@bot.callback_query_handler(func=lambda call: (call.data == "set ua" or call.data == "set ru" or
+                                               call.data == "set pl" or call.data == "set en"))
 def set_language(call: types.CallbackQuery):
-    _, language = call.data.split(" ")
+    user_cache = r.exists(f"{call.from_user.id}")
+    action, language = call.data.split(" ")
 
-    session: dict = {"user_id": call.from_user.id, "lang": language}
+    if not user_cache:
+        user_session: dict = {"user_id": call.from_user.id, "language": language}
+        r.hset(f"{call.from_user.id}", mapping=user_session)
 
-    try:
-        SessionApi.set_session(session)
+    r.hset(f"{call.from_user.id}", "language", language)
 
-        text = t(language, 'language_changed_to')
-        session_store.set_session(user_id=call.from_user.id, data=session)
-        bot.send_message(chat_id=call.from_user.id, text=text)
-    except requests.RequestException as e:
-        logging.error(e)
-        bot.send_message(chat_id=call.from_user.id, text="Problem occurred")
+    bot.send_message(chat_id=call.from_user.id,
+                     text=t(language, "language_changed_to"))
