@@ -14,6 +14,5 @@ langs = {
 
 def t(lang: str, key: str, **kwargs) -> str:
     phrase: Template = langs[lang][key]
-    print(phrase.template)
 
     return phrase.substitute(**kwargs) if kwargs else phrase.template
