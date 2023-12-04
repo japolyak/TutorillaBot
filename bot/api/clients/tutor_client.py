@@ -26,7 +26,6 @@ class TutorClient:
 
     @staticmethod
     def add_course(user_id: int, subject_id: int):
-        print('send')
         url = f"{api_link}/tutor/{user_id}/course/{subject_id}/"
         r = requests.post(url)
 
