@@ -1,10 +1,10 @@
 from telebot import types
+from bot.api.api_models import TutorCourse, PrivateCourse
 from bot.bot_token import bot
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.api.clients.student_client import StudentClient
 from bot.api.clients.tutor_client import TutorClient
-from bot.serializers.serializers import PrivateCourseSerializer, TutorCourseSerializer
 
 
 @bot.message_handler(regexp="Main menu")
@@ -34,7 +34,7 @@ def query_text(query: types.InlineQuery):
                                                                         message_text="Bad request"))])
             return
 
-        response_data = PrivateCourseSerializer.serialize(request.json())
+        response_data = [PrivateCourse(**c) for c in request.json()]
 
         courses = [
             types.InlineQueryResultArticle(
@@ -62,7 +62,7 @@ def query_text(query: types.InlineQuery):
 
             return
 
-        response_data = PrivateCourseSerializer.serialize(request.json())
+        response_data = [PrivateCourse(**c) for c in request.json()]
 
         courses = [
             types.InlineQueryResultArticle(
@@ -86,7 +86,7 @@ def query_text(query: types.InlineQuery):
                                                                                   message_text="Bad request"))])
             return
 
-        response_data = TutorCourseSerializer.serialize(request.json())
+        response_data = [TutorCourse(**c) for c in request.json()]
 
         courses = [
             types.InlineQueryResultArticle(

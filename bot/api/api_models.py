@@ -1,33 +1,31 @@
-class User:
-    def __init__(self, user_id: int, first_name: str, last_name: str, email: str, normalized_email: str,
-                 phone_number: str, is_tutor: bool, is_student: bool, is_admin: bool):
-        self.id = user_id
-        self.first_name = first_name
-        self.last_name = last_name
-        self.email = email
-        self.normalized_email = normalized_email
-        self.phone_number = phone_number
-        self.is_tutor = is_tutor
-        self.is_student = is_student
-        self.is_admin = is_admin
+from pydantic import BaseModel
 
 
-class Subject:
-    def __init__(self, subject_id: int, name: str):
-        self.id = subject_id
-        self.name = name
+class User(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+    email: str
+    normalized_email: str
+    phone_number: str
+    is_tutor: bool
+    is_student: bool
+    is_admin: bool
 
 
-class TutorCourse:
-    def __init__(self, tutor_course_id: int, is_active: bool, subject: Subject, tutor: User):
-        self.id = tutor_course_id
-        self.tutor = tutor
-        self.subject = subject
-        self.is_active = is_active
+class Subject(BaseModel):
+    id: int
+    name: str
 
 
-class PrivateCourse:
-    def __init__(self, private_course_id: int, student: User, course: TutorCourse):
-        self.id = private_course_id
-        self.student = student
-        self.course = course
+class TutorCourse(BaseModel):
+    id: int
+    tutor: User
+    subject: Subject
+    is_active: bool
+
+
+class PrivateCourse(BaseModel):
+    id: int
+    student: User
+    course: TutorCourse

@@ -3,7 +3,7 @@ from bot.api.clients.student_client import StudentClient
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
-from ...serializers.serializers import SubjectSerializer
+from ...api.api_models import Subject
 
 
 @bot.message_handler(regexp="Classroom")
@@ -19,7 +19,7 @@ def my_courses(message: types.Message):
 
     msg_text = "Choose your subject"
 
-    response_data = SubjectSerializer.serialize(request.json())
+    response_data = [Subject(**s) for s in request.json()]
 
     if not len(response_data):
         bot.send_message(chat_id=message.chat.id, text="You have no courses")
@@ -61,7 +61,7 @@ def send_available_subjects(user_id: int):
         bot.send_message(chat_id=user_id, text="No available subjects")
         return
 
-    response_data = SubjectSerializer.serialize(request.json())
+    response_data = [Subject(**s) for s in request.json()]
 
     if not len(response_data):
         bot.send_message(chat_id=user_id, text="No available subjects")

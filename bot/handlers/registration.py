@@ -7,8 +7,8 @@ from ..redis_client import r
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.api.clients.registration_client import RegistrationClient
-from ..serializers.serializers import UserSerializer
 from ..validators import Validator
+from ..api.api_models import User
 
 
 @bot.message_handler(commands=["start"])
@@ -16,7 +16,7 @@ def welcome(message: types.Message):
     request = RegistrationClient.get_user(message.from_user.id)
 
     if request.ok:
-        user = UserSerializer.serialize(request.json())
+        user = User(**request.json())
 
         r.hset(message.from_user.id, "is_student", int(user.is_student))
         r.hset(message.from_user.id, "is_tutor", int(user.is_tutor))

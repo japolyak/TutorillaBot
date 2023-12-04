@@ -3,7 +3,7 @@ from bot.api.clients.tutor_client import TutorClient
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
-from ...serializers.serializers import SubjectSerializer
+from ...api.api_models import Subject
 
 
 @bot.message_handler(regexp="Office")
@@ -19,7 +19,7 @@ def my_courses(message: types.Message):
 
     msg_text = "Choose your course"
 
-    response_data = SubjectSerializer.serialize(request.json())
+    response_data = [Subject(**s) for s in request.json()]
 
     if not len(response_data):
         bot.send_message(chat_id=message.chat.id, text="You have no courses")
@@ -38,7 +38,7 @@ def add_course(message: types.Message):
         bot.send_message(chat_id=message.chat.id, text="No available subjects")
         return
 
-    response_data = SubjectSerializer.serialize(request.json())
+    response_data = [Subject(**s) for s in request.json()]
 
     if not len(response_data):
         bot.send_message(chat_id=message.chat.id, text="No available subjects")
@@ -60,7 +60,7 @@ def add_course_callback(call: types.CallbackQuery):
     if not request.ok:
         request = TutorClient.available_subjects_tutor(user_id=call.from_user.id)
 
-        response_data = SubjectSerializer.serialize(request.json())
+        response_data = [Subject(**s) for s in request.json()]
 
         markup = InlineKeyboardMarkupCreator.add_course_markup(courses=response_data)
         bot.send_message(chat_id=call.from_user.id, text="Oops, try again or try later", reply_markup=markup)
