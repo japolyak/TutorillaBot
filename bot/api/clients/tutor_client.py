@@ -5,28 +5,28 @@ from bot.config import api_link
 class TutorClient:
     @staticmethod
     def available_subjects_tutor(user_id: int):
-        url = f"{api_link}/tutor/{user_id}/available-course/"
+        url = f"{api_link}/tutors/{user_id}/available-courses/"
         r = requests.get(url)
 
         return r
 
     @staticmethod
     def my_courses(user_id: int):
-        url = f"{api_link}/tutor/{user_id}/course/"
+        url = f"{api_link}/tutors/{user_id}/courses/"
         r = requests.get(url)
 
         return r
 
     @staticmethod
     def private_courses(user_id: int, subject_name: str):
-        url = f"{api_link}/tutor/{user_id}/private-course/{subject_name}/"
+        url = f"{api_link}/tutors/{user_id}/private-courses/{subject_name}/"
         r = requests.get(url)
 
         return r
 
     @staticmethod
     def add_course(user_id: int, subject_id: int):
-        url = f"{api_link}/tutor/{user_id}/course/{subject_id}/"
+        url = f"{api_link}/tutors/{user_id}/courses/{subject_id}/"
         r = requests.post(url)
 
         return r
