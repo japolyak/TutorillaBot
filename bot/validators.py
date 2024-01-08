@@ -4,7 +4,7 @@ import re
 class Validator:
     @staticmethod
     def validate_name(name):
-        return re.match("^[a-zA-Zа-яА-Я ]+$", name)
+        return re.match("^[a-zA-Z]+$", name)
 
     @staticmethod
     def email_validator(email):

@@ -1,8 +1,8 @@
 from bot.bot_token import bot
 import logging
 from bot.handlers import registration, localization
-from bot.handlers.tutor import reply_tutor_keyboard
-from bot.handlers.student import reply_student_keyboard
+from bot.handlers.tutor import reply_tutor_keyboard, tutor_course_keyboard
+from bot.handlers.student import reply_student_keyboard, student_class_keyboard
 from bot.handlers import shared
 
 

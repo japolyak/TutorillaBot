@@ -8,7 +8,8 @@ from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.api.clients.registration_client import RegistrationClient
 from ..validators import Validator
-from ..api.api_models import User
+from ..api.api_models import UserDto
+import json
 
 
 @bot.message_handler(commands=["start"])
@@ -16,19 +17,19 @@ def welcome(message: types.Message):
     request = RegistrationClient.get_user(message.from_user.id)
 
     if request.ok:
-        user = User(**request.json())
+        user = UserDto(**request.json())
 
         r.hset(message.from_user.id, "is_student", int(user.is_student))
         r.hset(message.from_user.id, "is_tutor", int(user.is_tutor))
         r.hset(message.from_user.id, "is_admin", int(user.is_admin))
 
         markup = ReplyKeyboardMarkupCreator.main_menu_markup(message.from_user.id)
-        bot.send_message(chat_id=message.chat.id, text=f"Hi, {user.first_name} {user.last_name}", reply_markup=markup)
+        bot.send_message(chat_id=message.from_user.id, text=f"Hi, {user.first_name} {user.last_name}", reply_markup=markup)
         return
 
     markup = InlineKeyboardMarkupCreator.language_markup("set")
 
-    bot.send_message(chat_id=message.chat.id,
+    bot.send_message(chat_id=message.from_user.id,
                      text="Hello! Feel free to adjust your language settings with the options provided.",
                      reply_markup=markup)
 
@@ -42,12 +43,13 @@ def set_language(call: types.CallbackQuery):
     """
     user_cache = r.exists(f"{call.from_user.id}")
     _, language = call.data.split(" ")
-
-    if not user_cache:
-        user_session: dict = {"id": call.from_user.id, "language": language}
-        r.hset(str(call.from_user.id), mapping=user_session)
-
-    r.hset(str(call.from_user.id), "language", language)
+    r.hset(str(call.from_user.id), "id", int(call.from_user.id))
+    # TODO - rewrite later
+    # if not user_cache:
+    #     user_session: dict = {"id": call.from_user.id, "language": language}
+    #     r.hset(str(call.from_user.id), mapping=user_session)
+    #
+    # r.hset(str(call.from_user.id), "language", language)
 
     bot.send_message(chat_id=call.from_user.id,
                      text=t(language, "selected_language"))
@@ -56,8 +58,8 @@ def set_language(call: types.CallbackQuery):
 
 
 def registration_first_name(message: types.Message, field: str, language: str):
-    if message.content_type != "text":
-        next_stepper(message.chat.id, "One more time", registration_first_name, language, field)
+    if message.content_type != "text" or not Validator.validate_name(message.text):
+        next_stepper(message.from_user.id, "Use only latin letters", registration_first_name, language, field)
 
         return
 
@@ -65,8 +67,8 @@ def registration_first_name(message: types.Message, field: str, language: str):
 
 
 def registration_last_name(message: types.Message, field: str, language: str):
-    if message.content_type != "text":
-        next_stepper(message.chat.id, "One more time", registration_last_name, language, field)
+    if message.content_type != "text" or not Validator.validate_name(message.text):
+        next_stepper(message.from_user.id, "Use only latin letters", registration_last_name, language, field)
 
         return
 
@@ -75,7 +77,7 @@ def registration_last_name(message: types.Message, field: str, language: str):
 
 def registration_email(message: types.Message, field: str, language: str):
     if message.content_type != "text" or not Validator.email_validator(message.text):
-        next_stepper(message.chat.id, "One more time", registration_email, language, field)
+        next_stepper(message.from_user.id, "One more time", registration_email, language, field)
 
         return
 
@@ -87,7 +89,7 @@ def set_phone(message: types.Message, field: str, language: str):
     if message.content_type != "contact":
         markup = ReplyKeyboardMarkupCreator.phone_markup(language)
 
-        next_stepper(message.chat.id, "One more time", set_phone, language, field, markup)
+        next_stepper(message.from_user.id, "One more time", set_phone, language, field, markup)
 
         return
 
@@ -95,13 +97,9 @@ def set_phone(message: types.Message, field: str, language: str):
 
     r.hset(str(message.from_user.id), field, phone_number)
 
-    bot.send_message(chat_id=message.chat.id, text="Phone number added", reply_markup=types.ReplyKeyboardRemove())
+    bot.send_message(chat_id=message.from_user.id, text="Phone number added", reply_markup=types.ReplyKeyboardRemove())
 
-    payload = r.hgetall(str(message.from_user.id))
-    payload["is_student"] = False
-    payload["is_tutor"] = False
-    payload["is_admin"] = False
-    payload["normalized_email"] = payload["email"].lower()
+    payload = json.dumps(r.hgetall(str(message.from_user.id)), indent=4)
 
     request = RegistrationClient.signup_user(payload)
 
@@ -110,13 +108,13 @@ def set_phone(message: types.Message, field: str, language: str):
         for x in fields_to_pop:
             r.hdel(message.from_user.id, x)
 
-        bot.send_message(chat_id=message.chat.id,
+        bot.send_message(chat_id=message.from_user.id,
                          text="Pizda naturalna. Do it again! Press /start")
 
         return
 
     markup = InlineKeyboardMarkupCreator.choose_occupation()
-    bot.send_message(chat_id=message.chat.id,
+    bot.send_message(chat_id=message.from_user.id,
                      text="Congratulations, You have registered and now choose what do You want to do!",
                      reply_markup=markup)
 
@@ -140,7 +138,7 @@ def next_registration_step(message: types.Message, func: Callable, field: str, n
     next_stepper(message.from_user.id, msg_text, func, language, next_field, markup)
 
 
-@bot.callback_query_handler(func=lambda call: (call.data == "student"))
+@bot.callback_query_handler(func=lambda call: (call.data == "BecomeStudent"))
 @language_callback_checker
 def become_student(message: types.Message, language: str):
     request = RegistrationClient.apply_for_student_role(message.from_user.id)
@@ -164,7 +162,7 @@ def become_student(message: types.Message, language: str):
                      reply_markup=markup)
 
 
-@bot.callback_query_handler(func=lambda call: (call.data == "tutor"))
+@bot.callback_query_handler(func=lambda call: (call.data == "BecomeTutor"))
 @language_callback_checker
 def become_tutor(message: types.Message, language: str):
     request = RegistrationClient.apply_for_tutor_role(message.from_user.id)
@@ -186,18 +184,3 @@ def become_tutor(message: types.Message, language: str):
     bot.send_message(chat_id=message.from_user.id,
                      text="Confirmed!",
                      reply_markup=markup)
-
-
-# region TODO - Delete later
-@bot.message_handler(regexp="Restore")
-def restore_redis(message: types.Message):
-    payload = r.hgetall(str(message.from_user.id))
-
-    new_payload = payload.pop('phone')
-    new_payload = payload.pop('language')
-    print(payload)
-    RegistrationClient.signup_user(payload)
-
-    # bot.send_message(chat_id=message.chat.id, text="Restored", reply_markup=types.ReplyKeyboardRemove())
-    bot.send_message(chat_id=message.chat.id, text="Restored")
-# endregion

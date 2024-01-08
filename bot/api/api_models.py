@@ -1,7 +1,9 @@
 from pydantic import BaseModel
+from typing import List
+from datetime import datetime
 
 
-class User(BaseModel):
+class UserDto(BaseModel):
     id: int
     first_name: str
     last_name: str
@@ -13,19 +15,19 @@ class User(BaseModel):
     is_admin: bool
 
 
-class Subject(BaseModel):
+class SubjectDto(BaseModel):
     id: int
     name: str
 
 
-class TutorCourse(BaseModel):
+class TutorCourseDto(BaseModel):
     id: int
-    tutor: User
-    subject: Subject
+    tutor: UserDto
+    subject: SubjectDto
     is_active: bool
 
 
-class PrivateCourse(BaseModel):
+class PrivateCourseDto(BaseModel):
     id: int
     student: User
     course: TutorCourse
