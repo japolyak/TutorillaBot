@@ -4,6 +4,7 @@ from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from ...api.api_models import SubjectDto
+from ...enums import CallBackPrefix
 
 
 @bot.message_handler(regexp="Office")
@@ -50,9 +51,9 @@ def add_course(message: types.Message):
     bot.send_message(chat_id=message.from_user.id, text=msg_text, reply_markup=markup)
 
 
-@bot.callback_query_handler(func=lambda call: (call.data.startswith("Add course")))
+@bot.callback_query_handler(func=lambda call: (call.data.startswith(CallBackPrefix.AddCourse)))
 def add_course_callback(call: types.CallbackQuery):
-    subject_id = int(call.data.split(" ")[2])
+    subject_id = int(call.data.split(" ")[1])
 
     request = TutorClient.add_course(user_id=call.from_user.id, subject_id=subject_id)
 
