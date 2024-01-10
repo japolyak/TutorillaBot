@@ -3,6 +3,7 @@ import logging
 from bot.handlers import registration, localization
 from bot.handlers.tutor import reply_tutor_keyboard, tutor_course_keyboard
 from bot.handlers.student import reply_student_keyboard, student_class_keyboard
+from bot.handlers.admin import reply_admin_keyboard
 from bot.handlers import shared
 
 
