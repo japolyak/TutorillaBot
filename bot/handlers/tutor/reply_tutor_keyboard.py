@@ -10,7 +10,7 @@ from ...enums import CallBackPrefix
 @bot.message_handler(regexp="Office")
 def restore_redis(message: types.Message):
     markup = ReplyKeyboardMarkupCreator.tutor_office_markup()
-    bot.send_message(chat_id=message.from_user.id, text="Office is here", reply_markup=markup)
+    bot.send_message(chat_id=message.from_user.id, text="Office is here", disable_notification=True, reply_markup=markup)
 
 
 @bot.message_handler(regexp="My courses")
@@ -22,12 +22,12 @@ def my_courses(message: types.Message):
     response_data = [SubjectDto(**s) for s in request.json()]
 
     if not len(response_data):
-        bot.send_message(chat_id=message.from_user.id, text="You have no courses")
+        bot.send_message(chat_id=message.from_user.id, text="You have no courses", disable_notification=True)
         return
 
     markup = InlineKeyboardMarkupCreator.tutor_courses_markup(courses=response_data)
 
-    bot.send_message(chat_id=message.from_user.id, text=msg_text, reply_markup=markup)
+    bot.send_message(chat_id=message.from_user.id, text=msg_text, disable_notification=True, reply_markup=markup)
 
 
 @bot.message_handler(regexp="Add course")
@@ -35,20 +35,20 @@ def add_course(message: types.Message):
     request = TutorClient.available_subjects_tutor(user_id=message.from_user.id)
 
     if not len(request.json()):
-        bot.send_message(chat_id=message.from_user.id, text="No available subjects")
+        bot.send_message(chat_id=message.from_user.id, text="No available subjects", disable_notification=True)
         return
 
     response_data = [SubjectDto(**s) for s in request.json()]
 
     if not len(response_data):
-        bot.send_message(chat_id=message.from_user.id, text="No available subjects")
+        bot.send_message(chat_id=message.from_user.id, text="No available subjects", disable_notification=True)
         return
 
     msg_text = "Choose course to teach"
 
     markup = InlineKeyboardMarkupCreator.add_course_markup(courses=response_data)
 
-    bot.send_message(chat_id=message.from_user.id, text=msg_text, reply_markup=markup)
+    bot.send_message(chat_id=message.from_user.id, text=msg_text, disable_notification=True, reply_markup=markup)
 
 
 @bot.callback_query_handler(func=lambda call: (call.data.startswith(CallBackPrefix.AddCourse)))
@@ -63,7 +63,8 @@ def add_course_callback(call: types.CallbackQuery):
         response_data = [SubjectDto(**s) for s in request.json()]
 
         markup = InlineKeyboardMarkupCreator.add_course_markup(courses=response_data)
-        bot.send_message(chat_id=call.from_user.id, text="Oops, try again or try later", reply_markup=markup)
+        bot.send_message(chat_id=call.from_user.id, text="Oops, try again or try later",
+                         disable_notification=True, reply_markup=markup)
         return
 
-    bot.send_message(chat_id=call.from_user.id, text="Course added successfully")
+    bot.send_message(chat_id=call.from_user.id, text="Course added successfully", disable_notification=True)

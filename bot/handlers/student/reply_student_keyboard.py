@@ -10,7 +10,10 @@ from ...api.api_models import SubjectDto
 def restore_redis(message: Message):
     markup = ReplyKeyboardMarkupCreator.student_classroom_markup()
 
-    bot.send_message(chat_id=message.from_user.id, text="Your classroom is here", reply_markup=markup)
+    bot.send_message(chat_id=message.from_user.id,
+                     text="Your classroom is here",
+                     disable_notification=True,
+                     reply_markup=markup)
 
 
 @bot.message_handler(regexp="My classes")
@@ -22,12 +25,12 @@ def my_courses(message: Message):
     response_data = [SubjectDto(**s) for s in request.json()]
 
     if not len(response_data):
-        bot.send_message(chat_id=message.from_user.id, text="You have no courses")
+        bot.send_message(chat_id=message.from_user.id, text="You have no courses", disable_notification=True)
         return
 
     markup = InlineKeyboardMarkupCreator.student_courses_markup(courses=response_data)
 
-    bot.send_message(chat_id=message.from_user.id, text=msg_text, reply_markup=markup)
+    bot.send_message(chat_id=message.from_user.id, text=msg_text, disable_notification=True, reply_markup=markup)
 
 
 @bot.message_handler(regexp="Subscribe course")
@@ -42,12 +45,12 @@ def subscribe_course_callback(call: CallbackQuery):
     request = StudentClient.enroll_in_course(user_id=call.from_user.id, course_id=course_id)
 
     if not request.ok:
-        bot.send_message(chat_id=call.from_user.id, text="Problem occurred")
+        bot.send_message(chat_id=call.from_user.id, text="Problem occurred", disable_notification=True,)
         return
 
     markup = ReplyKeyboardMarkupCreator.student_classroom_markup()
     bot.send_message(chat_id=call.from_user.id, text="You have successfully subscribed to the course",
-                     reply_markup=markup)
+                     disable_notification=True, reply_markup=markup)
 
 
 @bot.callback_query_handler(func=lambda call: (call.data.startswith("ReturnToSelect")))
@@ -59,17 +62,17 @@ def send_available_subjects(user_id: int):
     request = StudentClient.available_courses_student(user_id=user_id)
 
     if not len(request.json()):
-        bot.send_message(chat_id=user_id, text="No available subjects")
+        bot.send_message(chat_id=user_id, text="No available subjects", disable_notification=True)
         return
 
     response_data = [SubjectDto(**s) for s in request.json()]
 
     if not len(response_data):
-        bot.send_message(chat_id=user_id, text="No available subjects")
+        bot.send_message(chat_id=user_id, text="No available subjects", disable_notification=True)
         return
 
     msg_text = "Choose subject to learn"
 
     markup = InlineKeyboardMarkupCreator.sub_course_markup(courses=response_data)
 
-    bot.send_message(chat_id=user_id, text=msg_text, reply_markup=markup)
+    bot.send_message(chat_id=user_id, text=msg_text, disable_notification=True, reply_markup=markup)

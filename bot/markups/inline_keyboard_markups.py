@@ -1,3 +1,4 @@
+from typing import Literal
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from bot.i18n.i18n import t
 from ..api.api_models import *
@@ -97,18 +98,18 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def tutor_student_course_markup(private_course: PrivateCourseDto) -> InlineKeyboardMarkup:
+    def tutor_student_course_markup(private_course: PrivateCourseDto, role: Literal["tutor", "student"]) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 
         plan_class_btn = InlineKeyboardButton("Plan class",
                                               web_app=WebAppInfo(
                                                   url=f"{web_app_link}/tutor/private-course/{private_course.id}"
                                               ))
-        all_classes_btn = InlineKeyboardButton("All classes", callback_data=f"{CallBackPrefix.TutorCourseClasses} {private_course.id}")
-        invoices_btn = InlineKeyboardButton("Invoices", callback_data=CallBackPrefix.InvoicesForTutor)
+        all_classes_btn = InlineKeyboardButton("All classes", callback_data=f"{CallBackPrefix.CourseClasses} {private_course.id} {role}")
+        # invoices_btn = InlineKeyboardButton("Invoices", callback_data=CallBackPrefix.InvoicesForTutor)
         back_btn = InlineKeyboardButton("Back", callback_data=CallBackPrefix.BackToChoosePrivateCourse)
 
-        markup.add(plan_class_btn).add(all_classes_btn).add(invoices_btn).add(back_btn)
+        markup.add(plan_class_btn).add(all_classes_btn).add(back_btn)
 
         return markup
 

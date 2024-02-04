@@ -11,7 +11,7 @@ class CallBackPrefix(StrEnum):
     AddCourse = "add_course"
     SubscribeCourse = "subscribe_course"
     ReturnToSelect = "return_to_select"
-    TutorCourseClasses = "tutor_course_classes"
+    CourseClasses = "course_classes"
     InvoicesForTutor = "invoices_for_tutor"
     BackToPrivateCourse = "Back_to_private_course"
     BackToChoosePrivateCourse = "back_to_choose_private_course"

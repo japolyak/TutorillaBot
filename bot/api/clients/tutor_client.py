@@ -18,23 +18,9 @@ class TutorClient:
         return r
 
     @staticmethod
-    def private_courses(user_id: int, subject_name: str):
-        url = f"{api_link}/tutors/{user_id}/private-courses/{subject_name}/"
-        r = requests.get(url)
-
-        return r
-
-    @staticmethod
     def add_course(user_id: int, subject_id: int):
         url = f"{api_link}/tutors/{user_id}/courses/{subject_id}/"
         r = requests.post(url)
-
-        return r
-
-    @staticmethod
-    def get_classes(user_id: int, private_course_id: int):
-        url = f"{api_link}/tutors/{user_id}/private-courses/{private_course_id}/classes/"
-        r = requests.get(url)
 
         return r
 

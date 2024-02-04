@@ -25,13 +25,6 @@ class StudentClient:
         return r
 
     @staticmethod
-    def private_courses(user_id: int, subject_name: str):
-        url = f"{api_link}/students/{user_id}/private-courses/{subject_name}"
-        r = requests.get(url)
-
-        return r
-
-    @staticmethod
     def course_tutors(user_id: int, subject_name: str):
         url = f"{api_link}/students/{user_id}/courses/{subject_name}"
         r = requests.get(url)

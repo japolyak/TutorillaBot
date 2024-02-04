@@ -1,15 +1,14 @@
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from telebot import service_utils
-from bot.i18n.i18n import t
 from bot.redis_client import r
 from typing import List
 
 
 class ReplyKeyboardMarkupCreator:
     @staticmethod
-    def phone_markup(language: str) -> ReplyKeyboardMarkup:
+    def phone_markup() -> ReplyKeyboardMarkup:
         markup = ReplyKeyboardMarkup(resize_keyboard=True)
-        phone_btn = KeyboardButton(t(language, "phone"), request_contact=True)
+        phone_btn = KeyboardButton("Phone", request_contact=True)
         markup.add(phone_btn)
 
         return markup
@@ -64,6 +63,18 @@ class ReplyKeyboardMarkupCreator:
         main_menu_btn = KeyboardButton(text="Main menu")
 
         markup.add(my_courses_btn, add_course_btn).add(main_menu_btn)
+
+        return markup
+
+    @staticmethod
+    def admin_panel_markup() -> ReplyKeyboardMarkup:
+        markup = ReplyKeyboardMarkup(resize_keyboard=True)
+
+        tutor_requests_btn = KeyboardButton(text="Tutor requests")
+        student_requests_btn = KeyboardButton(text="Student requests")
+        back_to_admin_panel = KeyboardButton(text="Main menu")
+
+        markup.add(tutor_requests_btn, student_requests_btn).add(back_to_admin_panel)
 
         return markup
 
