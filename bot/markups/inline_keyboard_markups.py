@@ -4,6 +4,7 @@ from bot.i18n.i18n import t
 from ..api.api_models import *
 from ..config import web_app_link
 from ..enums import *
+from telebot import service_utils
 
 
 class InlineKeyboardMarkupCreator:
@@ -103,7 +104,7 @@ class InlineKeyboardMarkupCreator:
 
         plan_class_btn = InlineKeyboardButton("Plan class",
                                               web_app=WebAppInfo(
-                                                  url=f"{web_app_link}/tutor/private-course/{private_course.id}"
+                                                  url=f"{web_app_link}/{role}/private-course/{private_course.id}"
                                               ))
         all_classes_btn = InlineKeyboardButton("All classes", callback_data=f"{CallBackPrefix.CourseClasses} {private_course.id} {role}")
         # invoices_btn = InlineKeyboardButton("Invoices", callback_data=CallBackPrefix.InvoicesForTutor)
@@ -114,19 +115,30 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def course_classes_markup(private_class: PrivateClassDto) -> InlineKeyboardMarkup:
-        markup = InlineKeyboardMarkup()
+    def course_classes_markup(paginated_list: PaginatedList[PrivateClassBaseDto], go_back_id: int, role: str) -> InlineKeyboardMarkup:
+        markup = CustomInlineKeyboardMarkup()
 
         [markup.add(
             InlineKeyboardButton(text=f"{Emoji.ClassPaid.value if i.is_paid else (Emoji.ClassOccurred.value if i.has_occurred else Emoji.ClassScheduled.value)} {i.schedule_datetime.strftime("%d-%m-%Y %H:%M")}",
                                  callback_data=f"{CallBackPrefix.PrivateClass} {i.id}")
         )
             for i
-            in private_class.classes]
+            in paginated_list.items]
+
+        row = [
+            InlineKeyboardButton(text=f"{Emoji.BackArrow.value}",
+                                 callback_data=f"{CallBackPrefix.LoadPage} {paginated_list.current_page - 1} {go_back_id} {role}"if paginated_list.current_page > 1 else CallBackPrefix.EmptyCallback),
+            InlineKeyboardButton(text=f"{paginated_list.current_page}/{paginated_list.pages}",
+                                 callback_data=CallBackPrefix.EmptyCallback),
+            InlineKeyboardButton(text=f"{Emoji.NextArrow.value}",
+                                 callback_data=f"{CallBackPrefix.LoadPage} {paginated_list.current_page + 1} {go_back_id} {role}" if paginated_list.current_page < paginated_list.pages else CallBackPrefix.EmptyCallback),
+        ]
+
+        markup.add_row(row)
 
         markup.add(
             InlineKeyboardButton(text=f"{Emoji.BackArrow.value} Back to course",
-                                 callback_data=f"{CallBackPrefix.BackToPrivateCourse} {private_class.private_course.id}"
+                                 callback_data=f"{CallBackPrefix.BackToPrivateCourse} {go_back_id}"
                                  )
         )
 
@@ -156,3 +168,15 @@ class InlineKeyboardMarkupCreator:
         markup.add(accept_btn).add(decline_btn).add(back_to_requests)
 
         return markup
+
+
+class CustomInlineKeyboardMarkup(InlineKeyboardMarkup):
+    def add_row(self, buttons: List[InlineKeyboardButton], row_width=None):
+        if row_width is None:
+            row_width = self.row_width
+
+        for row in service_utils.chunks(buttons, row_width):
+            button_array = [button for button in row]
+            self.keyboard.append(button_array)
+
+        return self

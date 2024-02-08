@@ -1,6 +1,19 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Generic, TypeVar
 from datetime import datetime
+
+
+T = TypeVar('T')
+
+
+class PaginatedList(BaseModel, Generic[T]):
+    items: List[T]
+    total: int
+    current_page: int
+    pages: int
+
+    class Config:
+        from_attributes = True
 
 
 class UserBaseDto(BaseModel):

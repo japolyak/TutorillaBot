@@ -21,6 +21,8 @@ class CallBackPrefix(StrEnum):
     AcceptRole = "accept_role"
     DeclineRole = "decline_role"
     BackToUsersRequests = "back_to_users_requests"
+    LoadPage = "load_page"
+    EmptyCallback = "empty_callback"
 
 
 class Emoji(Enum):
@@ -28,6 +30,7 @@ class Emoji(Enum):
     ClassOccurred = u'\U00002705'
     ClassPaid = u'\U0001F4B0'
     BackArrow = u'\u2B05'
+    NextArrow = u'\u27A1'
     Accept = u'\u2714'
     Decline = u'\u274C'
 

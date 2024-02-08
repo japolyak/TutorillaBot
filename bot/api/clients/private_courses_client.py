@@ -4,8 +4,8 @@ from bot.config import api_link
 
 class PrivateCoursesClient:
     @staticmethod
-    def get_classes(private_course_id: int, role: str):
-        url = f"{api_link}/private-courses/{private_course_id}/classes/?role={role}"
+    def get_classes(private_course_id: int, role: str, page: int = 1):
+        url = f"{api_link}/private-courses/{private_course_id}/classes/?role={role}&page={page}"
         r = requests.get(url)
 
         return r
