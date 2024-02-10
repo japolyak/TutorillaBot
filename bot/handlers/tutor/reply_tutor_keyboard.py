@@ -1,5 +1,5 @@
 from telebot.types import Message, CallbackQuery
-from bot.api.clients.tutor_client import TutorClient
+from bot.api.clients.tutor_course_client import TutorCourseClient
 from bot.api.clients.subject_client import SubjectClient
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
@@ -45,7 +45,7 @@ def add_course(message: Message):
 def add_course_callback(call: CallbackQuery):
     subject_id = int(call.data.split(" ")[1])
 
-    request = TutorClient.add_course(user_id=call.from_user.id, subject_id=subject_id)
+    request = TutorCourseClient.add_course(user_id=call.from_user.id, subject_id=subject_id)
 
     if not request.ok:
         request = SubjectClient.get_available_subjects(user_id=call.from_user.id, role="tutor")

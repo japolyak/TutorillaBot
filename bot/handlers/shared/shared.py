@@ -14,6 +14,7 @@ def main_menu(message: Message):
     bot.send_message(chat_id=message.from_user.id, text="Main menu", disable_notification=True, reply_markup=markup)
 
 
+# TODO - rewrite this part for no subjects
 repeated_inline_query_result = [InlineQueryResultArticle(id="1", title="Bad request",
                                                          input_message_content=InputTextMessageContent(
                                                              message_text="Bad request"))]
@@ -44,7 +45,7 @@ def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal["tu
             input_message_content=InputTextMessageContent(
                 message_text=f"Subject: {i.course.subject.name}\nhOther details..."
             ),
-            reply_markup=InlineKeyboardMarkupCreator.private_course_markup(i, role)
+            reply_markup=InlineKeyboardMarkupCreator.private_course_markup(i.id, role)
         ) for i in response_data
     ]
 
