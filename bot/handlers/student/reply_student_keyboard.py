@@ -5,6 +5,7 @@ from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from ...api.api_models import SubjectDto
+from ..tutor.shared import get_subjects
 
 
 @bot.message_handler(regexp="Classroom")
@@ -19,19 +20,7 @@ def restore_redis(message: Message):
 
 @bot.message_handler(regexp="My classes")
 def my_courses(message: Message):
-    request = SubjectClient.get_classes(user_id=message.from_user.id, role="student")
-
-    msg_text = "Choose your subject"
-
-    response_data = [SubjectDto(**s) for s in request.json()]
-
-    if not len(response_data):
-        bot.send_message(chat_id=message.from_user.id, text="You have no courses", disable_notification=True)
-        return
-
-    markup = InlineKeyboardMarkupCreator.student_courses_markup(courses=response_data)
-
-    bot.send_message(chat_id=message.from_user.id, text=msg_text, disable_notification=True, reply_markup=markup)
+    get_subjects(message.from_user.id, "student")
 
 
 @bot.message_handler(regexp="Subscribe course")
@@ -60,7 +49,7 @@ def return_to_select_callback(call: CallbackQuery):
 
 
 def send_available_subjects(user_id: int):
-    request = StudentClient.available_courses_student(user_id=user_id)
+    request = SubjectClient.get_available_subjects(user_id=user_id, role="student")
 
     if not len(request.json()):
         bot.send_message(chat_id=user_id, text="No available subjects", disable_notification=True)

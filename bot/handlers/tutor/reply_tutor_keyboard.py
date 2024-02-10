@@ -1,11 +1,12 @@
 from telebot.types import Message, CallbackQuery
 from bot.api.clients.tutor_client import TutorClient
+from bot.api.clients.subject_client import SubjectClient
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from ...api.api_models import SubjectDto
 from ...enums import CallBackPrefix
-from .shared import get_tutor_subjects
+from .shared import get_subjects
 
 
 @bot.message_handler(regexp="Office")
@@ -16,12 +17,12 @@ def restore_redis(message: Message):
 
 @bot.message_handler(regexp="My courses")
 def my_courses(message: Message):
-    get_tutor_subjects(message.from_user.id)
+    get_subjects(message.from_user.id, "tutor")
 
 
 @bot.message_handler(regexp="Add course")
 def add_course(message: Message):
-    request = TutorClient.available_subjects_tutor(user_id=message.from_user.id)
+    request = SubjectClient.get_available_subjects(user_id=message.from_user.id, role="tutor")
 
     if not len(request.json()):
         bot.send_message(chat_id=message.from_user.id, text="No available subjects", disable_notification=True)
@@ -47,7 +48,7 @@ def add_course_callback(call: CallbackQuery):
     request = TutorClient.add_course(user_id=call.from_user.id, subject_id=subject_id)
 
     if not request.ok:
-        request = TutorClient.available_subjects_tutor(user_id=call.from_user.id)
+        request = SubjectClient.get_available_subjects(user_id=call.from_user.id, role="tutor")
 
         response_data = [SubjectDto(**s) for s in request.json()]
 

@@ -4,13 +4,6 @@ from bot.config import api_link
 
 class StudentClient:
     @staticmethod
-    def available_courses_student(user_id: int):
-        url = f"{api_link}/students/{user_id}/available-courses/"
-        r = requests.get(url)
-
-        return r
-
-    @staticmethod
     def enroll_in_course(user_id: int, course_id: int):
         url = f"{api_link}/students/{user_id}/courses/{course_id}/"
         r = requests.post(url)

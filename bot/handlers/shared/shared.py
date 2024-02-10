@@ -44,7 +44,7 @@ def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal["tu
             input_message_content=InputTextMessageContent(
                 message_text=f"Subject: {i.course.subject.name}\nhOther details..."
             ),
-            reply_markup=InlineKeyboardMarkupCreator.tutor_student_course_markup(i, role)
+            reply_markup=InlineKeyboardMarkupCreator.private_course_markup(i, role)
         ) for i in response_data
     ]
 

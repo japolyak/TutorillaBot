@@ -44,22 +44,11 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def tutor_courses_markup(courses: List[SubjectDto]) -> InlineKeyboardMarkup:
+    def subjects_markup(courses: List[SubjectDto], role: Literal["Tutor", "Student"]) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 
         [markup.add(
-            InlineKeyboardButton(text=course.name, switch_inline_query_current_chat=f"Tutor {course.name}"))
-            for course
-            in courses]
-
-        return markup
-
-    @staticmethod
-    def student_courses_markup(courses: List[SubjectDto]) -> InlineKeyboardMarkup:
-        markup = InlineKeyboardMarkup()
-
-        [markup.add(
-            InlineKeyboardButton(text=course.name, switch_inline_query_current_chat=f"Student {course.name}"))
+            InlineKeyboardButton(text=course.name, switch_inline_query_current_chat=f"{role} {course.name}"))
             for course
             in courses]
 
@@ -99,7 +88,7 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def tutor_student_course_markup(private_course: PrivateCourseDto, role: Literal["tutor", "student"]) -> InlineKeyboardMarkup:
+    def private_course_markup(private_course: PrivateCourseDto, role: Literal["tutor", "student"]) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 
         plan_class_btn = InlineKeyboardButton("Plan class",
@@ -107,7 +96,7 @@ class InlineKeyboardMarkupCreator:
                                                   url=f"{web_app_link}/{role}/private-course/{private_course.id}"
                                               ))
         all_classes_btn = InlineKeyboardButton("All classes", callback_data=f"{CallBackPrefix.CourseClasses} {private_course.id} {role}")
-        back_btn = InlineKeyboardButton("Back", callback_data=CallBackPrefix.BackToChoosePrivateCourse)
+        back_btn = InlineKeyboardButton("Back", callback_data=f"{CallBackPrefix.BackToChoosePrivateCourse} {role}")
 
         markup.add(plan_class_btn).add(all_classes_btn).add(back_btn)
 
