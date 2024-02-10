@@ -107,7 +107,6 @@ class InlineKeyboardMarkupCreator:
                                                   url=f"{web_app_link}/{role}/private-course/{private_course.id}"
                                               ))
         all_classes_btn = InlineKeyboardButton("All classes", callback_data=f"{CallBackPrefix.CourseClasses} {private_course.id} {role}")
-        # invoices_btn = InlineKeyboardButton("Invoices", callback_data=CallBackPrefix.InvoicesForTutor)
         back_btn = InlineKeyboardButton("Back", callback_data=CallBackPrefix.BackToChoosePrivateCourse)
 
         markup.add(plan_class_btn).add(all_classes_btn).add(back_btn)
@@ -115,7 +114,7 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def course_classes_markup(paginated_list: PaginatedList[PrivateClassBaseDto], go_back_id: int, role: str) -> InlineKeyboardMarkup:
+    def course_classes_markup(paginated_list: PaginatedList[PrivateClassBaseDto], go_back_id: int, role: str, inline_message_id: str) -> InlineKeyboardMarkup:
         markup = CustomInlineKeyboardMarkup()
 
         [markup.add(
@@ -127,18 +126,18 @@ class InlineKeyboardMarkupCreator:
 
         row = [
             InlineKeyboardButton(text=f"{Emoji.BackArrow.value}",
-                                 callback_data=f"{CallBackPrefix.LoadPage} {paginated_list.current_page - 1} {go_back_id} {role}"if paginated_list.current_page > 1 else CallBackPrefix.EmptyCallback),
+                                 callback_data=f"{CallBackPrefix.LoadPage} {paginated_list.current_page - 1} {go_back_id} {role} {inline_message_id}"if paginated_list.current_page > 1 else CallBackPrefix.EmptyCallback),
             InlineKeyboardButton(text=f"{paginated_list.current_page}/{paginated_list.pages}",
                                  callback_data=CallBackPrefix.EmptyCallback),
             InlineKeyboardButton(text=f"{Emoji.NextArrow.value}",
-                                 callback_data=f"{CallBackPrefix.LoadPage} {paginated_list.current_page + 1} {go_back_id} {role}" if paginated_list.current_page < paginated_list.pages else CallBackPrefix.EmptyCallback),
+                                 callback_data=f"{CallBackPrefix.LoadPage} {paginated_list.current_page + 1} {go_back_id} {role} {inline_message_id}" if paginated_list.current_page < paginated_list.pages else CallBackPrefix.EmptyCallback),
         ]
 
         markup.add_row(row)
 
         markup.add(
             InlineKeyboardButton(text=f"{Emoji.BackArrow.value} Back to course",
-                                 callback_data=f"{CallBackPrefix.BackToPrivateCourse} {go_back_id}"
+                                 callback_data=f"{CallBackPrefix.BackToPrivateCourse} {go_back_id} {inline_message_id} {role}"
                                  )
         )
 

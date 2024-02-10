@@ -6,6 +6,16 @@ from typing import List
 
 class ReplyKeyboardMarkupCreator:
     @staticmethod
+    def choose_time_zone() -> ReplyKeyboardMarkup:
+        markup = CustomReplyKeyboardMarkup(resize_keyboard=True)
+
+        top_row = [KeyboardButton("+1"), KeyboardButton("+2")]
+
+        markup.add_row(top_row)
+
+        return markup
+
+    @staticmethod
     def phone_markup() -> ReplyKeyboardMarkup:
         markup = ReplyKeyboardMarkup(resize_keyboard=True)
         phone_btn = KeyboardButton("Phone", request_contact=True)

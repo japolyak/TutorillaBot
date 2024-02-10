@@ -11,3 +11,11 @@ class Validator:
         regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
 
         return re.fullmatch(regex, email)
+
+    @staticmethod
+    def validate_time_zone(time_zone: str) -> bool:
+        try:
+            float(time_zone)
+            return True
+        except ValueError:
+            return False

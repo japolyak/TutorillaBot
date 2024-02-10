@@ -22,7 +22,7 @@ class UserBaseDto(BaseModel):
     last_name: str
     email: str
     phone_number: str
-    time_zone: int
+    time_zone: float
 
 
 class UserDto(UserBaseDto):

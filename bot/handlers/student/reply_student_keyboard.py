@@ -1,5 +1,6 @@
 from telebot.types import Message, CallbackQuery
 from bot.api.clients.student_client import StudentClient
+from bot.api.clients.subject_client import SubjectClient
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
@@ -18,7 +19,7 @@ def restore_redis(message: Message):
 
 @bot.message_handler(regexp="My classes")
 def my_courses(message: Message):
-    request = StudentClient.my_classes(user_id=message.from_user.id)
+    request = SubjectClient.get_classes(user_id=message.from_user.id, role="student")
 
     msg_text = "Choose your subject"
 

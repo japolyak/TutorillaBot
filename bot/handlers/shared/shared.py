@@ -5,7 +5,7 @@ from bot.bot_token import bot
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.api.clients.student_client import StudentClient
-from bot.api.clients.private_courses_client import PrivateCoursesClient
+from bot.api.clients.private_course_client import PrivateCourseClient
 
 
 @bot.message_handler(regexp="Main menu")
@@ -20,7 +20,7 @@ repeated_inline_query_result = [InlineQueryResultArticle(id="1", title="Bad requ
 
 
 def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal["tutor", "student"]):
-    request = PrivateCoursesClient.get_private_courses_by_course_name(
+    request = PrivateCourseClient.get_private_courses_by_course_name(
         user_id=query.from_user.id,
         subject_name=subject_name,
         role=role
