@@ -23,3 +23,10 @@ class PrivateCourseClient:
         r = requests.get(url)
 
         return r
+
+    @staticmethod
+    def enroll_in_course(user_id: int, private_course_id: int):
+        url = f"{api_link}/private-courses/{private_course_id}/users/{user_id}/"
+        r = requests.post(url)
+
+        return r

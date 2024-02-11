@@ -4,7 +4,7 @@ from bot.api.api_models import TutorCourseDto, PrivateCourseDto
 from bot.bot_token import bot
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
-from bot.api.clients.student_client import StudentClient
+from bot.api.clients.tutor_course_client import TutorCourseClient
 from bot.api.clients.private_course_client import PrivateCourseClient
 
 
@@ -67,7 +67,7 @@ def query_text(query: InlineQuery):
 
         if query.query.startswith("Subscribe"):
             # TODO - rewrite this part
-            request = StudentClient.course_tutors(user_id=query.from_user.id, subject_name=subject[1])
+            request = TutorCourseClient.course_tutors(user_id=query.from_user.id, subject_name=subject[1])
             if not request.ok:
                 bot.answer_inline_query(query.id, repeated_inline_query_result)
                 return

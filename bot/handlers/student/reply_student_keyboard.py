@@ -1,5 +1,5 @@
 from telebot.types import Message, CallbackQuery
-from bot.api.clients.student_client import StudentClient
+from bot.api.clients.private_course_client import PrivateCourseClient
 from bot.api.clients.subject_client import SubjectClient
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
@@ -32,7 +32,7 @@ def subscribe_course(message: Message):
 def subscribe_course_callback(call: CallbackQuery):
     course_id = int(call.data.split(" ")[1])
 
-    request = StudentClient.enroll_in_course(user_id=call.from_user.id, course_id=course_id)
+    request = PrivateCourseClient.enroll_in_course(user_id=call.from_user.id, private_course_id=course_id)
 
     if not request.ok:
         bot.send_message(chat_id=call.from_user.id, text="Problem occurred", disable_notification=True,)
@@ -50,6 +50,7 @@ def return_to_select_callback(call: CallbackQuery):
 
 def send_available_subjects(user_id: int):
     request = SubjectClient.get_available_subjects(user_id=user_id, role="student")
+    print(request.json())
 
     if not len(request.json()):
         bot.send_message(chat_id=user_id, text="No available subjects", disable_notification=True)

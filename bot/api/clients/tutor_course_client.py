@@ -9,3 +9,10 @@ class TutorCourseClient:
         r = requests.post(url)
 
         return r
+
+    @staticmethod
+    def course_tutors(user_id: int, subject_name: str):
+        url = f"{api_link}/tutor-courses/users/{user_id}/subject-name/{subject_name}/"
+        r = requests.get(url)
+
+        return r
