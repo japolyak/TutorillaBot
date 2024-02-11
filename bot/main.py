@@ -24,6 +24,9 @@ def init_webhook():
         bot.set_webhook(url=webhook_url)
 
 
+if webhook_enabled:
+    init_webhook()
+
 if __name__ == '__main__':
     if webhook_enabled:
         init_webhook()

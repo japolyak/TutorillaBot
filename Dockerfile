@@ -4,9 +4,8 @@ ENV PYTHONUNBUFFERED True
 
 WORKDIR /code
 
-COPY . ./
+COPY . .
 
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "bot.main:app", "--host", "0.0.0.0", "--port", "$PORT"]
