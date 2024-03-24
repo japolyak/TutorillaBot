@@ -10,14 +10,22 @@ from bot.api.clients.private_course_client import PrivateCourseClient
 
 @bot.message_handler(regexp="Main menu")
 def main_menu(message: Message):
-    markup = ReplyKeyboardMarkupCreator.main_menu_markup(message.from_user.id)
-    bot.send_message(chat_id=message.from_user.id, text="Main menu", disable_notification=True, reply_markup=markup)
+    try:
+        markup = ReplyKeyboardMarkupCreator.main_menu_markup(message.from_user.id)
+        bot.send_message(chat_id=message.from_user.id, text="Main menu", disable_notification=True, reply_markup=markup)
+
+    except Exception as e:
+        error_message = f"Error Occurred: {e}"
+        bot.send_message(chat_id=message.from_user.id, text=error_message, disable_notification=True)
 
 
-# TODO - rewrite this part for no subjects
-repeated_inline_query_result = [InlineQueryResultArticle(id="1", title="Bad request",
-                                                         input_message_content=InputTextMessageContent(
-                                                             message_text="Bad request"))]
+def repeated_inline_query_result():
+    # TODO - rewrite this part for no subjects
+    return [InlineQueryResultArticle(id="1",
+                                     title="Bad request",
+                                     input_message_content=InputTextMessageContent(
+                                         message_text="Bad request")
+                                     )]
 
 
 def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal["tutor", "student"]):
@@ -28,11 +36,11 @@ def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal["tu
     )
 
     if not request.ok:
-        bot.answer_inline_query(query.id, repeated_inline_query_result)
+        bot.answer_inline_query(query.id, repeated_inline_query_result())
         return
 
     if not request.json():
-        bot.answer_inline_query(query.id, repeated_inline_query_result)
+        bot.answer_inline_query(query.id, repeated_inline_query_result())
         return
 
     response_data = [PrivateCourseDto(**c) for c in request.json()]
@@ -54,37 +62,42 @@ def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal["tu
 
 @bot.inline_handler(func=lambda query: query.query)
 def query_text(query: InlineQuery):
-    subject = query.query.split(" ")
+    try:
+        subject = query.query.split(" ")
 
-    if len(subject):
-        if query.query.startswith("Tutor"):
-            get_courses_by_role(query, subject[1], "tutor")
-            return
-
-        if len(subject) and query.query.startswith("Student"):
-            get_courses_by_role(query, subject[1], "student")
-            return
-
-        if query.query.startswith("Subscribe"):
-            # TODO - rewrite this part
-            request = TutorCourseClient.course_tutors(user_id=query.from_user.id, subject_name=subject[1])
-            if not request.ok:
-                bot.answer_inline_query(query.id, repeated_inline_query_result)
+        if len(subject):
+            if query.query.startswith("Tutor"):
+                get_courses_by_role(query, subject[1], "tutor")
                 return
 
-            response_data = [TutorCourseDto(**c) for c in request.json()]
+            if len(subject) and query.query.startswith("Student"):
+                get_courses_by_role(query, subject[1], "student")
+                return
 
-            courses = [
-                InlineQueryResultArticle(
-                    id=i.id,
-                    title=f"{i.subject.name}",
-                    description=f"{i.tutor.first_name} {i.tutor.last_name}",
-                    input_message_content=InputTextMessageContent(
-                        message_text=f"Subject: {i.subject.name}\n With {i.tutor.first_name} {i.tutor.last_name}"
-                    ),
-                    reply_markup=InlineKeyboardMarkupCreator.subscribe_course_markup(i.id)
-                ) for i in response_data
-            ]
+            if query.query.startswith("Subscribe"):
+                # TODO - rewrite this part
+                request = TutorCourseClient.course_tutors(user_id=query.from_user.id, subject_name=subject[1])
+                if not request.ok:
+                    bot.answer_inline_query(query.id, repeated_inline_query_result())
+                    return
 
-            bot.answer_inline_query(inline_query_id=query.id, results=courses, cache_time=0)
-            return
+                response_data = [TutorCourseDto(**c) for c in request.json()]
+
+                courses = [
+                    InlineQueryResultArticle(
+                        id=i.id,
+                        title=f"{i.subject.name}",
+                        description=f"{i.tutor.first_name} {i.tutor.last_name}",
+                        input_message_content=InputTextMessageContent(
+                            message_text=f"Subject: {i.subject.name}\n With {i.tutor.first_name} {i.tutor.last_name}"
+                        ),
+                        reply_markup=InlineKeyboardMarkupCreator.subscribe_course_markup(i.id)
+                    ) for i in response_data
+                ]
+
+                bot.answer_inline_query(inline_query_id=query.id, results=courses, cache_time=0)
+                return
+
+    except Exception as e:
+        error_message = f"Error Occurred: {e}"
+        bot.send_message(chat_id=query.from_user.id, text=error_message, disable_notification=True)
