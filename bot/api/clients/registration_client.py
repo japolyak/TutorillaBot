@@ -1,4 +1,5 @@
 import requests
+from requests import Response
 from bot.config import api_link
 
 
@@ -18,7 +19,7 @@ class RegistrationClient:
         return r
 
     @staticmethod
-    def apply_for_role(user_id: int, role: str):
+    def apply_for_role(user_id: int, role: str) -> Response:
         url = f"{api_link}/users/{user_id}/apply_role/{role}/"
         r = requests.post(url)
         return r

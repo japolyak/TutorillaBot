@@ -1,5 +1,5 @@
 import redis
-from .config import redis_host, redis_db, redis_password, redis_username
+from bot.config import redis_host, redis_db, redis_password, redis_username
 
 r = redis.StrictRedis(
     host=redis_host,

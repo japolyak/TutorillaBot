@@ -35,7 +35,12 @@ if __name__ == '__main__':
     else:
         logging.info('Starting bot..')
 
+        logging.info('Removing webhook..')
+        bot.remove_webhook()
+        time.sleep(0.1)
+
         logging.info('Initializing handlers')
 
         logging.info('Starting polling')
+
         bot.infinity_polling()

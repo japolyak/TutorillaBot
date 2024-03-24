@@ -4,48 +4,75 @@ from bot.api.clients.subject_client import SubjectClient
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
-from ...api.api_models import SubjectDto
-from ..tutor.shared import get_subjects
+from bot.api.api_models import SubjectDto
+from bot.handlers.tutor.shared import get_subjects
+from bot.callback_query_agent import get_callback_query_data
+from bot.enums import CallBackPrefix
 
 
 @bot.message_handler(regexp="Classroom")
 def restore_redis(message: Message):
-    markup = ReplyKeyboardMarkupCreator.student_classroom_markup()
+    try:
+        markup = ReplyKeyboardMarkupCreator.student_classroom_markup()
 
-    bot.send_message(chat_id=message.from_user.id,
-                     text="Your classroom is here",
-                     disable_notification=True,
-                     reply_markup=markup)
+        bot.send_message(chat_id=message.from_user.id,
+                         text="Your classroom is here",
+                         disable_notification=True,
+                         reply_markup=markup)
+
+    except Exception as e:
+        error_message = f"Error Occurred: {e}"
+        bot.send_message(chat_id=message.from_user.id, text=error_message, disable_notification=True)
 
 
 @bot.message_handler(regexp="My classes")
 def my_courses(message: Message):
-    get_subjects(message.from_user.id, "student")
+    try:
+        get_subjects(message.from_user.id, "student")
+
+    except Exception as e:
+        error_message = f"Error Occurred: {e}"
+        bot.send_message(chat_id=message.from_user.id, text=error_message, disable_notification=True)
 
 
 @bot.message_handler(regexp="Subscribe course")
 def subscribe_course(message: Message):
-    send_available_subjects(user_id=message.from_user.id)
+    try:
+        send_available_subjects(user_id=message.from_user.id)
+
+    except Exception as e:
+        error_message = f"Error Occurred: {e}"
+        bot.send_message(chat_id=message.from_user.id, text=error_message, disable_notification=True)
 
 
-@bot.callback_query_handler(func=lambda call: (call.data.startswith("SubscribeCourse")))
+@bot.callback_query_handler(func=lambda call: (call.data.startswith(CallBackPrefix.SubscribeCourse)))
 def subscribe_course_callback(call: CallbackQuery):
-    course_id = int(call.data.split(" ")[1])
+    try:
+        course_id = get_callback_query_data(CallBackPrefix.SubscribeCourse, call)[0]
 
-    request = PrivateCourseClient.enroll_in_course(user_id=call.from_user.id, private_course_id=course_id)
+        request = PrivateCourseClient.enroll_in_course(user_id=call.from_user.id, private_course_id=course_id)
 
-    if not request.ok:
-        bot.send_message(chat_id=call.from_user.id, text="Problem occurred", disable_notification=True,)
-        return
+        if not request.ok:
+            bot.send_message(chat_id=call.from_user.id, text="Problem occurred", disable_notification=True,)
+            return
 
-    markup = ReplyKeyboardMarkupCreator.student_classroom_markup()
-    bot.send_message(chat_id=call.from_user.id, text="You have successfully subscribed to the course",
-                     disable_notification=True, reply_markup=markup)
+        markup = ReplyKeyboardMarkupCreator.student_classroom_markup()
+        bot.send_message(chat_id=call.from_user.id, text="You have successfully subscribed to the course",
+                         disable_notification=True, reply_markup=markup)
+
+    except Exception as e:
+        error_message = f"Error Occurred: {e}"
+        bot.send_message(chat_id=call.from_user.id, text=error_message, disable_notification=True)
 
 
 @bot.callback_query_handler(func=lambda call: (call.data.startswith("ReturnToSelect")))
 def return_to_select_callback(call: CallbackQuery):
-    send_available_subjects(user_id=call.from_user.id)
+    try:
+        send_available_subjects(user_id=call.from_user.id)
+
+    except Exception as e:
+        error_message = f"Error Occurred: {e}"
+        bot.send_message(chat_id=call.from_user.id, text=error_message, disable_notification=True)
 
 
 def send_available_subjects(user_id: int):
