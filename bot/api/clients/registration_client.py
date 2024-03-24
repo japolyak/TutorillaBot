@@ -20,6 +20,6 @@ class RegistrationClient:
 
     @staticmethod
     def apply_for_role(user_id: int, role: str) -> Response:
-        url = f"{api_link}/users/{user_id}/apply_role/{role}/"
+        url = f"{api_link}/users/{user_id}/apply-role/{role}/"
         r = requests.post(url)
         return r
