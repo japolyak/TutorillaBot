@@ -130,7 +130,7 @@ def set_phone(message: Message, field: str):
                 r.hdel(message.from_user.id, x)
 
             bot.send_message(chat_id=message.from_user.id,
-                             text="Pizda naturalna. Do it again! Press /start",
+                             text="Something went wrong. Do it again! Press /start",
                              disable_notification=True)
 
             return
