@@ -4,9 +4,10 @@ from bot.api.clients.subject_client import SubjectClient
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
-from ...api.api_models import SubjectDto
-from ...enums import CallBackPrefix
-from .shared import get_subjects
+from bot.api.api_models import SubjectDto
+from bot.enums import CallBackPrefix
+from bot.handlers.tutor.shared import get_subjects
+from bot.callback_query_agent import get_callback_query_data
 
 
 @bot.message_handler(regexp="Office")
@@ -59,7 +60,7 @@ def add_course(message: Message):
 @bot.callback_query_handler(func=lambda call: (call.data.startswith(CallBackPrefix.AddCourse)))
 def add_course_callback(call: CallbackQuery):
     try:
-        subject_id = int(call.data.split(" ")[1])
+        subject_id: int = get_callback_query_data(CallBackPrefix.AddCourse, call)[0]
 
         request = TutorCourseClient.add_course(user_id=call.from_user.id, subject_id=subject_id)
 

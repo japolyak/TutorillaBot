@@ -3,9 +3,10 @@ from bot.bot_token import bot
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.api.clients.admin_client import AdminClient
-from ...api.api_models import UserRequestDto, UserDto
-from ...enums import CallBackPrefix, Role
+from bot.api.api_models import UserRequestDto, UserDto
+from bot.enums import CallBackPrefix, Role
 from bot.redis.redis_client import r
+from bot.callback_query_agent import get_callback_query_data
 
 
 @bot.message_handler(regexp="Admin panel")
@@ -45,7 +46,7 @@ def get_tutor_role_requests(message: Message):
 @bot.callback_query_handler(func=lambda call: call.data.startswith(CallBackPrefix.RoleRequest))
 def open_user_request(call: CallbackQuery):
     try:
-        role_request_id: int = int(call.data.split(" ")[1])
+        role_request_id = get_callback_query_data(CallBackPrefix.RoleRequest, call)[0]
 
         request = AdminClient.role_request(role_request_id)
 
@@ -77,7 +78,7 @@ def open_user_request(call: CallbackQuery):
 @bot.callback_query_handler(func=lambda call: call.data.startswith(CallBackPrefix.AcceptRole))
 def accept_user_request(call: CallbackQuery):
     try:
-        user_id, role = int(call.data.split(" ")[1]), call.data.split(" ")[2]
+        user_id, role = get_callback_query_data(CallBackPrefix.AcceptRole, call)
 
         request = AdminClient.accept_user_request(user_id=user_id, role=role)
 
@@ -101,7 +102,7 @@ def accept_user_request(call: CallbackQuery):
 @bot.callback_query_handler(func=lambda call: call.data.startswith(CallBackPrefix.DeclineRole))
 def decline_user_request(call: CallbackQuery):
     try:
-        user_id: int = int(call.data.split(" ")[1])
+        user_id: int = get_callback_query_data(CallBackPrefix.DeclineRole, call)[0]
 
         request = AdminClient.decline_user_request(user_id)
 
@@ -119,7 +120,8 @@ def decline_user_request(call: CallbackQuery):
 @bot.callback_query_handler(func=lambda call: call.data.startswith(CallBackPrefix.BackToUsersRequests))
 def decline_user_request(call: CallbackQuery):
     try:
-        role: str = call.data.split(" ")[1]
+        role: str = get_callback_query_data(CallBackPrefix.BackToUsersRequests, call)[0]
+
         role_requests(user_id=call.from_user.id, role=role)
 
     except Exception as e:

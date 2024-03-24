@@ -80,7 +80,7 @@ class InlineKeyboardMarkupCreator:
     def subscribe_course_markup(course_id: int) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 
-        subscribe_btn = InlineKeyboardButton("Subscribe", callback_data=f"SubscribeCourse {course_id}")
+        subscribe_btn = InlineKeyboardButton("Subscribe", callback_data=f"{CallBackPrefix.SubscribeCourse} {course_id}")
         return_btn = InlineKeyboardButton("Return to select subjects", callback_data="ReturnToSelect")
 
         markup.add(subscribe_btn).add(return_btn)

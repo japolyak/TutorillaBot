@@ -2,15 +2,16 @@ from telebot.types import CallbackQuery
 from bot.api.clients.private_course_client import PrivateCourseClient
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
-from ...api.api_models import PaginatedList, PrivateClassBaseDto
-from ...enums import CallBackPrefix
+from bot.api.api_models import PaginatedList, PrivateClassBaseDto
+from bot.enums import CallBackPrefix
+from bot.callback_query_agent import get_callback_query_data
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith(CallBackPrefix.CourseClasses))
 def get_course_classes(call: CallbackQuery):
     try:
-        private_course_id: int = int(call.data.split(" ")[1])
-        role: str = call.data.split(" ")[2]
+        private_course_id, role = get_callback_query_data(CallBackPrefix.CourseClasses, call)
+
         inline_message_id = call.inline_message_id
 
         request = PrivateCourseClient.get_classes(private_course_id=private_course_id, role=role)
@@ -36,10 +37,7 @@ def get_course_classes(call: CallbackQuery):
 @bot.callback_query_handler(func=lambda call: call.data.startswith(CallBackPrefix.LoadPage))
 def load_page(call: CallbackQuery):
     try:
-        page = int(call.data.split(" ")[1])
-        private_course_id = int(call.data.split(" ")[2])
-        role = call.data.split(" ")[3]
-        inline_message_id = call.data.split(" ")[4]
+        page, private_course_id, role, inline_message_id = get_callback_query_data(CallBackPrefix.LoadPage, call)
 
         request = PrivateCourseClient.get_classes(private_course_id=private_course_id, role=role, page=page)
 

@@ -4,8 +4,10 @@ from bot.api.clients.subject_client import SubjectClient
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
-from ...api.api_models import SubjectDto
-from ..tutor.shared import get_subjects
+from bot.api.api_models import SubjectDto
+from bot.handlers.tutor.shared import get_subjects
+from bot.callback_query_agent import get_callback_query_data
+from bot.enums import CallBackPrefix
 
 
 @bot.message_handler(regexp="Classroom")
@@ -43,10 +45,10 @@ def subscribe_course(message: Message):
         bot.send_message(chat_id=message.from_user.id, text=error_message, disable_notification=True)
 
 
-@bot.callback_query_handler(func=lambda call: (call.data.startswith("SubscribeCourse")))
+@bot.callback_query_handler(func=lambda call: (call.data.startswith(CallBackPrefix.SubscribeCourse)))
 def subscribe_course_callback(call: CallbackQuery):
     try:
-        course_id = int(call.data.split(" ")[1])
+        course_id = get_callback_query_data(CallBackPrefix.SubscribeCourse, call)[0]
 
         request = PrivateCourseClient.enroll_in_course(user_id=call.from_user.id, private_course_id=course_id)
 

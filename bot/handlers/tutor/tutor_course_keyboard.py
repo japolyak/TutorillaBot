@@ -2,15 +2,16 @@ from telebot.types import CallbackQuery
 from bot.api.clients.private_course_client import PrivateCourseClient
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
-from ...api.api_models import PrivateCourseDto
-from ...enums import CallBackPrefix
-from .shared import get_subjects
+from bot.enums import CallBackPrefix
+from bot.handlers.tutor.shared import get_subjects
+from bot.callback_query_agent import get_callback_query_data
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith(CallBackPrefix.BackToChoosePrivateCourse))
 def back_to_choose_subject_callback(call: CallbackQuery):
     try:
-        role = call.data.split(" ")[1]
+        role = get_callback_query_data(CallBackPrefix.BackToChoosePrivateCourse, call)[0]
+
         get_subjects(call.from_user.id, role)
 
     except Exception as e:
@@ -21,8 +22,7 @@ def back_to_choose_subject_callback(call: CallbackQuery):
 @bot.callback_query_handler(func=lambda call: call.data.startswith(CallBackPrefix.BackToPrivateCourse))
 def back_to_private_course(call: CallbackQuery):
     try:
-        private_course_id: int = int(call.data.split(" ")[1])
-        inline_message_id: str = call.data.split(" ")[2]
+        private_course_id, inline_message_id = get_callback_query_data(CallBackPrefix.BackToPrivateCourse, call)
 
         request = PrivateCourseClient.get_private_course(user_id=call.from_user.id, private_course_id=private_course_id)
 
