@@ -1,4 +1,10 @@
 import redis
-from .config import redis_host, redis_port
+from .config import redis_host, redis_db, redis_password, redis_username
 
-r = redis.StrictRedis(host=redis_host, port=redis_port, decode_responses=True)
+r = redis.StrictRedis(
+    host=redis_host,
+    db=redis_db,
+    password=redis_password,
+    username=redis_username,
+    decode_responses=True
+)

@@ -4,7 +4,7 @@ en = {
     "welcome": Template("Welcome, $name"),
     "selected_language": Template("Wonderful! English has been chosen"),
     "first_name": Template("First name"),
-    "last_name": Template("Last_name"),
+    "last_name": Template("Last name"),
     "phone": Template("Phone"),
     "email": Template("Email"),
     "enter_first_name": Template("Enter first name"),

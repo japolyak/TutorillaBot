@@ -2,6 +2,7 @@ from telebot.types import Message, ReplyKeyboardRemove, CallbackQuery
 from typing import Callable
 from ..bot_token import bot
 from ..redis_client import r
+from ..i18n.i18n import t
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.api.clients.registration_client import RegistrationClient
@@ -13,27 +14,27 @@ import json
 
 @bot.message_handler(commands=["start"])
 def welcome(message: Message):
-    bot.send_message(chat_id=message.from_user.id, text="Welcome to the registration process", disable_notification=True)
+    bot.send_message(chat_id=message.from_user.id, text="Darova zaebal", disable_notification=True)
     # request = RegistrationClient.get_user(message.from_user.id)
-
-
+    #
+    # r.hset(str(message.from_user.id), "id", int(message.from_user.id))
+    #
     # if request.ok:
     #     user: UserDto = UserDto(**request.json())
     #     # TODO - add full redis save
+    #     r.hset(message.from_user.id, "locale", user.locale)
     #     r.hset(message.from_user.id, "is_student", int(user.is_student))
     #     r.hset(message.from_user.id, "is_tutor", int(user.is_tutor))
     #     r.hset(message.from_user.id, "is_admin", int(user.is_admin))
     #
     #     markup = ReplyKeyboardMarkupCreator.main_menu_markup(message.from_user.id)
     #     bot.send_message(chat_id=message.from_user.id,
-    #                      text=f"Hi, {user.first_name} {user.last_name}",
+    #                      text=t(message.from_user.id, "welcome", name=user.first_name),
     #                      disable_notification=True,
     #                      reply_markup=markup)
     #     return
     #
-    # r.hset(str(message.from_user.id), "id", message.from_user.id)
-    #
-    # next_stepper(message.from_user.id, "First name", registration_first_name, "first_name", ReplyKeyboardRemove())
+    # next_stepper(message.from_user.id, t(message.from_user.id, "first_name"), registration_first_name, "first_name", ReplyKeyboardRemove())
 
 
 def registration_first_name(message: Message, field: str):
