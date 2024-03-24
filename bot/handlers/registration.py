@@ -121,6 +121,7 @@ def set_phone(message: Message, field: str):
                          reply_markup=ReplyKeyboardRemove())
 
         payload = json.dumps(r.hgetall(str(message.from_user.id)), indent=4)
+        bot.send_message(chat_id=message.from_user.id, text=f"Wait for registration {payload}", disable_notification=True)
 
         request = RegistrationClient.signup_user(payload)
 
