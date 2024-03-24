@@ -1,14 +1,14 @@
 from telebot.types import Message, ReplyKeyboardRemove, CallbackQuery
 from typing import Callable
-from ..bot_token import bot
+from bot.bot_token import bot
 from bot.redis.redis_client import r
-from ..i18n.i18n import t
+from bot.i18n.i18n import t
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.api.clients.registration_client import RegistrationClient
-from ..enums import CallBackPrefix, Role
-from ..validators import Validator
-from ..api.api_models import UserDto
+from bot.enums import CallBackPrefix, Role
+from bot.validators import Validator
+from bot.api.api_models import UserDto
 from bot.redis.redis_user_management import add_user
 import json
 from requests import Response
@@ -30,6 +30,8 @@ def welcome(message: Message):
                              disable_notification=True,
                              reply_markup=markup)
             return
+
+        r.hset(str(message.from_user.id), "id", int(message.from_user.id))
 
         next_stepper(message.from_user.id, t(message.from_user.id, "first_name"), registration_first_name, "first_name",
                      ReplyKeyboardRemove())
@@ -121,7 +123,6 @@ def set_phone(message: Message, field: str):
                          reply_markup=ReplyKeyboardRemove())
 
         payload = json.dumps(r.hgetall(str(message.from_user.id)), indent=4)
-        bot.send_message(chat_id=message.from_user.id, text=f"Wait for registration {payload}", disable_notification=True)
 
         request = RegistrationClient.signup_user(payload)
 
