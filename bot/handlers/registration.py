@@ -17,12 +17,10 @@ def welcome(message: Message):
     try:
         request = RegistrationClient.get_user(message.from_user.id)
 
-        r.hset(str(message.from_user.id), "id", int(message.from_user.id))
-
         if request.ok:
             user: UserDto = UserDto(**request.json())
 
-            r.hset(message.from_user.id, "id", user.id)
+            r.hset(message.from_user.id, "id", int(user.id))
             r.hset(message.from_user.id, "first_name", user.first_name)
             r.hset(message.from_user.id, "last_name", user.last_name)
             r.hset(message.from_user.id, "email", user.email)
