@@ -8,4 +8,4 @@ COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["uvicorn", "bot.main:app", "--host", "0.0.0.0", "--port", "$PORT"]
+CMD uvicorn bot.main:app --host 0.0.0.0 --port $PORT
