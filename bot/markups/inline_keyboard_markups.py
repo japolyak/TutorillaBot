@@ -23,12 +23,12 @@ class InlineKeyboardMarkupCreator:
     def change_profile(language: str) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 
-        first_name_btn = InlineKeyboardButton(t(language, "first_name"), callback_data=CallBackPrefix.SetFirstName)
-        last_name_btn = InlineKeyboardButton(t(language, "last_name"), callback_data=CallBackPrefix.SetLastName)
-        phone_btn = InlineKeyboardButton(t(language, "phone"), callback_data=CallBackPrefix.SetPhone)
-        email_btn = InlineKeyboardButton(t(language, "email"), callback_data=CallBackPrefix.SetEmail)
+        # first_name_btn = InlineKeyboardButton(t(language, "first_name"), callback_data=CallBackPrefix.SetFirstName)
+        # last_name_btn = InlineKeyboardButton(t(language, "last_name"), callback_data=CallBackPrefix.SetLastName)
+        # phone_btn = InlineKeyboardButton(t(language, "phone"), callback_data=CallBackPrefix.SetPhone)
+        # email_btn = InlineKeyboardButton(t(language, "email"), callback_data=CallBackPrefix.SetEmail)
 
-        markup.add(first_name_btn, last_name_btn).add(phone_btn, email_btn)
+        # markup.add(first_name_btn, last_name_btn).add(phone_btn, email_btn)
 
         return markup
 
@@ -93,7 +93,7 @@ class InlineKeyboardMarkupCreator:
 
         plan_class_btn = InlineKeyboardButton("Plan class",
                                               web_app=WebAppInfo(
-                                                  url=f"{web_app_link}/{role}/private-course/{private_course_id}"
+                                                  url=f"{web_app_link}"
                                               ))
         all_classes_btn = InlineKeyboardButton("All classes", callback_data=f"{CallBackPrefix.CourseClasses} {private_course_id} {role}")
         back_btn = InlineKeyboardButton("Back", callback_data=f"{CallBackPrefix.BackToChoosePrivateCourse} {role}")
