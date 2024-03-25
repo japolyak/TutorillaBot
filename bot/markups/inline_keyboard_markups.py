@@ -93,7 +93,7 @@ class InlineKeyboardMarkupCreator:
 
         plan_class_btn = InlineKeyboardButton("Plan class",
                                               web_app=WebAppInfo(
-                                                  url=f"{web_app_link}"
+                                                  url=f"{web_app_link}/{role}/private-course/{private_course_id}"
                                               ))
         all_classes_btn = InlineKeyboardButton("All classes", callback_data=f"{CallBackPrefix.CourseClasses} {private_course_id} {role}")
         back_btn = InlineKeyboardButton("Back", callback_data=f"{CallBackPrefix.BackToChoosePrivateCourse} {role}")
