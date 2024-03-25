@@ -16,7 +16,8 @@ def main_menu(message: Message):
         bot.send_message(chat_id=message.from_user.id, text="Main menu", disable_notification=True, reply_markup=markup)
 
     except Exception as e:
-        error_message = f"Error Occurred: {e}"
+        logging.error(msg="Exception in main_menu", exc_info=e)
+        error_message = f"Error Occurred\n{e}"
         bot.send_message(chat_id=message.from_user.id, text=error_message, disable_notification=True)
 
 

@@ -1,11 +1,10 @@
-from typing import Literal
+from typing import Literal, List
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from bot.i18n.i18n import t
-from ..api.api_models import *
-from ..config import web_app_link
-from ..enums import *
+from bot.api.api_models import PaginatedList, PrivateClassBaseDto, SubjectDto, UserRequestDto
+from bot.config import web_app_link
+from bot.enums import CallBackPrefix, Emoji
 from telebot import service_utils
-import logging
 
 
 class InlineKeyboardMarkupCreator:
@@ -117,18 +116,9 @@ class InlineKeyboardMarkupCreator:
     @staticmethod
     def course_classes_markup(paginated_list: PaginatedList[PrivateClassBaseDto], go_back_id: int, role: str, inline_message_id: str) -> InlineKeyboardMarkup:
         markup = CustomInlineKeyboardMarkup()
-        #
-        # logging.info("Filling classes buttons")
-        # [markup.add(
-        #     InlineKeyboardButton(text=f"{Emoji.ClassPaid.value if i.is_paid else (Emoji.ClassOccurred.value if i.has_occurred else Emoji.ClassScheduled.value)} {i.schedule_datetime.strftime("%d-%m-%Y %H:%M")}",
-        #                          callback_data=f"{CallBackPrefix.PrivateClass} {i.id}")
-        # )
-        #     for i
-        #     in paginated_list.items]
 
         for i in paginated_list.items:
             callback_data = f"{CallBackPrefix.PrivateClass} {i.id}"
-            logging.info(f"callback_data_{i.id}_len - {len(callback_data.encode())}")
 
             markup.add(
                 InlineKeyboardButton(
@@ -144,11 +134,6 @@ class InlineKeyboardMarkupCreator:
         current_btn_callback = CallBackPrefix.EmptyCallback
         next_btn_callback = f"{CallBackPrefix.LoadPage} {paginated_list.current_page + 1} {go_back_id} {role} {inline_message_id}" if paginated_list.current_page < paginated_list.pages else CallBackPrefix.EmptyCallback
 
-        logging.info(f"back_btn_callback_len - {len(back_btn_callback.encode())}")
-        logging.info(f"current_btn_callback_len - {len(current_btn_callback.encode())}")
-        logging.info(f"next_btn_callback_len - {len(next_btn_callback.encode())}")
-
-        logging.info("Filling pagination buttons")
         row = [
             InlineKeyboardButton(text=back_btn_text, callback_data=back_btn_callback),
             InlineKeyboardButton(text=current_btn_text, callback_data=current_btn_callback),
@@ -158,9 +143,7 @@ class InlineKeyboardMarkupCreator:
         markup.add_row(row)
 
         back_to_course_btn_callback = f"{CallBackPrefix.BackToPrivateCourse} {go_back_id} {inline_message_id} {role}"
-        logging.info(f"back_to_course_btn_callback_len - {len(back_to_course_btn_callback.encode())}")
 
-        logging.info("Filling back button")
         markup.add(
             InlineKeyboardButton(text=f"{Emoji.BackArrow.value} Back to course",
                                  callback_data=back_to_course_btn_callback

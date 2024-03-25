@@ -18,6 +18,7 @@ def get_course_classes(call: CallbackQuery):
         request = PrivateCourseClient.get_classes(private_course_id=private_course_id, role=role)
 
         if not request.ok:
+            logging.error(msg="Bad API request for get_course_classes")
             bot.send_message(chat_id=call.from_user.id, text="Shit, try later", disable_notification=True)
             return
 
@@ -26,10 +27,9 @@ def get_course_classes(call: CallbackQuery):
         if not len(request_data.items):
             bot.send_message(chat_id=call.from_user.id, text="You dont have classes", disable_notification=True)
             return
-        logging.info(msg=f"request_data - {request_data}, private_course_id - {private_course_id}, role - {role}, inline_message_id {inline_message_id}")
+
         markup = InlineKeyboardMarkupCreator.course_classes_markup(request_data, private_course_id, role, inline_message_id)
-        # markup = InlineKeyboardMarkupCreator.test_markup()
-        logging.info(msg="markup created")
+
         bot.edit_message_reply_markup(inline_message_id=inline_message_id, reply_markup=markup)
 
     except Exception as e:
@@ -46,7 +46,7 @@ def load_page(call: CallbackQuery):
         request = PrivateCourseClient.get_classes(private_course_id=private_course_id, role=role, page=page)
 
         if not request.ok:
-            logging.error(msg="Bad API request in load_page")
+            logging.error(msg="Bad API request for load_page")
             bot.send_message(chat_id=call.from_user.id, text="Shit, try later", disable_notification=True)
             return
 
