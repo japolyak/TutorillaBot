@@ -27,8 +27,8 @@ def get_course_classes(call: CallbackQuery):
             bot.send_message(chat_id=call.from_user.id, text="You dont have classes", disable_notification=True)
             return
         logging.info(msg=f"request_data - {request_data}, private_course_id - {private_course_id}, role - {role}, inline_message_id {inline_message_id}")
-        # markup = InlineKeyboardMarkupCreator.course_classes_markup(request_data, private_course_id, role, inline_message_id)
-        markup = InlineKeyboardMarkupCreator.test_markup()
+        markup = InlineKeyboardMarkupCreator.course_classes_markup(request_data, private_course_id, role, inline_message_id)
+        # markup = InlineKeyboardMarkupCreator.test_markup()
         logging.info(msg="markup created")
         bot.edit_message_reply_markup(inline_message_id=inline_message_id, reply_markup=markup)
 

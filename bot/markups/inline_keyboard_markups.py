@@ -117,35 +117,53 @@ class InlineKeyboardMarkupCreator:
     @staticmethod
     def course_classes_markup(paginated_list: PaginatedList[PrivateClassBaseDto], go_back_id: int, role: str, inline_message_id: str) -> InlineKeyboardMarkup:
         markup = CustomInlineKeyboardMarkup()
+        #
+        # logging.info("Filling classes buttons")
+        # [markup.add(
+        #     InlineKeyboardButton(text=f"{Emoji.ClassPaid.value if i.is_paid else (Emoji.ClassOccurred.value if i.has_occurred else Emoji.ClassScheduled.value)} {i.schedule_datetime.strftime("%d-%m-%Y %H:%M")}",
+        #                          callback_data=f"{CallBackPrefix.PrivateClass} {i.id}")
+        # )
+        #     for i
+        #     in paginated_list.items]
 
-        logging.info("Filling classes buttons")
-        [markup.add(
-            InlineKeyboardButton(text=f"{Emoji.ClassPaid.value if i.is_paid else (Emoji.ClassOccurred.value if i.has_occurred else Emoji.ClassScheduled.value)} {i.schedule_datetime.strftime("%d-%m-%Y %H:%M")}",
-                                 callback_data=f"{CallBackPrefix.PrivateClass} {i.id}")
-        )
-            for i
-            in paginated_list.items]
+        for i in paginated_list.items:
+            callback_data = f"{CallBackPrefix.PrivateClass} {i.id}"
+            logging.info(f"callback_data_{i.id}_len - {len(callback_data.encode())}")
+
+            markup.add(
+                InlineKeyboardButton(
+                    text=f"{Emoji.ClassPaid.value if i.is_paid else (Emoji.ClassOccurred.value if i.has_occurred else Emoji.ClassScheduled.value)} {i.schedule_datetime.strftime("%d-%m-%Y %H:%M")}",
+                    callback_data=callback_data)
+            )
 
         back_btn_text = f"{Emoji.BackArrow.value}"
         current_btn_text = f"{paginated_list.current_page}/{paginated_list.pages}"
         next_btn_text = f"{Emoji.NextArrow.value}"
 
         back_btn_callback = f"{CallBackPrefix.LoadPage} {paginated_list.current_page - 1} {go_back_id} {role} {inline_message_id}"if paginated_list.current_page > 1 else CallBackPrefix.EmptyCallback
+        current_btn_callback = CallBackPrefix.EmptyCallback
         next_btn_callback = f"{CallBackPrefix.LoadPage} {paginated_list.current_page + 1} {go_back_id} {role} {inline_message_id}" if paginated_list.current_page < paginated_list.pages else CallBackPrefix.EmptyCallback
+
+        logging.info(f"back_btn_callback_len - {len(back_btn_callback.encode())}")
+        logging.info(f"current_btn_callback_len - {len(current_btn_callback.encode())}")
+        logging.info(f"next_btn_callback_len - {len(next_btn_callback.encode())}")
 
         logging.info("Filling pagination buttons")
         row = [
             InlineKeyboardButton(text=back_btn_text, callback_data=back_btn_callback),
-            InlineKeyboardButton(text=current_btn_text, callback_data=CallBackPrefix.EmptyCallback),
+            InlineKeyboardButton(text=current_btn_text, callback_data=current_btn_callback),
             InlineKeyboardButton(text=next_btn_text, callback_data=next_btn_callback),
         ]
 
         markup.add_row(row)
 
+        back_to_course_btn_callback = f"{CallBackPrefix.BackToPrivateCourse} {go_back_id} {inline_message_id} {role}"
+        logging.info(f"back_to_course_btn_callback_len - {len(back_to_course_btn_callback.encode())}")
+
         logging.info("Filling back button")
         markup.add(
             InlineKeyboardButton(text=f"{Emoji.BackArrow.value} Back to course",
-                                 callback_data=f"{CallBackPrefix.BackToPrivateCourse} {go_back_id} {inline_message_id} {role}"
+                                 callback_data=back_to_course_btn_callback
                                  )
         )
 
