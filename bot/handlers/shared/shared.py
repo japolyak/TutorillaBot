@@ -6,6 +6,7 @@ from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.api.clients.tutor_course_client import TutorCourseClient
 from bot.api.clients.private_course_client import PrivateCourseClient
+import logging
 
 
 @bot.message_handler(regexp="Main menu")
@@ -51,7 +52,7 @@ def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal["tu
             title=f"{i.student.first_name} {i.student.last_name}",
             description=f"{i.course.subject.name}",
             input_message_content=InputTextMessageContent(
-                message_text=f"Subject: {i.course.subject.name}\nhOther details..."
+                message_text=f"Subject: {i.course.subject.name}\nOther details..."
             ),
             reply_markup=InlineKeyboardMarkupCreator.private_course_markup(i.id, role)
         ) for i in response_data
@@ -99,5 +100,6 @@ def query_text(query: InlineQuery):
                 return
 
     except Exception as e:
-        error_message = f"Error Occurred: {e}"
+        logging.error(msg="Exception in query_text", exc_info=e)
+        error_message = f"Error Occurred\n{e}"
         bot.send_message(chat_id=query.from_user.id, text=error_message, disable_notification=True)

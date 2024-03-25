@@ -5,6 +5,7 @@ from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.api.api_models import PaginatedList, PrivateClassBaseDto
 from bot.enums import CallBackPrefix
 from bot.callback_query_agent import get_callback_query_data
+import logging
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith(CallBackPrefix.CourseClasses))
@@ -30,7 +31,8 @@ def get_course_classes(call: CallbackQuery):
         bot.edit_message_reply_markup(inline_message_id=inline_message_id, reply_markup=markup)
 
     except Exception as e:
-        error_message = f"Error Occurred: {e}"
+        logging.error(msg="Exception in get_course_classes", exc_info=e)
+        error_message = f"Error Occurred\n{e}"
         bot.send_message(chat_id=call.from_user.id, text=error_message, disable_notification=True)
 
 
