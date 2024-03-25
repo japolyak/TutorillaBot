@@ -104,6 +104,17 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
+    def test_markup() -> InlineKeyboardMarkup:
+        markup = InlineKeyboardMarkup()
+
+        test_btn = InlineKeyboardButton("Test", callback_data="Test")
+        back_btn = InlineKeyboardButton("Back", callback_data="Back")
+
+        markup.add(test_btn).add(back_btn)
+
+        return markup
+
+    @staticmethod
     def course_classes_markup(paginated_list: PaginatedList[PrivateClassBaseDto], go_back_id: int, role: str, inline_message_id: str) -> InlineKeyboardMarkup:
         markup = CustomInlineKeyboardMarkup()
 
