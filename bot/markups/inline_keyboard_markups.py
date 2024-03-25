@@ -5,6 +5,7 @@ from ..api.api_models import *
 from ..config import web_app_link
 from ..enums import *
 from telebot import service_utils
+import logging
 
 
 class InlineKeyboardMarkupCreator:
@@ -106,6 +107,7 @@ class InlineKeyboardMarkupCreator:
     def course_classes_markup(paginated_list: PaginatedList[PrivateClassBaseDto], go_back_id: int, role: str, inline_message_id: str) -> InlineKeyboardMarkup:
         markup = CustomInlineKeyboardMarkup()
 
+        logging.info("Filling classes buttons")
         [markup.add(
             InlineKeyboardButton(text=f"{Emoji.ClassPaid.value if i.is_paid else (Emoji.ClassOccurred.value if i.has_occurred else Emoji.ClassScheduled.value)} {i.schedule_datetime.strftime("%d-%m-%Y %H:%M")}",
                                  callback_data=f"{CallBackPrefix.PrivateClass} {i.id}")
@@ -113,17 +115,23 @@ class InlineKeyboardMarkupCreator:
             for i
             in paginated_list.items]
 
+        back_btn_text = f"{Emoji.BackArrow.value}"
+        current_btn_text = f"{paginated_list.current_page}/{paginated_list.pages}"
+        next_btn_text = f"{Emoji.NextArrow.value}"
+
+        back_btn_callback = f"{CallBackPrefix.LoadPage} {paginated_list.current_page - 1} {go_back_id} {role} {inline_message_id}"if paginated_list.current_page > 1 else CallBackPrefix.EmptyCallback
+        next_btn_callback = f"{CallBackPrefix.LoadPage} {paginated_list.current_page + 1} {go_back_id} {role} {inline_message_id}" if paginated_list.current_page < paginated_list.pages else CallBackPrefix.EmptyCallback
+
+        logging.info("Filling pagination buttons")
         row = [
-            InlineKeyboardButton(text=f"{Emoji.BackArrow.value}",
-                                 callback_data=f"{CallBackPrefix.LoadPage} {paginated_list.current_page - 1} {go_back_id} {role} {inline_message_id}"if paginated_list.current_page > 1 else CallBackPrefix.EmptyCallback),
-            InlineKeyboardButton(text=f"{paginated_list.current_page}/{paginated_list.pages}",
-                                 callback_data=CallBackPrefix.EmptyCallback),
-            InlineKeyboardButton(text=f"{Emoji.NextArrow.value}",
-                                 callback_data=f"{CallBackPrefix.LoadPage} {paginated_list.current_page + 1} {go_back_id} {role} {inline_message_id}" if paginated_list.current_page < paginated_list.pages else CallBackPrefix.EmptyCallback),
+            InlineKeyboardButton(text=back_btn_text, callback_data=back_btn_callback),
+            InlineKeyboardButton(text=current_btn_text, callback_data=CallBackPrefix.EmptyCallback),
+            InlineKeyboardButton(text=next_btn_text, callback_data=next_btn_callback),
         ]
 
         markup.add_row(row)
 
+        logging.info("Filling back button")
         markup.add(
             InlineKeyboardButton(text=f"{Emoji.BackArrow.value} Back to course",
                                  callback_data=f"{CallBackPrefix.BackToPrivateCourse} {go_back_id} {inline_message_id} {role}"
