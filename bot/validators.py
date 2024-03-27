@@ -14,7 +14,7 @@ class Validator:
 
     @staticmethod
     def validate_time_zone(time_zone: str) -> bool:
-        regex = r'^[-+]?[0-9]+\.?[0-9]+$'
+        regex = r'^[-+]?[0-9]+(\.[0-9]+)?$'
 
         if not re.fullmatch(regex, time_zone):
             return False

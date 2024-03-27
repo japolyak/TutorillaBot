@@ -210,5 +210,6 @@ def become_someone(call: CallbackQuery):
                          disable_notification=True)
 
     except Exception as e:
-        bot.delete_message(chat_id=chat_id, message_id=call.message.message_id)
         log_exception(chat_id, "become_someone", e)
+    finally:
+        bot.delete_message(chat_id=chat_id, message_id=call.message.message_id)
