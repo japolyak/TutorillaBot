@@ -1,5 +1,6 @@
 import os
 
+debug = bool(os.getenv("DEBUG") or False)
 app_port = int(os.getenv("APP_PORT") or 80)
 webhook_enabled = bool(os.getenv("USE_WEBHOOK") or False)
 webhook_url = os.getenv("WEBHOOK_URL")

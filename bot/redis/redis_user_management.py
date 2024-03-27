@@ -7,7 +7,6 @@ def add_user(user_id: int, user: UserDto):
     r.hset(user_id, "first_name", user.first_name)
     r.hset(user_id, "last_name", user.last_name)
     r.hset(user_id, "email", user.email)
-    r.hset(user_id, "phone_number", user.phone_number)
     r.hset(user_id, "time_zone", user.time_zone)
 
     r.hset(user_id, "locale", user.locale)

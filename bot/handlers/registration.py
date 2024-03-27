@@ -12,140 +12,124 @@ from bot.api.api_models import UserDto
 from bot.redis.redis_user_management import add_user
 import json
 from requests import Response
+from bot.exception_handler import log_exception
 
 
 @bot.message_handler(commands=["start"])
 def welcome(message: Message):
+    chat_id = message.from_user.id
+
     try:
-        request = RegistrationClient.get_user(message.from_user.id)
+        request = RegistrationClient.get_user(chat_id)
 
         if request.ok:
             user: UserDto = UserDto(**request.json())
 
-            add_user(message.from_user.id, user)
+            add_user(chat_id, user)
 
-            markup = ReplyKeyboardMarkupCreator.main_menu_markup(message.from_user.id)
-            bot.send_message(chat_id=message.from_user.id,
-                             text=t(message.from_user.id, "welcome", name=user.first_name),
+            markup = ReplyKeyboardMarkupCreator.main_menu_markup(chat_id)
+            bot.send_message(chat_id=chat_id,
+                             text=t(chat_id, "Welcome", user.locale, name=user.first_name),
                              disable_notification=True,
                              reply_markup=markup)
             return
 
-        r.hset(str(message.from_user.id), "id", int(message.from_user.id))
+        r.hset(str(chat_id), "id", int(chat_id))
 
-        next_stepper(message.from_user.id, t(message.from_user.id, "first_name"), registration_first_name, "first_name",
+        next_stepper(chat_id, t(chat_id, 'ProvideYourFirstname'), registration_first_name, "first_name",
                      ReplyKeyboardRemove())
 
     except Exception as e:
-        error_message = f"Error Occurred: {e}"
-        bot.send_message(chat_id=message.from_user.id, text=error_message, disable_notification=True)
+        log_exception(chat_id, "welcome", e)
 
 
 def registration_first_name(message: Message, field: str):
+    chat_id = message.from_user.id
+
     try:
         if message.content_type != "text" or not Validator.validate_name(message.text):
-            next_stepper(message.from_user.id, "Use only latin letters", registration_first_name, field)
+            next_stepper(chat_id, t(chat_id, "UseOnlyLatinLetters"), registration_first_name, field)
 
             return
 
-        next_registration_step(message.from_user.id, registration_last_name, field, "last_name", message.text, "Last name")
+        next_registration_step(chat_id, registration_last_name, field, "last_name", message.text, t(message.from_user.id, "ProvideYourLastname"))
 
     except Exception as e:
-        error_message = f"Error Occurred: {e}"
-        bot.send_message(chat_id=message.from_user.id, text=error_message, disable_notification=True)
+        log_exception(chat_id, "registration_first_name", e)
 
 
 def registration_last_name(message: Message, field: str):
+    chat_id = message.from_user.id
+
     try:
         if message.content_type != "text" or not Validator.validate_name(message.text):
-            next_stepper(message.from_user.id, "Use only latin letters", registration_last_name, field)
+            next_stepper(chat_id, t(chat_id, "UseOnlyLatinLetters"), registration_last_name, field)
 
             return
 
-        next_registration_step(message.from_user.id, registration_email, field, "email", message.text, "Email")
+        next_registration_step(chat_id, registration_email, field,
+                               "email", message.text, t(chat_id, "ProvideYourEmail"))
 
     except Exception as e:
-        error_message = f"Error Occurred: {e}"
-        bot.send_message(chat_id=message.from_user.id, text=error_message, disable_notification=True)
+        log_exception(chat_id, "registration_last_name", e)
 
 
 def registration_email(message: Message, field: str):
+    chat_id = message.from_user.id
+
     try:
         if message.content_type != "text" or not Validator.email_validator(message.text):
-            next_stepper(message.from_user.id, "One more time", registration_email, field)
+            next_stepper(chat_id, t(chat_id, "OneMoreTime"), registration_email, field)
 
             return
 
         markup = ReplyKeyboardMarkupCreator.choose_time_zone()
-        next_registration_step(message.from_user.id, registration_time_zone, field, "time_zone", message.text, "TimeZone", markup)
+        next_registration_step(chat_id, registration_time_zone, field, "time_zone", message.text, t(chat_id, "ChooseYourTimeZone"), markup)
 
     except Exception as e:
-        error_message = f"Error Occurred: {e}"
-        bot.send_message(chat_id=message.from_user.id, text=error_message, disable_notification=True)
+        log_exception(chat_id, "registration_email", e)
 
 
 def registration_time_zone(message: Message, field: str):
+    chat_id = message.from_user.id
+
     try:
         if message.content_type != "text":
-            next_stepper(message.from_user.id, "One more time", registration_time_zone, field)
+            next_stepper(chat_id, t(chat_id, "OneMoreTime"), registration_time_zone, field)
 
             return
 
         if not Validator.validate_time_zone(message.text):
-            next_stepper(message.from_user.id, "Use only digits", registration_time_zone, field)
+            next_stepper(chat_id, t(chat_id, "UseOnlyDigits"), registration_time_zone, field)
 
             return
 
-        markup = ReplyKeyboardMarkupCreator.phone_markup()
-        next_registration_step(message.from_user.id, set_phone, field, "phone_number", message.text, "Phone", markup)
+        r.hset(str(chat_id), field, float(message.text))
 
-    except Exception as e:
-        error_message = f"Error Occurred: {e}"
-        bot.send_message(chat_id=message.from_user.id, text=error_message, disable_notification=True)
-
-
-def set_phone(message: Message, field: str):
-    try:
-        if message.content_type != "contact":
-            markup = ReplyKeyboardMarkupCreator.phone_markup()
-
-            next_stepper(message.from_user.id, "One more time", set_phone, field, markup)
-
-            return
-
-        phone_number = message.contact.phone_number.replace("+", "")
-
-        r.hset(str(message.from_user.id), field, phone_number)
-
-        bot.send_message(chat_id=message.from_user.id,
-                         text="Phone number added",
-                         disable_notification=True,
-                         reply_markup=ReplyKeyboardRemove())
-
-        payload = json.dumps(r.hgetall(str(message.from_user.id)), indent=4)
+        payload = json.dumps(r.hgetall(str(chat_id)), indent=4)
 
         request = RegistrationClient.signup_user(payload)
 
         if not request.ok:
-            fields_to_pop = ["last_name", "first_name", "phone", "email", "time_zone"]
+            fields_to_pop = ["last_name", "first_name", "email", "time_zone"]
             for x in fields_to_pop:
-                r.hdel(message.from_user.id, x)
+                r.hdel(chat_id, x)
 
-            bot.send_message(chat_id=message.from_user.id,
-                             text="Something went wrong. Do it again! Press /start",
+            log_exception(chat_id, "registration_time_zone")
+            bot.send_message(chat_id=chat_id,
+                             text=t(chat_id, "SomethingWentWrong"),
                              disable_notification=True)
 
             return
 
         markup = InlineKeyboardMarkupCreator.choose_occupation()
         bot.send_message(chat_id=message.from_user.id,
-                         text="Congratulations, You have registered and now choose what do You want to do!",
+                         text=t(chat_id, "WelcomeOnBoard"),
                          disable_notification=True,
                          reply_markup=markup)
 
     except Exception as e:
-        error_message = f"Error Occurred: {e}"
-        bot.send_message(chat_id=message.from_user.id, text=error_message, disable_notification=True)
+        log_exception(chat_id, "registration_time_zone", e)
 
 
 def next_stepper(chat_id: int, text: str, func: Callable, field=None, markup=None) -> None:
@@ -206,25 +190,25 @@ def next_registration_step(chat_id: int, func: Callable, field: str, next_field:
 
 @bot.callback_query_handler(func=lambda call: (call.data in (CallBackPrefix.BecomeTutor, CallBackPrefix.BecomeStudent)))
 def become_someone(call: CallbackQuery):
+    chat_id = call.from_user.id
+
     try:
         request: Response | None = None
 
         if call.data == CallBackPrefix.BecomeTutor:
-            request = RegistrationClient.apply_for_role(call.from_user.id, Role.Tutor)
+            request = RegistrationClient.apply_for_role(chat_id, Role.Tutor)
         elif call.data == CallBackPrefix.BecomeStudent:
-            request = RegistrationClient.apply_for_role(call.from_user.id, Role.Student)
+            request = RegistrationClient.apply_for_role(chat_id, Role.Student)
 
         if not request.ok:
-            bot.send_message(chat_id=call.from_user.id,
-                             text="Shit, try later",
-                             disable_notification=True)
+            log_exception(chat_id, "become_someone API request")
 
             return
 
-        bot.send_message(chat_id=call.from_user.id,
-                         text="Wait for confirmation by Admin",
+        bot.send_message(chat_id=chat_id,
+                         text=t(call.from_user.id, "GreatWaitForConfirmationByAdmin"),
                          disable_notification=True)
 
     except Exception as e:
-        error_message = f"Error Occurred: {e}"
-        bot.send_message(chat_id=call.from_user.id, text=error_message, disable_notification=True)
+        bot.delete_message(chat_id=chat_id, message_id=call.message.message_id)
+        log_exception(chat_id, "become_someone", e)

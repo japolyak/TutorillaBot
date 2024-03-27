@@ -1,7 +1,7 @@
-from ..bot_token import bot
-from telebot import types
-from ..i18n.i18n import t
-from ..decorators import language_message_checker
+# from bot.bot_token import bot
+# from telebot import types
+# from bot.i18n.i18n import t
+# from bot.decorators import language_message_checker
 
 
 # @bot.message_handler(regexp='Українська')

@@ -25,7 +25,6 @@ class InlineKeyboardMarkupCreator:
 
         # first_name_btn = InlineKeyboardButton(t(language, "first_name"), callback_data=CallBackPrefix.SetFirstName)
         # last_name_btn = InlineKeyboardButton(t(language, "last_name"), callback_data=CallBackPrefix.SetLastName)
-        # phone_btn = InlineKeyboardButton(t(language, "phone"), callback_data=CallBackPrefix.SetPhone)
         # email_btn = InlineKeyboardButton(t(language, "email"), callback_data=CallBackPrefix.SetEmail)
 
         # markup.add(first_name_btn, last_name_btn).add(phone_btn, email_btn)

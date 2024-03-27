@@ -5,7 +5,7 @@ class CallBackPrefix(StrEnum):
     """
     An Enum for callback prefixes
 
-    : This Enum serves the purpose of encapsulating various prefixes used in callback data.
+    This Enum serves the purpose of encapsulating various prefixes used in callback data.
 
     In essence, each value is a concatenation of the first letters of each word in the key, separated by underscores.
     This convention is employed to ensure that the length of callback data does not exceed the 64-byte limit imposed by Telegram.
@@ -31,7 +31,6 @@ class CallBackPrefix(StrEnum):
     SetEmail = "s_e"
     SetFirstName = "s_f_n"
     SetLastName = "s_l_n"
-    SetPhone = "s_p"
 
 
 class Emoji(Enum):
