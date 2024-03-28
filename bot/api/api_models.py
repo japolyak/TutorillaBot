@@ -17,6 +17,7 @@ class PaginatedList(BaseModel, Generic[T]):
 
 
 class UserBaseDto(BaseModel):
+    locale: str
     id: int
     first_name: str
     last_name: str
@@ -25,7 +26,6 @@ class UserBaseDto(BaseModel):
 
 
 class UserDto(UserBaseDto):
-    locale: str
     normalized_email: str
     is_active: bool
     is_tutor: bool

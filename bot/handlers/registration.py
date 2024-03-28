@@ -35,6 +35,8 @@ def welcome(message: Message):
                              reply_markup=markup)
             return
 
+        r.hset(str(chat_id), "id", int(chat_id))
+
         bot.send_message(chat_id=chat_id, text="Select language", reply_markup=InlineKeyboardMarkupCreator.locale_markup())
 
     except Exception as e:
@@ -99,6 +101,8 @@ def registration_email(message: Message, field: str, locale: str):
 
             return
 
+        r.hset(str(chat_id), "email", message.text)
+
         bot.send_message(chat_id=chat_id, text=t(chat_id, "SelectYourTimezone", locale), reply_markup=InlineKeyboardMarkupCreator.timezone_markup(locale))
 
     except Exception as e:
@@ -117,6 +121,7 @@ def registration_time_zone(call: CallbackQuery):
         bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id, reply_markup=None)
 
         payload = json.dumps(r.hgetall(str(chat_id)), indent=4)
+        print(payload)
 
         request = RegistrationClient.signup_user(payload)
 
@@ -140,6 +145,33 @@ def registration_time_zone(call: CallbackQuery):
 
     except Exception as e:
         log_exception(chat_id, "registration_time_zone", e)
+
+
+@bot.callback_query_handler(func=lambda call: (call.data in (CallBackPrefix.BecomeTutor, CallBackPrefix.BecomeStudent)))
+def select_role(call: CallbackQuery):
+    chat_id = call.from_user.id
+
+    try:
+        request: Response | None = None
+
+        if call.data == CallBackPrefix.BecomeTutor:
+            request = RegistrationClient.apply_for_role(chat_id, Role.Tutor)
+        elif call.data == CallBackPrefix.BecomeStudent:
+            request = RegistrationClient.apply_for_role(chat_id, Role.Student)
+
+        if not request.ok:
+            log_exception(chat_id, "select_role API request")
+
+            return
+
+        bot.send_message(chat_id=chat_id,
+                         text=t(call.from_user.id, "GreatWaitForConfirmationByAdmin"),
+                         disable_notification=True)
+
+    except Exception as e:
+        log_exception(chat_id, "select_role", e)
+    finally:
+        bot.delete_message(chat_id=chat_id, message_id=call.message.message_id)
 
 
 def next_stepper(chat_id: int, locale: str, text: str, func: Callable, field=None, markup=None) -> None:
@@ -202,30 +234,3 @@ def next_registration_step(chat_id: int, func: Callable, field: str, next_field:
     r.hset(str(chat_id), field, data)
 
     next_stepper(chat_id, locale, msg_text, func, next_field, markup)
-
-
-@bot.callback_query_handler(func=lambda call: (call.data in (CallBackPrefix.BecomeTutor, CallBackPrefix.BecomeStudent)))
-def select_role(call: CallbackQuery):
-    chat_id = call.from_user.id
-
-    try:
-        request: Response | None = None
-
-        if call.data == CallBackPrefix.BecomeTutor:
-            request = RegistrationClient.apply_for_role(chat_id, Role.Tutor)
-        elif call.data == CallBackPrefix.BecomeStudent:
-            request = RegistrationClient.apply_for_role(chat_id, Role.Student)
-
-        if not request.ok:
-            log_exception(chat_id, "select_role API request")
-
-            return
-
-        bot.send_message(chat_id=chat_id,
-                         text=t(call.from_user.id, "GreatWaitForConfirmationByAdmin"),
-                         disable_notification=True)
-
-    except Exception as e:
-        log_exception(chat_id, "select_role", e)
-    finally:
-        bot.delete_message(chat_id=chat_id, message_id=call.message.message_id)
