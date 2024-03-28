@@ -31,14 +31,14 @@ def get_callback_query_data(prefix: CallBackPrefix, call: CallbackQuery) -> List
         case CallBackPrefix.DeclineRole:
             return [int(cb_data[0])]
 
-        case CallBackPrefix.BackToPrivateCourse:
-            return [int(cb_data[0]), cb_data[1]]
-
         case CallBackPrefix.AcceptRole:
             return [int(cb_data[0]), cb_data[1]]
 
         case CallBackPrefix.CourseClasses:
             return [int(cb_data[0]), cb_data[1]]
+
+        case CallBackPrefix.BackToPrivateCourse:
+            return [int(cb_data[0]), cb_data[1], cb_data[2]]
 
         case CallBackPrefix.LoadPage:
             return [int(cb_data[0]), int(cb_data[1]), cb_data[2], cb_data[3]]
