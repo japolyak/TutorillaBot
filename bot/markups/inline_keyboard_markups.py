@@ -9,6 +9,27 @@ from telebot import service_utils
 
 class InlineKeyboardMarkupCreator:
     @staticmethod
+    def locale_markup() -> InlineKeyboardMarkup:
+        markup = InlineKeyboardMarkup()
+
+        english = InlineKeyboardButton("English", callback_data=f"{CallBackPrefix.SetUserLocale} en-US")
+
+        markup.add(english)
+
+        return markup
+
+    @staticmethod
+    def timezone_markup(locale: str) -> InlineKeyboardMarkup:
+        markup = InlineKeyboardMarkup()
+
+        plus_one = InlineKeyboardButton("+1", callback_data=f"{CallBackPrefix.SetTimeZone} 1 {locale}")
+        plus_two = InlineKeyboardButton("+2", callback_data=f"{CallBackPrefix.SetTimeZone} 2 {locale}")
+
+        markup.add(plus_one, plus_two)
+
+        return markup
+
+    @staticmethod
     def language_markup(command: str) -> InlineKeyboardMarkup:
         ukr_btn = InlineKeyboardButton("Українська", callback_data=f"{command} ua")
         rus_btn = InlineKeyboardButton("Русский", callback_data=f"{command} ru")

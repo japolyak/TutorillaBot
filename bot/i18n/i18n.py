@@ -1,5 +1,5 @@
 from string import Template
-from .locales.en_EN import en
+from .locales.en_US import en
 from .locales.pl_PL import pl
 from .locales.ru_RU import ru
 from .locales.ua_UA import ua

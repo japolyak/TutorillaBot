@@ -13,6 +13,12 @@ def get_callback_query_data(prefix: CallBackPrefix, call: CallbackQuery) -> List
         case CallBackPrefix.BackToUsersRequests:
             return [cb_data[0]]
 
+        case CallBackPrefix.SetUserLocale:
+            return [cb_data[0]]
+
+        case CallBackPrefix.SetTimeZone:
+            return [float(cb_data[0]), cb_data[1]]
+
         case CallBackPrefix.RoleRequest:
             return [int(cb_data[0])]
 

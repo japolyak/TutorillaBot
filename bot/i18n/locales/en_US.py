@@ -16,6 +16,7 @@ en = {
     "GreatWaitForConfirmationByAdmin": Template("Great! Wait for confirmation by Admin"),
     "OneMoreTime": Template("Try one more time"),
     "UseOnlyDigits": Template("Use only digits"),
+    "SelectYourTimezone": Template("Select your timezone"),
     "SomethingWentWrong": Template("Something went wrong. Repeat registration process! Press /start"),
     "WelcomeOnBoard": Template("Welcome on board, You have successfully registered. Now You can choose what do You want to do!"),
 }

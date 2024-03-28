@@ -31,6 +31,8 @@ class CallBackPrefix(StrEnum):
     SetEmail = "s_e"
     SetFirstName = "s_f_n"
     SetLastName = "s_l_n"
+    SetTimeZone = "s_t_z"
+    SetUserLocale = "s_u_l"
 
 
 class Emoji(Enum):
