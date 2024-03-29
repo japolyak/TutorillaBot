@@ -15,3 +15,7 @@ For each new language it's necessary to:
 ## Guards
 
 For each new `KeyboardButton()` it's necessary to add a new guard regarding context in `keyboard_button_guards.py` folder.
+
+## Actions
+
+For each new action it's necessary to add a new function in `actions` folder regarding context.
