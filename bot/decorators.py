@@ -24,9 +24,9 @@ def language_message_checker(func: tp.FunctionType):
         language = "en"
 
         if language is None:
-            user_default_session: dict = {"user_id": message.from_user.id, "language": "en"}
+            # user_default_session: dict = {"user_id": message.from_user.id, "language": "en"}
             # r.hset(str(message.from_user.id), mapping=user_default_session)
-            return func(message, "en")
+            return func(message, "en-US")
 
         return func(message, language)
 

@@ -16,14 +16,6 @@ class ReplyKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def phone_markup() -> ReplyKeyboardMarkup:
-        markup = ReplyKeyboardMarkup(resize_keyboard=True)
-        phone_btn = KeyboardButton("Phone", request_contact=True)
-        markup.add(phone_btn)
-
-        return markup
-
-    @staticmethod
     def main_menu_markup(user_id) -> ReplyKeyboardMarkup:
         is_tutor = int(r.hget(str(user_id), "is_tutor"))
         is_student = int(r.hget(str(user_id), "is_student"))

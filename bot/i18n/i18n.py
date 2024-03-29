@@ -13,9 +13,9 @@ langs = {
 }
 
 
-def t(tg_id: int, key: str, locale: str | None = None, **kwargs) -> str:
+def t(chat_id: int, key: str, locale: str | None = None, **kwargs) -> str:
     if not locale:
-        locale = r.hget(tg_id, 'locale') or 'en-US'
+        locale = r.hget(chat_id, 'locale') or 'en-US'
 
     phrase: Template = langs[locale][key]
 

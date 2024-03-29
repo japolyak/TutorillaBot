@@ -8,9 +8,10 @@ from bot.api.api_models import SubjectDto
 from bot.enums import CallBackPrefix
 from bot.handlers.tutor.shared import get_subjects
 from bot.callback_query_agent import get_callback_query_data
+from bot.keyboard_button_guards.tutor_button_guard import TutorButtonGuard
 
 
-@bot.message_handler(regexp="Office")
+@bot.message_handler(func=TutorButtonGuard.office_button_guard)
 def restore_redis(message: Message):
     try:
         markup = ReplyKeyboardMarkupCreator.tutor_office_markup()

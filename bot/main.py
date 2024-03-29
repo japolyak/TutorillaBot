@@ -4,7 +4,7 @@ from bot.webhook_app import app
 import logging
 import time
 import uvicorn
-from bot.handlers import registration, localization
+from bot.handlers import registration
 from bot.handlers.tutor import reply_tutor_keyboard, tutor_course_keyboard
 from bot.handlers.student import reply_student_keyboard
 from bot.handlers.admin import reply_admin_keyboard
