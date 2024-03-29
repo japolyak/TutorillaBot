@@ -3,7 +3,7 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from bot.api.api_models import PaginatedList, PrivateClassBaseDto, SubjectDto, UserRequestDto
 from bot.config import web_app_link
 from bot.enums import Emoji
-from bot.handlers.callback_query_handlers.callback_prefix import CallBackPrefix
+from bot.handlers.callback_query_handler.callback_prefix import CallBackPrefix
 from telebot import service_utils
 
 

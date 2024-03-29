@@ -5,7 +5,7 @@ from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.api.api_models import SubjectDto
 from bot.handlers.shared import get_subjects
-from bot.keyboard_button_guards.tutor_button_guard import TutorButtonGuard
+from bot.handlers.message_handlers.guard.tutor_button_guard import TutorButtonGuard
 from bot.exception_handler import log_exception
 
 

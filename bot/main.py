@@ -4,7 +4,7 @@ from bot.webhook_app import app
 import logging
 import time
 import uvicorn
-from bot.handlers.callback_query_handlers import query_handler
+from bot.handlers.callback_query_handler import query_handler
 from bot.handlers.inline_handler import inline_handler
 from bot.handlers.message_handlers import admin, student, tutor, registration, profile
 
