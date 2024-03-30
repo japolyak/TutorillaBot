@@ -1,6 +1,6 @@
 from telebot import types
 import types as tp
-# from .redis_client import r
+
 
 # TODO - remake after better times
 def language_callback_checker(func: tp.FunctionType):
