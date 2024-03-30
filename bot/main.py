@@ -6,7 +6,7 @@ import time
 import uvicorn
 from bot.handlers.callback_query_handler import query_handler
 from bot.handlers.inline_handler import inline_handler
-from bot.handlers.message_handlers import admin, student, tutor, registration, profile
+from bot.handlers.message_handlers import message_handler, registration
 
 logging.basicConfig(encoding='utf-8', level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
 

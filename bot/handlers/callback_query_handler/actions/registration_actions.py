@@ -44,7 +44,6 @@ class RegistrationActions:
             bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id, reply_markup=None)
 
             payload = json.dumps(r.hgetall(str(chat_id)), indent=4)
-            print(payload)
 
             request = RegistrationClient.signup_user(payload)
 
@@ -86,11 +85,13 @@ class RegistrationActions:
 
                 return
 
+            r.hset(str(chat_id), "is_active", 0)
+
+            bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id, reply_markup=None)
+
             bot.send_message(chat_id=chat_id,
                              text=t(call.from_user.id, "GreatWaitForConfirmationByAdmin"),
                              disable_notification=True)
 
         except Exception as e:
             log_exception(chat_id, RegistrationActions.select_role, e)
-        finally:
-            bot.delete_message(chat_id=chat_id, message_id=call.message.message_id)
