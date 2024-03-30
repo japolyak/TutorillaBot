@@ -30,29 +30,6 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def language_markup(command: str) -> InlineKeyboardMarkup:
-        ukr_btn = InlineKeyboardButton("Українська", callback_data=f"{command} ua")
-        rus_btn = InlineKeyboardButton("Русский", callback_data=f"{command} ru")
-        eng_btn = InlineKeyboardButton("English", callback_data=f"{command} en")
-        pol_btn = InlineKeyboardButton("Polski", callback_data=f"{command} pl")
-
-        markup = InlineKeyboardMarkup([[ukr_btn, rus_btn, eng_btn], [pol_btn]])
-
-        return markup
-
-    @staticmethod
-    def change_profile(language: str) -> InlineKeyboardMarkup:
-        markup = InlineKeyboardMarkup()
-
-        # first_name_btn = InlineKeyboardButton(t(language, "first_name"), callback_data=CallBackPrefix.SetFirstName)
-        # last_name_btn = InlineKeyboardButton(t(language, "last_name"), callback_data=CallBackPrefix.SetLastName)
-        # email_btn = InlineKeyboardButton(t(language, "email"), callback_data=CallBackPrefix.SetEmail)
-
-        # markup.add(first_name_btn, last_name_btn).add(phone_btn, email_btn)
-
-        return markup
-
-    @staticmethod
     def choose_occupation() -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 
