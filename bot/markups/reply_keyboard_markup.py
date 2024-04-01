@@ -7,9 +7,9 @@ from typing import List
 class ReplyKeyboardMarkupCreator:
     @staticmethod
     def main_menu_markup(user_id) -> ReplyKeyboardMarkup:
-        is_tutor = int(r.hget(str(user_id), "is_tutor"))
-        is_student = int(r.hget(str(user_id), "is_student"))
-        is_admin = int(r.hget(str(user_id), "is_admin"))
+        is_tutor = int(r.hget(user_id, "is_tutor") or 0)
+        is_student = int(r.hget(user_id, "is_student") or 0)
+        is_admin = int(r.hget(user_id, "is_admin") or 0)
 
         markup = CustomReplyKeyboardMarkup(resize_keyboard=True)
 

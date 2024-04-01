@@ -23,4 +23,9 @@ en = {
     "ChooseSubjectToTeach": Template("Choose subject to teach"),
     "UseOnlyNumbers": Template("Use only numbers"),
     "CourseAddedSuccessfully": Template("Course added successfully"),
+    "SubscribeCourse": Template("Subject: $subject\nTutor: $tutor\nPrice: $price"),
+    "NoCoursesFound": Template("No courses found"),
+    "TutorInCourse": Template("Tutor: <b>$tutor</b>"),
+    "StudentInCourse": Template("Student: <b>$student</b>"),
+    "SubjectAndRoleInCourse": Template("Subject: $subject\n$role: $name"),
 }

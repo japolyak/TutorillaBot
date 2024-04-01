@@ -7,20 +7,20 @@ from bot.api.clients.admin_client import AdminClient
 from bot.redis.redis_client import r
 
 
-def get_subjects(chat_id: int, role: Literal["tutor", "student"]):
-    request = SubjectClient.get_users_subjects(user_id=chat_id, role=role)
+def get_subjects(user_id: int, role: Literal["tutor", "student"]):
+    request = SubjectClient.get_users_subjects(user_id=user_id, role=role)
 
     msg_text = "Choose subject"
 
     response_data = [SubjectDto(**subject) for subject in request.json()]
 
     if not len(response_data):
-        bot.send_message(chat_id=chat_id, text="You have no courses", disable_notification=True)
+        bot.send_message(chat_id=user_id, text="You have no courses", disable_notification=True)
         return
 
     markup = InlineKeyboardMarkupCreator.subjects_markup(courses=response_data, role=role.capitalize())
 
-    bot.send_message(chat_id=chat_id, text=msg_text, disable_notification=True, reply_markup=markup)
+    bot.send_message(chat_id=user_id, text=msg_text, disable_notification=True, reply_markup=markup)
 
 
 def role_requests(user_id: int, role: str):

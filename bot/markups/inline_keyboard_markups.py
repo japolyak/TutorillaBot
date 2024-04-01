@@ -5,6 +5,7 @@ from bot.config import web_app_link
 from bot.enums import Emoji
 from bot.handlers.callback_query_handler.callback_prefix import CallBackPrefix
 from telebot import service_utils
+from bot.enums import Role
 
 
 class InlineKeyboardMarkupCreator:
@@ -85,7 +86,7 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def private_course_markup(private_course_id: int, role: Literal["tutor", "student"]) -> InlineKeyboardMarkup:
+    def private_course_markup(private_course_id: int, role: Literal[Role.Tutor, Role.Student]) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 
         plan_class_btn = InlineKeyboardButton("Plan class",
