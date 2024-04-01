@@ -26,7 +26,7 @@ def welcome(message: Message):
 
             markup = ReplyKeyboardMarkupCreator.main_menu_markup(chat_id)
             bot.send_message(chat_id=chat_id,
-                             text=t(chat_id, "Welcome", user.locale, name=user.first_name),
+                             text=t(chat_id, "Welcome", "en-US", name=user.first_name),
                              disable_notification=True,
                              reply_markup=markup)
             return
