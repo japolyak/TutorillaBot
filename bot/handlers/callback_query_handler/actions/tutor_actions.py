@@ -54,7 +54,7 @@ class TutorActions:
             bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id, reply_markup=None)
 
             next_stepper(chat_id,
-                         t(int(chat_id), "SpecifyCourseCostPerHourInDollars", "en-US", subject=f"<b>{subject_name}</b>"),
+                         t(int(chat_id), "SpecifyCourseCostPerHourInDollars", "en-US", subject=f"{subject_name}"),
                          cls.__add_course_price, locale="en-US", parse_mode="HTML", subject_id=subject_id)
 
         except Exception as e:

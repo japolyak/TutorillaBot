@@ -1,7 +1,7 @@
 import os
 
 # App
-debug = bool(os.getenv("DEBUG") or False)
+debug = os.getenv("DEBUG") == "True"
 app_port = int(os.getenv("APP_PORT") or 80)
 api_link = os.getenv("API_LINK") or "http://127.0.0.1:8000"
 
