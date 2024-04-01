@@ -13,6 +13,10 @@ class Validator:
         return re.fullmatch(regex, email)
 
     @staticmethod
+    def int_validator(value):
+        return re.match("^[0-9]+$", value)
+
+    @staticmethod
     def validate_time_zone(time_zone: str) -> bool:
         regex = r'^[-+]?[0-9]+(\.[0-9]+)?$'
 

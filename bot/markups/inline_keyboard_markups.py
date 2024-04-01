@@ -56,7 +56,7 @@ class InlineKeyboardMarkupCreator:
         markup = InlineKeyboardMarkup()
 
         [markup.add(
-            InlineKeyboardButton(text=course.name, callback_data=f"{CallBackPrefix.AddCourse} {course.id}"))
+            InlineKeyboardButton(text=course.name, callback_data=f"{CallBackPrefix.AddCourse} {course.id} {course.name}"))
             for course
             in courses]
 

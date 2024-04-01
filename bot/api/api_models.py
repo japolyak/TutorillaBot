@@ -79,3 +79,11 @@ class PrivateClassBaseDto(BaseModel):
 class PrivateClassDto(BaseModel):
     private_course: PrivateCourseDto
     classes: List[PrivateClassBaseDto]
+
+
+class NewTutorCourseDto(BaseModel):
+    subject_id: int
+    price: int
+
+    class Config:
+        from_attributes = True

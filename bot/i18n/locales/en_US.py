@@ -19,4 +19,8 @@ en = {
     "SelectYourTimezone": Template("Select your timezone"),
     "SomethingWentWrong": Template("Something went wrong. Repeat registration process! Press /start"),
     "WelcomeOnBoard": Template("Welcome on board, You have successfully registered. Now You can choose what do You want to do!"),
+    "SpecifyCourseCostPerHourInDollars": Template("Specify $subject course cost per hour in dollars"),
+    "ChooseSubjectToTeach": Template("Choose subject to teach"),
+    "UseOnlyNumbers": Template("Use only numbers"),
+    "CourseAddedSuccessfully": Template("Course added successfully"),
 }

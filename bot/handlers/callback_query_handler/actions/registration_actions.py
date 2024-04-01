@@ -26,8 +26,8 @@ class RegistrationActions:
 
             bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id, reply_markup=None)
 
-            next_stepper(chat_id, locale, t(chat_id, 'ProvideYourFirstname', locale), registration_first_name, "first_name",
-                         ReplyKeyboardRemove())
+            next_stepper(chat_id, t(chat_id, 'ProvideYourFirstname', locale), registration_first_name,
+                         ReplyKeyboardRemove(), locale=locale, field="first_name")
 
         except Exception as e:
             log_exception(chat_id, RegistrationActions.registration_locale, e)

@@ -60,15 +60,12 @@ def send_available_subjects(user_id: int):
     bot.send_message(chat_id=user_id, text=msg_text, disable_notification=True, reply_markup=markup)
 
 
-def next_stepper(chat_id: int, locale: str, text: str, func: Callable, field=None, markup=None) -> None:
+def next_stepper(chat_id: int, text: str, func: Callable, markup=None, parse_mode: str | None = None, **kwargs) -> None:
     """
     Sends message and tracks it`s answer
 
     :param chat_id: The message for which we want to handle new message in the same chat.
     :type chat_id: :obj:`int`
-
-    :param locale: Users locale.
-    :type locale: :obj:`str`
 
     :param text: The text of the message.
     :type text: :obj:`str`
@@ -76,19 +73,19 @@ def next_stepper(chat_id: int, locale: str, text: str, func: Callable, field=Non
     :param func: The callback function which next new message arrives.
     :type func: :obj:`Callable[[telebot.types.Message], None]`
 
-    :field: The field to save in redis.
-    :type field: :obj:`str`
+    :param parse_mode: Mode for parsing entities in the message text.
+    :type parse_mode: :obj:`str`
 
     :param markup: The reply markup of the message.
 
     :return: None
     """
 
-    msg = bot.send_message(chat_id=chat_id, text=text, disable_notification=True, reply_markup=markup)
-    bot.register_next_step_handler(message=msg, callback=func, field=field, locale=locale)
+    msg = bot.send_message(chat_id=chat_id, text=text, parse_mode=parse_mode, disable_notification=True, reply_markup=markup)
+    bot.register_next_step_handler(message=msg, callback=func, **kwargs)
 
 
-def next_registration_step(chat_id: int, func: Callable, field: str, next_field: str, data: str, locale: str, msg_text: str, markup=None) -> None:
+def register_next_step(chat_id: int, func: Callable, field_to_save: str | None, data: str, msg_text: str, markup=None, **kwargs) -> None:
     """
     Saves user`s cache and makes next move
 
@@ -98,17 +95,11 @@ def next_registration_step(chat_id: int, func: Callable, field: str, next_field:
     :param func: The callback function which next new message arrives.
     :type func: :obj:`Callable[[telebot.types.Message], None]`
 
-    :field: The field to save in redis.
-    :type field: :obj:`str`
-
-    :param next_field: The next field to save in redis.
-    :type next_field: :obj:`str`
+    :param field_to_save: The field to save in redis.
+    :type field_to_save: :obj:`str`
 
     :param data: The data to save in redis.
     :type data: :obj:`str`
-
-    :param locale: Users locale.
-    :type locale: :obj:`str`
 
     :param msg_text: The text of the message.
     :type msg_text: :obj:`str`
@@ -117,6 +108,7 @@ def next_registration_step(chat_id: int, func: Callable, field: str, next_field:
 
     :return: None
     """
-    r.hset(str(chat_id), field, data)
+    if field_to_save:
+        r.hset(str(chat_id), field_to_save, data)
 
-    next_stepper(chat_id, locale, msg_text, func, next_field, markup)
+    next_stepper(chat_id, msg_text, func, markup, **kwargs)
