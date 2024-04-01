@@ -6,28 +6,10 @@ from typing import List
 
 class ReplyKeyboardMarkupCreator:
     @staticmethod
-    def choose_time_zone() -> ReplyKeyboardMarkup:
-        markup = CustomReplyKeyboardMarkup(resize_keyboard=True)
-
-        top_row = [KeyboardButton("+1"), KeyboardButton("+2")]
-
-        markup.add_row(top_row)
-
-        return markup
-
-    @staticmethod
-    def phone_markup() -> ReplyKeyboardMarkup:
-        markup = ReplyKeyboardMarkup(resize_keyboard=True)
-        phone_btn = KeyboardButton("Phone", request_contact=True)
-        markup.add(phone_btn)
-
-        return markup
-
-    @staticmethod
     def main_menu_markup(user_id) -> ReplyKeyboardMarkup:
-        is_tutor = int(r.hget(str(user_id), "is_tutor"))
-        is_student = int(r.hget(str(user_id), "is_student"))
-        is_admin = int(r.hget(str(user_id), "is_admin"))
+        is_tutor = int(r.hget(user_id, "is_tutor") or 0)
+        is_student = int(r.hget(user_id, "is_student") or 0)
+        is_admin = int(r.hget(user_id, "is_admin") or 0)
 
         markup = CustomReplyKeyboardMarkup(resize_keyboard=True)
 

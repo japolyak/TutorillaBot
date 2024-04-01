@@ -17,16 +17,15 @@ class PaginatedList(BaseModel, Generic[T]):
 
 
 class UserBaseDto(BaseModel):
+    locale: str
     id: int
     first_name: str
     last_name: str
     email: str
-    phone_number: str
     time_zone: float
 
 
 class UserDto(UserBaseDto):
-    locale: str
     normalized_email: str
     is_active: bool
     is_tutor: bool
@@ -80,3 +79,11 @@ class PrivateClassBaseDto(BaseModel):
 class PrivateClassDto(BaseModel):
     private_course: PrivateCourseDto
     classes: List[PrivateClassBaseDto]
+
+
+class NewTutorCourseDto(BaseModel):
+    subject_id: int
+    price: int
+
+    class Config:
+        from_attributes = True

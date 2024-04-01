@@ -4,12 +4,9 @@ from bot.webhook_app import app
 import logging
 import time
 import uvicorn
-from bot.handlers import registration, localization
-from bot.handlers.tutor import reply_tutor_keyboard, tutor_course_keyboard
-from bot.handlers.student import reply_student_keyboard
-from bot.handlers.admin import reply_admin_keyboard
-from bot.handlers.shared import private_courses, shared
-
+from bot.handlers.callback_query_handler import query_handler
+from bot.handlers.inline_handler import inline_handler
+from bot.handlers.message_handlers import message_handler, registration
 
 logging.basicConfig(encoding='utf-8', level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
 

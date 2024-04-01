@@ -1,34 +1,32 @@
 from typing import Literal, List
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
-from bot.i18n.i18n import t
 from bot.api.api_models import PaginatedList, PrivateClassBaseDto, SubjectDto, UserRequestDto
 from bot.config import web_app_link
-from bot.enums import CallBackPrefix, Emoji
+from bot.enums import Emoji
+from bot.handlers.callback_query_handler.callback_prefix import CallBackPrefix
 from telebot import service_utils
+from bot.enums import Role
 
 
 class InlineKeyboardMarkupCreator:
     @staticmethod
-    def language_markup(command: str) -> InlineKeyboardMarkup:
-        ukr_btn = InlineKeyboardButton("Українська", callback_data=f"{command} ua")
-        rus_btn = InlineKeyboardButton("Русский", callback_data=f"{command} ru")
-        eng_btn = InlineKeyboardButton("English", callback_data=f"{command} en")
-        pol_btn = InlineKeyboardButton("Polski", callback_data=f"{command} pl")
+    def locale_markup() -> InlineKeyboardMarkup:
+        markup = InlineKeyboardMarkup()
 
-        markup = InlineKeyboardMarkup([[ukr_btn, rus_btn, eng_btn], [pol_btn]])
+        english = InlineKeyboardButton("English", callback_data=f"{CallBackPrefix.SetUserLocale} en-US")
+
+        markup.add(english)
 
         return markup
 
     @staticmethod
-    def change_profile(language: str) -> InlineKeyboardMarkup:
+    def timezone_markup(locale: str) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 
-        # first_name_btn = InlineKeyboardButton(t(language, "first_name"), callback_data=CallBackPrefix.SetFirstName)
-        # last_name_btn = InlineKeyboardButton(t(language, "last_name"), callback_data=CallBackPrefix.SetLastName)
-        # phone_btn = InlineKeyboardButton(t(language, "phone"), callback_data=CallBackPrefix.SetPhone)
-        # email_btn = InlineKeyboardButton(t(language, "email"), callback_data=CallBackPrefix.SetEmail)
+        plus_one = InlineKeyboardButton("+1", callback_data=f"{CallBackPrefix.SetTimeZone} 1 {locale}")
+        plus_two = InlineKeyboardButton("+2", callback_data=f"{CallBackPrefix.SetTimeZone} 2 {locale}")
 
-        # markup.add(first_name_btn, last_name_btn).add(phone_btn, email_btn)
+        markup.add(plus_one, plus_two)
 
         return markup
 
@@ -59,7 +57,7 @@ class InlineKeyboardMarkupCreator:
         markup = InlineKeyboardMarkup()
 
         [markup.add(
-            InlineKeyboardButton(text=course.name, callback_data=f"{CallBackPrefix.AddCourse} {course.id}"))
+            InlineKeyboardButton(text=course.name, callback_data=f"{CallBackPrefix.AddCourse} {course.id} {course.name}"))
             for course
             in courses]
 
@@ -88,7 +86,7 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def private_course_markup(private_course_id: int, role: Literal["tutor", "student"]) -> InlineKeyboardMarkup:
+    def private_course_markup(private_course_id: int, role: Literal[Role.Tutor, Role.Student]) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 
         plan_class_btn = InlineKeyboardButton("Plan class",
