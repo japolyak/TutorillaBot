@@ -23,10 +23,11 @@ class InlineKeyboardMarkupCreator:
     def timezone_markup(locale: str) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 
-        plus_one = InlineKeyboardButton("+1", callback_data=f"{CallBackPrefix.SetTimeZone} 1 {locale}")
-        plus_two = InlineKeyboardButton("+2", callback_data=f"{CallBackPrefix.SetTimeZone} 2 {locale}")
+        plus_one = InlineKeyboardButton("Central Europe - Warsaw, Berlin, Paris (UTC+1)", callback_data=f"{CallBackPrefix.SetTimeZone} 1 {locale}")
+        plus_two = InlineKeyboardButton("East Europe - Kyiv, Bucharest, Helsinki (UTC+2)", callback_data=f"{CallBackPrefix.SetTimeZone} 2 {locale}")
 
-        markup.add(plus_one, plus_two)
+        markup.add(plus_one)
+        markup.add(plus_two)
 
         return markup
 
