@@ -52,7 +52,7 @@ class SharedActions:
 
             rsp_data: PaginatedList[PrivateClassBaseDto] = PaginatedList[PrivateClassBaseDto](**request.json())
 
-            markup = InlineKeyboardMarkupCreator.course_classes_markup(rsp_data, private_course_id, role)
+            markup = InlineKeyboardMarkupCreator.course_classes_markup(rsp_data, private_course_id, role, inline_message_id)
 
             bot.edit_message_reply_markup(inline_message_id=inline_message_id, reply_markup=markup)
 
