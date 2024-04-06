@@ -89,10 +89,10 @@ class InlineKeyboardMarkupCreator:
     @staticmethod
     def private_course_markup(private_course_id: int, role: Literal[Role.Tutor, Role.Student]) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
-
+        # TODO - think about adding role to an url
         plan_class_btn = InlineKeyboardButton("Plan class",
                                               web_app=WebAppInfo(
-                                                  url=f"{web_app_link}/{role}/private-course/{private_course_id}"
+                                                  url=f"{web_app_link}/private-course/{private_course_id}"
                                               ))
         all_classes_btn = InlineKeyboardButton("All classes", callback_data=f"{CallBackPrefix.CourseClasses} {private_course_id} {role}")
         back_btn = InlineKeyboardButton("Back", callback_data=f"{CallBackPrefix.BackToChoosePrivateCourse} {role}")
