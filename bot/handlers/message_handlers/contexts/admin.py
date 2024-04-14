@@ -4,6 +4,8 @@ from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.exception_handler import log_exception
 from bot.handlers.shared import role_requests
 from bot.decorators.message_decorator import MessageDecorator
+from bot.i18n.i18n import t
+from bot.redis.redis_client import r
 
 
 class Admin:
@@ -15,9 +17,10 @@ class Admin:
             if not MessageDecorator.admin_guard(chat_id):
                 return
 
+            locale = r.hget(chat_id, "locale")
             markup = ReplyKeyboardMarkupCreator.admin_panel_markup()
             bot.send_message(chat_id=message.from_user.id,
-                             text="Admin panel is here",
+                             text=t(chat_id, "AdminPanelIsHere", locale),
                              disable_notification=True,
                              reply_markup=markup)
 

@@ -30,7 +30,7 @@ class ReplyKeyboardMarkupCreator:
             top_row.append(my_courses_btn)
 
         markup.add_row(top_row)
-        markup.add(profile_btn, support_btn)
+        # markup.add(profile_btn, support_btn)
 
         return markup
 

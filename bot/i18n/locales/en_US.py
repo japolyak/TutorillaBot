@@ -28,4 +28,9 @@ en = {
     "TutorInCourse": Template("Tutor: <b>$tutor</b>"),
     "StudentInCourse": Template("Student: <b>$student</b>"),
     "SubjectAndRoleInCourse": Template("Subject: $subject\n$role: $name"),
+    "AdminPanelIsHere": Template("Admin panel is here"),
+    "MainMenu": Template("Main menu"),
+    "OfficeIsHere": Template("Office is here"),
+    "NoAvailableSubjects": Template("No available subjects"),
+    "YourClassroomIsHere": Template("Your classroom is here"),
 }

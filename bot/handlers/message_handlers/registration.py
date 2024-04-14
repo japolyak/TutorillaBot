@@ -26,14 +26,18 @@ def welcome(message: Message):
 
             markup = ReplyKeyboardMarkupCreator.main_menu_markup(chat_id)
             bot.send_message(chat_id=chat_id,
-                             text=t(chat_id, "Welcome", "en-US", name=user.first_name),
+                             text=t(chat_id, "Welcome", user.locale, name=user.first_name),
                              disable_notification=True,
                              reply_markup=markup)
             return
 
         r.hset(str(chat_id), "id", int(chat_id))
 
-        bot.send_message(chat_id=chat_id, text="Select language", reply_markup=InlineKeyboardMarkupCreator.locale_markup())
+        welcome_message = """
+        Hi, it's TutorillaBot!\nMy mission is to help you to find a tutor for your needs. Please, select a language by clicking the button below to start the registration process.
+        """
+
+        bot.send_message(chat_id=chat_id, text=welcome_message, reply_markup=InlineKeyboardMarkupCreator.locale_markup())
 
     except Exception as e:
         log_exception(chat_id, welcome, e)

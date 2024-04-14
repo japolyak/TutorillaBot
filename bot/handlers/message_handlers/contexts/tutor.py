@@ -8,6 +8,7 @@ from bot.handlers.shared import get_subjects
 from bot.exception_handler import log_exception
 from bot.decorators.message_decorator import MessageDecorator
 from bot.i18n.i18n import t
+from bot.redis.redis_client import r
 
 
 class Tutor:
@@ -19,8 +20,10 @@ class Tutor:
             if not MessageDecorator.tutor_guard(chat_id):
                 return
 
+            locale = r.hget(chat_id, "locale")
             markup = ReplyKeyboardMarkupCreator.tutor_office_markup()
-            bot.send_message(chat_id=chat_id, text="Office is here", disable_notification=True, reply_markup=markup)
+            bot.send_message(chat_id=chat_id,text=t(chat_id, "OfficeIsHere", locale),
+                             disable_notification=True, reply_markup=markup)
 
         except Exception as e:
             log_exception(chat_id, Tutor.my_office, e)
@@ -49,11 +52,12 @@ class Tutor:
             request = SubjectClient.get_available_subjects(user_id=chat_id, role="tutor")
 
             if not request.ok:
-                log_exception(chat_id, Tutor.add_course)
+                log_exception(chat_id, Tutor.add_course, api_error=True)
                 return
 
+            locale = r.hget(chat_id, "locale")
             if not len(request.json()):
-                bot.send_message(chat_id=chat_id, text="No available subjects", disable_notification=True)
+                bot.send_message(chat_id=chat_id, text=t(chat_id, "NoAvailableSubjects", locale), disable_notification=True)
                 return
 
             response_data = [SubjectDto(**s) for s in request.json()]
