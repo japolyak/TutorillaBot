@@ -9,6 +9,7 @@ from bot.exception_handler import log_exception
 from bot.decorators.message_decorator import MessageDecorator
 from bot.i18n.i18n import t
 from bot.enums import Role
+from bot.redis.redis_client import r
 
 
 def inline_handler_guard(query: InlineQuery):
@@ -45,19 +46,20 @@ def query_text(query: InlineQuery):
     chat_id = query.from_user.id
 
     context, subject = query.query.split()
+    locale = r.hget(chat_id, "locale")
 
     match context:
         case "Tutor":
-            get_courses_by_role(query, subject, Role.Tutor)
+            get_courses_by_role(query, subject, Role.Tutor, locale)
         case "Student":
-            get_courses_by_role(query, subject, Role.Student)
+            get_courses_by_role(query, subject, Role.Student, locale)
         case "Subscribe":
-            subscribe_course(chat_id, subject, query.id)
+            subscribe_course(chat_id, subject, query.id, locale)
         case _:
             return
 
 
-def subscribe_course(chat_id: int, subject: str, inline_query_id: str):
+def subscribe_course(chat_id: int, subject: str, inline_query_id: str, locale: str):
     try:
         request = TutorCourseClient.course_tutors(user_id=chat_id, subject_name=subject)
 
@@ -73,7 +75,7 @@ def subscribe_course(chat_id: int, subject: str, inline_query_id: str):
                 title=f"{i.subject.name} {i.price}$",
                 description=f"{i.tutor.first_name}",
                 input_message_content=InputTextMessageContent(
-                    message_text=t(chat_id, "SubscribeCourse", "en-US", subject=i.subject.name, tutor=i.tutor.first_name, price=f"{i.price}$")
+                    message_text=t(chat_id, "SubscribeCourse", locale, subject=i.subject.name, tutor=i.tutor.first_name, price=f"{i.price}$")
                 ),
                 reply_markup=InlineKeyboardMarkupCreator.subscribe_course_markup(i.id)
             ) for i in response_data
@@ -84,7 +86,7 @@ def subscribe_course(chat_id: int, subject: str, inline_query_id: str):
         log_exception(chat_id, subscribe_course, e)
 
 
-def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal[Role.Tutor, Role.Student]):
+def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal[Role.Tutor, Role.Student], locale: str):
     chat_id = query.from_user.id
 
     try:
@@ -99,26 +101,26 @@ def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal[Rol
             return
 
         if not request.json():
-            bot.send_message(chat_id=chat_id, text=t(chat_id, "NoCoursesFound", "en-US"), disable_notification=True)
+            bot.send_message(chat_id=chat_id, text=t(chat_id, "NoCoursesFound", locale), disable_notification=True)
             return
 
         response_data = [PrivateCourseDto(**c) for c in request.json()]
 
-        courses = create_inline_query_courses(chat_id, role, response_data)
+        courses = create_inline_query_courses(chat_id, role, response_data, locale)
 
         bot.answer_inline_query(inline_query_id=query.id, results=courses, cache_time=0)
     except Exception as e:
         log_exception(chat_id, get_courses_by_role, e)
 
 
-def create_inline_query_courses(chat_id, role: Role, payload: List[PrivateCourseDto]):
+def create_inline_query_courses(chat_id, role: Role, payload: List[PrivateCourseDto], locale):
     return [
         InlineQueryResultArticle(
             id=i.id,
             title=i.student.first_name if role == Role.Tutor else i.course.tutor.first_name,
             description=f"{i.course.subject.name}",
             input_message_content=InputTextMessageContent(
-                message_text=t(chat_id, "SubjectAndRoleInCourse", "en-US",
+                message_text=t(chat_id, "SubjectAndRoleInCourse", locale,
                                subject=i.course.subject.name,
                                role=role.capitalize(),
                                name=i.student.first_name if role == Role.Tutor else i.course.tutor.first_name)
