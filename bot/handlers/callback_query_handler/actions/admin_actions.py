@@ -63,6 +63,8 @@ class AdminActions:
             r.hset(user.id, "is_tutor" if user.is_tutor else "is_student", 1)
 
             cls.__send_confirmation_message(user=user, role=role)
+
+            bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id)
             bot.send_message(chat_id=chat_id, text="User's request accepted", disable_notification=True)
 
         except Exception as e:
@@ -81,6 +83,7 @@ class AdminActions:
                 log_exception(chat_id, cls.decline_user_request, api_error=True)
                 return
 
+            bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id)
             bot.send_message(chat_id=chat_id, text="User request declined", disable_notification=True)
 
         except Exception as e:
@@ -93,6 +96,7 @@ class AdminActions:
         try:
             role: str = callback_data[0]
 
+            bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id)
             role_requests(user_id=chat_id, role=role)
 
         except Exception as e:
