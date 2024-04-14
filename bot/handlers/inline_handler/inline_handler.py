@@ -77,7 +77,7 @@ def subscribe_course(chat_id: int, subject: str, inline_query_id: str, locale: s
                 input_message_content=InputTextMessageContent(
                     message_text=t(chat_id, "SubscribeCourse", locale, subject=i.subject.name, tutor=i.tutor.first_name, price=f"{i.price}$")
                 ),
-                reply_markup=InlineKeyboardMarkupCreator.subscribe_course_markup(i.id)
+                reply_markup=InlineKeyboardMarkupCreator.subscribe_course_markup(i.id, locale)
             ) for i in response_data
         ]
 
@@ -125,6 +125,6 @@ def create_inline_query_courses(chat_id, role: Role, payload: List[PrivateCourse
                                role=role.capitalize(),
                                name=i.student.first_name if role == Role.Tutor else i.course.tutor.first_name)
             ),
-            reply_markup=InlineKeyboardMarkupCreator.private_course_markup(i.id, role)
+            reply_markup=InlineKeyboardMarkupCreator.private_course_markup(i.id, role, locale)
         ) for i in payload
     ]

@@ -18,7 +18,7 @@ class Admin:
                 return
 
             locale = r.hget(chat_id, "locale")
-            markup = ReplyKeyboardMarkupCreator.admin_panel_markup()
+            markup = ReplyKeyboardMarkupCreator.admin_panel_markup(locale)
             bot.send_message(chat_id=message.from_user.id,
                              text=t(chat_id, "AdminPanelIsHere", locale),
                              disable_notification=True,
@@ -35,7 +35,8 @@ class Admin:
             if not MessageDecorator.admin_guard(chat_id):
                 return
 
-            role_requests(user_id=chat_id, role="tutor")
+            locale = r.hget(chat_id, "locale")
+            role_requests(chat_id, "tutor", locale)
 
         except Exception as e:
             log_exception(chat_id, Admin.get_tutor_role_requests, e)
@@ -48,7 +49,8 @@ class Admin:
             if not MessageDecorator.admin_guard(chat_id):
                 return
 
-            role_requests(user_id=chat_id, role="student")
+            locale = r.hget(chat_id, "locale")
+            role_requests(chat_id, "student", locale)
 
         except Exception as e:
             log_exception(chat_id, Admin.get_student_role_requests, e)

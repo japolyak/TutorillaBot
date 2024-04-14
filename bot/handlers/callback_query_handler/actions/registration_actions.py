@@ -59,7 +59,7 @@ class RegistrationActions:
 
                 return
 
-            markup = InlineKeyboardMarkupCreator.choose_occupation()
+            markup = InlineKeyboardMarkupCreator.choose_occupation(locale)
             bot.send_message(chat_id=chat_id,
                              text=t(chat_id, "WelcomeOnBoard", locale),
                              disable_notification=True,
@@ -69,19 +69,21 @@ class RegistrationActions:
             log_exception(chat_id, RegistrationActions.registration_time_zone, e)
 
     @staticmethod
-    def select_role(call: CallbackQuery, *args, **kwargs):
+    def select_role(call: CallbackQuery, callback_data: List[Any], *args, **kwargs):
         chat_id = call.from_user.id
 
         try:
             request: Response | None = None
 
-            if call.data == CallBackPrefix.BecomeTutor:
+            prefix, locale = call.data.split()
+
+            if prefix == CallBackPrefix.BecomeTutor:
                 request = RegistrationClient.apply_for_role(chat_id, Role.Tutor)
-            elif call.data == CallBackPrefix.BecomeStudent:
+            elif prefix == CallBackPrefix.BecomeStudent:
                 request = RegistrationClient.apply_for_role(chat_id, Role.Student)
 
             if not request.ok:
-                log_exception(chat_id, RegistrationActions.select_role)
+                log_exception(chat_id, RegistrationActions.select_role, api_error=True)
 
                 return
 
@@ -90,7 +92,7 @@ class RegistrationActions:
             bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id, reply_markup=None)
 
             bot.send_message(chat_id=chat_id,
-                             text=t(call.from_user.id, "GreatWaitForConfirmationByAdmin"),
+                             text=t(call.from_user.id, "GreatWaitForConfirmationByAdmin", locale),
                              disable_notification=True)
 
         except Exception as e:

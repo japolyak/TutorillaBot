@@ -6,7 +6,7 @@ from typing import List
 
 class ReplyKeyboardMarkupCreator:
     @staticmethod
-    def main_menu_markup(user_id) -> ReplyKeyboardMarkup:
+    def main_menu_markup(user_id, locale: str) -> ReplyKeyboardMarkup:
         is_tutor = int(r.hget(user_id, "is_tutor") or 0)
         is_student = int(r.hget(user_id, "is_student") or 0)
         is_admin = int(r.hget(user_id, "is_admin") or 0)
@@ -35,7 +35,7 @@ class ReplyKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def student_classroom_markup() -> ReplyKeyboardMarkup:
+    def student_classroom_markup(locale: str) -> ReplyKeyboardMarkup:
         markup = ReplyKeyboardMarkup(resize_keyboard=True)
 
         my_courses_btn = KeyboardButton(text="My classes")
@@ -47,7 +47,7 @@ class ReplyKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def tutor_office_markup() -> ReplyKeyboardMarkup:
+    def tutor_office_markup(locale: str) -> ReplyKeyboardMarkup:
         markup = ReplyKeyboardMarkup(resize_keyboard=True)
 
         my_courses_btn = KeyboardButton(text="My courses")
@@ -59,7 +59,7 @@ class ReplyKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def admin_panel_markup() -> ReplyKeyboardMarkup:
+    def admin_panel_markup(locale: str) -> ReplyKeyboardMarkup:
         markup = ReplyKeyboardMarkup(resize_keyboard=True)
 
         tutor_requests_btn = KeyboardButton(text="Tutor requests")

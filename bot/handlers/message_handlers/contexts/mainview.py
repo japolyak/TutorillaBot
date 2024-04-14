@@ -17,8 +17,9 @@ class MainView:
                 return
 
             locale = r.hget(chat_id, "locale")
-            markup = ReplyKeyboardMarkupCreator.main_menu_markup(chat_id)
-            bot.send_message(chat_id=chat_id, text=t(chat_id, "MainMenu", locale), disable_notification=True, reply_markup=markup)
+            markup = ReplyKeyboardMarkupCreator.main_menu_markup(chat_id, locale)
+            bot.send_message(chat_id=chat_id, text=t(chat_id, "MainMenu", locale),
+                             disable_notification=True, reply_markup=markup)
 
         except Exception as e:
             log_exception(chat_id, MainView.main_menu, e)

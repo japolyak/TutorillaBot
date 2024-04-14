@@ -7,7 +7,7 @@ from bot.api.clients.admin_client import AdminClient
 from bot.redis.redis_client import r
 
 
-def get_subjects(user_id: int, role: Literal["tutor", "student"]):
+def get_subjects(user_id: int, role: Literal["tutor", "student"], locale: str):
     request = SubjectClient.get_users_subjects(user_id=user_id, role=role)
 
     msg_text = "Choose subject"
@@ -23,7 +23,7 @@ def get_subjects(user_id: int, role: Literal["tutor", "student"]):
     bot.send_message(chat_id=user_id, text=msg_text, disable_notification=True, reply_markup=markup)
 
 
-def role_requests(user_id: int, role: str):
+def role_requests(user_id: int, role: str, locale: str):
     request = AdminClient.role_requests(role=role)
 
     if not request.ok:
@@ -35,12 +35,12 @@ def role_requests(user_id: int, role: str):
         return
 
     response_data: list[UserRequestDto] = [UserRequestDto(**item) for item in request.json()]
-    markup = InlineKeyboardMarkupCreator.requests_markup(requests=response_data)
+    markup = InlineKeyboardMarkupCreator.requests_markup(response_data, locale)
 
     bot.send_message(chat_id=user_id, text="All requests", disable_notification=True, reply_markup=markup)
 
 
-def send_available_subjects(user_id: int):
+def send_available_subjects(user_id: int, locale: str):
     request = SubjectClient.get_available_subjects(user_id=user_id, role="student")
 
     if not len(request.json()):

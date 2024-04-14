@@ -19,7 +19,7 @@ class Student:
                 return
 
             locale = r.hget(chat_id, "locale")
-            markup = ReplyKeyboardMarkupCreator.student_classroom_markup()
+            markup = ReplyKeyboardMarkupCreator.student_classroom_markup(locale)
 
             bot.send_message(chat_id=chat_id,
                              text=t(chat_id, "YourClassroomIsHere", locale),
@@ -37,7 +37,8 @@ class Student:
             if not MessageDecorator.student_guard(chat_id):
                 return
 
-            get_subjects(chat_id, "student")
+            locale = r.hget(chat_id, "locale")
+            get_subjects(chat_id, "student", locale)
 
         except Exception as e:
             log_exception(chat_id, cls.student_courses, e)
@@ -50,7 +51,8 @@ class Student:
             if not MessageDecorator.student_guard(chat_id):
                 return
 
-            send_available_subjects(user_id=chat_id)
+            locale = r.hget(chat_id, "locale")
+            send_available_subjects(chat_id, locale)
 
         except Exception as e:
             log_exception(chat_id, cls.subscribe_course, e)
