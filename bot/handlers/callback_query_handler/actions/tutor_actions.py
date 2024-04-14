@@ -18,6 +18,7 @@ class TutorActions:
 
         try:
             role = callback_data[0]
+            bot.edit_message_reply_markup(inline_message_id=call.inline_message_id)
 
             get_subjects(chat_id, role)
 
@@ -35,6 +36,8 @@ class TutorActions:
 
             if not request.ok:
                 bot.send_message(chat_id=chat_id, text="Shit, try later", disable_notification=True)
+                log_exception(chat_id, cls.back_to_private_course, None, True)
+                return
 
             markup = InlineKeyboardMarkupCreator.private_course_markup(private_course_id=private_course_id, role=role)
             bot.edit_message_reply_markup(inline_message_id=inline_message_id, reply_markup=markup)
