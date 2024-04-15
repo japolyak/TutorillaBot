@@ -28,6 +28,11 @@ en = {
     "OfficeIsHere": Template("Office is here"),
     "NoAvailableSubjects": Template("No available subjects"),
     "YourClassroomIsHere": Template("Your classroom is here"),
+    "ChooseSubject": Template("Choose subject"),
+    "YouHaveNoCourses": Template("You have no courses"),
+    "NoRequests": Template("No requests"),
+    "AllRequests": Template("All requests"),
+    "ChooseSubjectToLearn": Template("Choose subject to learn"),
 
     "TeachIKBtn": Template("Teach"),
     "StudyIKBtn": Template("Study"),

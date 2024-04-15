@@ -5,59 +5,68 @@ from bot.api.clients.subject_client import SubjectClient
 from typing import Literal, Callable
 from bot.api.clients.admin_client import AdminClient
 from bot.redis.redis_client import r
+from bot.i18n.i18n import t
+from bot.exception_handler import log_exception
 
 
 def get_subjects(user_id: int, role: Literal["tutor", "student"], locale: str):
     request = SubjectClient.get_users_subjects(user_id=user_id, role=role)
 
-    msg_text = "Choose subject"
+    if not request.ok:
+        log_exception(user_id, get_subjects, api_error=True)
+        return
 
     response_data = [SubjectDto(**subject) for subject in request.json()]
 
     if not len(response_data):
-        bot.send_message(chat_id=user_id, text="You have no courses", disable_notification=True)
+        bot.send_message(chat_id=user_id, text=t(user_id, "YouHaveNoCourses", locale), disable_notification=True)
         return
 
     markup = InlineKeyboardMarkupCreator.subjects_markup(courses=response_data, role=role.capitalize())
 
-    bot.send_message(chat_id=user_id, text=msg_text, disable_notification=True, reply_markup=markup)
+    bot.send_message(chat_id=user_id, text=t(user_id, "ChooseSubject", locale),
+                     disable_notification=True, reply_markup=markup)
 
 
 def role_requests(user_id: int, role: str, locale: str):
     request = AdminClient.role_requests(role=role)
 
     if not request.ok:
-        bot.send_message(chat_id=user_id, text="Shit, try later", disable_notification=True)
+        log_exception(user_id, role_requests, api_error=True)
         return
 
     if not request.json():
-        bot.send_message(chat_id=user_id, text="No requests", disable_notification=True)
+        bot.send_message(chat_id=user_id, text=t(user_id, "NoRequests", locale), disable_notification=True)
         return
 
     response_data: list[UserRequestDto] = [UserRequestDto(**item) for item in request.json()]
     markup = InlineKeyboardMarkupCreator.requests_markup(response_data, locale)
 
-    bot.send_message(chat_id=user_id, text="All requests", disable_notification=True, reply_markup=markup)
+    bot.send_message(chat_id=user_id, text=t(user_id, "AllRequests", locale), disable_notification=True, reply_markup=markup)
 
 
 def send_available_subjects(user_id: int, locale: str):
+    # Todo - role question
     request = SubjectClient.get_available_subjects(user_id=user_id, role="student")
 
+    if not request.ok:
+        log_exception(user_id, send_available_subjects, api_error=True)
+        return
+
     if not len(request.json()):
-        bot.send_message(chat_id=user_id, text="No available subjects", disable_notification=True)
+        bot.send_message(chat_id=user_id, text=t(user_id, "NoAvailableSubjects", locale), disable_notification=True)
         return
 
     response_data = [SubjectDto(**s) for s in request.json()]
 
     if not len(response_data):
-        bot.send_message(chat_id=user_id, text="No available subjects", disable_notification=True)
+        bot.send_message(chat_id=user_id, text=t(user_id, "NoAvailableSubjects", locale), disable_notification=True)
         return
-
-    msg_text = "Choose subject to learn"
 
     markup = InlineKeyboardMarkupCreator.sub_course_markup(courses=response_data)
 
-    bot.send_message(chat_id=user_id, text=msg_text, disable_notification=True, reply_markup=markup)
+    bot.send_message(chat_id=user_id, text=t(user_id, "ChooseSubjectToLearn", locale),
+                     disable_notification=True, reply_markup=markup)
 
 
 def next_stepper(chat_id: int, text: str, func: Callable, markup=None, parse_mode: str | None = None, **kwargs) -> None:
@@ -81,7 +90,8 @@ def next_stepper(chat_id: int, text: str, func: Callable, markup=None, parse_mod
     :return: None
     """
 
-    msg = bot.send_message(chat_id=chat_id, text=text, parse_mode=parse_mode, disable_notification=True, reply_markup=markup)
+    msg = bot.send_message(chat_id=chat_id, text=text, parse_mode=parse_mode, disable_notification=True,
+                           reply_markup=markup)
     bot.register_next_step_handler(message=msg, callback=func, **kwargs)
 
 
