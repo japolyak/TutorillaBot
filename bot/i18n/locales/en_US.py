@@ -28,4 +28,18 @@ en = {
     "OfficeIsHere": Template("Office is here"),
     "NoAvailableSubjects": Template("No available subjects"),
     "YourClassroomIsHere": Template("Your classroom is here"),
+
+    "ProfileKBtn": Template("Profile"),
+    "SupportKBtn": Template("Support"),
+    "OfficeKBtn": Template("Office"),
+    "ClassroomKBtn": Template("Classroom"),
+    "AdminPanelKBtn": Template("Admin panel"),
+    "MyClassesKBtn": Template("My classes"),
+    "SubscribeCourseKBtn": Template("Subscribe course"),
+    "MainMenuKBtn": Template("Main menu"),
+    "MyCoursesKBtn": Template("My courses"),
+    "AddCourseKBtn": Template("Add course"),
+    "TutorRequestsKBtn": Template("Tutor requests"),
+    "StudentRequestsKBtn": Template("Student requests"),
 }
+

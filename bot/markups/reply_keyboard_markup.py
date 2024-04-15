@@ -2,69 +2,70 @@ from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from telebot import service_utils
 from bot.redis.redis_client import r
 from typing import List
+from bot.i18n.i18n import t
 
 
 class ReplyKeyboardMarkupCreator:
-    @staticmethod
-    def main_menu_markup(user_id, locale: str) -> ReplyKeyboardMarkup:
+    @classmethod
+    def main_menu_markup(cls, user_id, locale: str) -> ReplyKeyboardMarkup:
         is_tutor = int(r.hget(user_id, "is_tutor") or 0)
         is_student = int(r.hget(user_id, "is_student") or 0)
         is_admin = int(r.hget(user_id, "is_admin") or 0)
 
         markup = CustomReplyKeyboardMarkup(resize_keyboard=True)
 
-        profile_btn = KeyboardButton(text="Profile")
-        support_btn = KeyboardButton(text="Support")
+        profile_btn = KeyboardButton(text=t(user_id, "ProfileKBtn", locale))
+        support_btn = KeyboardButton(text=t(user_id, "SupportKBtn", locale))
         top_row = []
 
         if is_tutor:
-            office_btn = KeyboardButton(text="Office")
+            office_btn = KeyboardButton(text=t(user_id, "OfficeKBtn", locale))
             top_row.append(office_btn)
 
         if is_student:
-            my_courses_btn = KeyboardButton(text="Classroom")
-            top_row.append(my_courses_btn)
+            classroom_btn = KeyboardButton(text=t(user_id, "ClassroomKBtn", locale))
+            top_row.append(classroom_btn)
 
         if is_admin:
-            my_courses_btn = KeyboardButton(text="Admin panel")
-            top_row.append(my_courses_btn)
+            admin_panel_btn = KeyboardButton(text=t(user_id, "AdminPanelKBtn", locale))
+            top_row.append(admin_panel_btn)
 
         markup.add_row(top_row)
-        # markup.add(profile_btn, support_btn)
+        # TODO markup.add(profile_btn, support_btn)
 
         return markup
 
-    @staticmethod
-    def student_classroom_markup(locale: str) -> ReplyKeyboardMarkup:
+    @classmethod
+    def student_classroom_markup(cls, user_id: int, locale: str) -> ReplyKeyboardMarkup:
         markup = ReplyKeyboardMarkup(resize_keyboard=True)
 
-        my_courses_btn = KeyboardButton(text="My classes")
-        add_course_btn = KeyboardButton(text="Subscribe course")
-        main_menu_btn = KeyboardButton(text="Main menu")
+        my_courses_btn = KeyboardButton(text=t(user_id, "MyClassesKBtn", locale))
+        add_course_btn = KeyboardButton(text=t(user_id, "SubscribeCourseKBtn", locale))
+        main_menu_btn = KeyboardButton(text=t(user_id, "MainMenuKBtn", locale))
 
         markup.add(my_courses_btn, add_course_btn).add(main_menu_btn)
 
         return markup
 
-    @staticmethod
-    def tutor_office_markup(locale: str) -> ReplyKeyboardMarkup:
+    @classmethod
+    def tutor_office_markup(cls, user_id: int, locale: str) -> ReplyKeyboardMarkup:
         markup = ReplyKeyboardMarkup(resize_keyboard=True)
 
-        my_courses_btn = KeyboardButton(text="My courses")
-        add_course_btn = KeyboardButton(text="Add course")
-        main_menu_btn = KeyboardButton(text="Main menu")
+        my_courses_btn = KeyboardButton(text=t(user_id, "MyCoursesKBtn", locale))
+        add_course_btn = KeyboardButton(text=t(user_id, "AddCourseKBtn", locale))
+        main_menu_btn = KeyboardButton(text=t(user_id, "MainMenuKBtn", locale))
 
         markup.add(my_courses_btn, add_course_btn).add(main_menu_btn)
 
         return markup
 
-    @staticmethod
-    def admin_panel_markup(locale: str) -> ReplyKeyboardMarkup:
+    @classmethod
+    def admin_panel_markup(cls, user_id: int, locale: str) -> ReplyKeyboardMarkup:
         markup = ReplyKeyboardMarkup(resize_keyboard=True)
 
-        tutor_requests_btn = KeyboardButton(text="Tutor requests")
-        student_requests_btn = KeyboardButton(text="Student requests")
-        back_to_admin_panel = KeyboardButton(text="Main menu")
+        tutor_requests_btn = KeyboardButton(text=t(user_id, "TutorRequestsKBtn", locale))
+        student_requests_btn = KeyboardButton(text=t(user_id, "StudentRequestsKBtn", locale))
+        back_to_admin_panel = KeyboardButton(text=t(user_id, "MainMenuKBtn", locale))
 
         markup.add(tutor_requests_btn, student_requests_btn).add(back_to_admin_panel)
 

@@ -22,7 +22,7 @@ class StudentActions:
                 return
 
             bot.edit_message_reply_markup(inline_message_id=call.inline_message_id, reply_markup=None)
-            markup = ReplyKeyboardMarkupCreator.student_classroom_markup(locale)
+            markup = ReplyKeyboardMarkupCreator.student_classroom_markup(chat_id, locale)
             bot.send_message(chat_id=chat_id, text="You have successfully subscribed to the course",
                              disable_notification=True, reply_markup=markup)
 

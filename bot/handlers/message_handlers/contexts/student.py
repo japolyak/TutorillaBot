@@ -19,7 +19,7 @@ class Student:
                 return
 
             locale = r.hget(chat_id, "locale")
-            markup = ReplyKeyboardMarkupCreator.student_classroom_markup(locale)
+            markup = ReplyKeyboardMarkupCreator.student_classroom_markup(chat_id, locale)
 
             bot.send_message(chat_id=chat_id,
                              text=t(chat_id, "YourClassroomIsHere", locale),

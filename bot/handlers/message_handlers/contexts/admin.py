@@ -18,7 +18,7 @@ class Admin:
                 return
 
             locale = r.hget(chat_id, "locale")
-            markup = ReplyKeyboardMarkupCreator.admin_panel_markup(locale)
+            markup = ReplyKeyboardMarkupCreator.admin_panel_markup(chat_id, locale)
             bot.send_message(chat_id=message.from_user.id,
                              text=t(chat_id, "AdminPanelIsHere", locale),
                              disable_notification=True,
