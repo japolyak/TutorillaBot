@@ -5,6 +5,7 @@ from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.api.api_models import PaginatedList, PrivateClassBaseDto
 from bot.exception_handler import log_exception
 from typing import Any, List
+from bot.i18n.i18n import t
 
 
 class SharedActions:
@@ -27,7 +28,7 @@ class SharedActions:
             request_data: PaginatedList[PrivateClassBaseDto] = PaginatedList[PrivateClassBaseDto](**request.json())
 
             if not len(request_data.items):
-                bot.send_message(chat_id=chat_id, text="You dont have classes", disable_notification=True)
+                bot.send_message(chat_id=chat_id, text=t(chat_id, "YouDontHaveClasses", locale), disable_notification=True)
                 return
 
             markup = InlineKeyboardMarkupCreator.course_classes_markup(request_data, private_course_id,

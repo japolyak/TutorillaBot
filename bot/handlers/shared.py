@@ -46,7 +46,6 @@ def role_requests(user_id: int, role: str, locale: str):
 
 
 def send_available_subjects(user_id: int, locale: str):
-    # Todo - role question
     request = SubjectClient.get_available_subjects(user_id=user_id, role="student")
 
     if not request.ok:

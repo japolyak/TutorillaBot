@@ -75,7 +75,8 @@ def subscribe_course(chat_id: int, subject: str, inline_query_id: str, locale: s
                 title=f"{i.subject.name} {i.price}$",
                 description=f"{i.tutor.first_name}",
                 input_message_content=InputTextMessageContent(
-                    message_text=t(chat_id, "SubscribeCourse", locale, subject=i.subject.name, tutor=i.tutor.first_name, price=f"{i.price}$")
+                    message_text=t(chat_id, "SubscribeCourse", locale, subject=i.subject.name,
+                                   tutor=i.tutor.first_name, price=f"{i.price}$")
                 ),
                 reply_markup=InlineKeyboardMarkupCreator.subscribe_course_markup(i.id, chat_id, locale)
             ) for i in response_data

@@ -9,6 +9,7 @@ from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.redis.redis_client import r
 from bot.exception_handler import log_exception
 from typing import Any, List
+from bot.i18n.i18n import t
 
 
 class AdminActions:
@@ -65,7 +66,8 @@ class AdminActions:
             cls.__send_confirmation_message(user, role, locale)
 
             bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id)
-            bot.send_message(chat_id=chat_id, text="User's request accepted", disable_notification=True)
+            bot.send_message(chat_id=chat_id, text=t(chat_id, "UsersRequestAccepted", locale),
+                             disable_notification=True)
 
         except Exception as e:
             log_exception(chat_id, cls.accept_user_request, e)
@@ -84,7 +86,8 @@ class AdminActions:
                 return
 
             bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id)
-            bot.send_message(chat_id=chat_id, text="User request declined", disable_notification=True)
+            bot.send_message(chat_id=chat_id, text=t(chat_id, "UsersRequestDeclined", locale),
+                             disable_notification=True)
 
         except Exception as e:
             log_exception(chat_id, cls.decline_user_request, e)
@@ -104,5 +107,8 @@ class AdminActions:
 
     @classmethod
     def __send_confirmation_message(cls, user: UserDto, role: str, locale: str):
+
         markup = ReplyKeyboardMarkupCreator.main_menu_markup(user.id, locale)
-        bot.send_message(chat_id=user.id, text=f"Congratulations {user.first_name}, Your request for {role} role has been accepted", reply_markup=markup, disable_notification=True)
+        bot.send_message(chat_id=user.id,
+                         text=t(user.id, "CongratulationsYourRequestForRoleHasBeenAccepted", locale, name=user.first_name, role=role),
+                         reply_markup=markup, disable_notification=True)

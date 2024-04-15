@@ -33,6 +33,11 @@ en = {
     "NoRequests": Template("No requests"),
     "AllRequests": Template("All requests"),
     "ChooseSubjectToLearn": Template("Choose subject to learn"),
+    "YouHaveSuccessfullySubscribedToTheCourse": Template("You have successfully subscribed to the course"),
+    "UsersRequestAccepted": Template("User\'s request accepted"),
+    "UsersRequestDeclined": Template("User\'s request declined"),
+    "CongratulationsYourRequestForRoleHasBeenAccepted": Template("Congratulations $name, Your request for $role role has been accepted"),
+    "YouDontHaveClasses": Template("You dont have classes"),
 
     "TeachIKBtn": Template("Teach"),
     "StudyIKBtn": Template("Study"),

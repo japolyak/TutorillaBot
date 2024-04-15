@@ -5,11 +5,12 @@ from bot.handlers.shared import send_available_subjects
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.exception_handler import log_exception
 from typing import Any, List
+from bot.i18n.i18n import t
 
 
 class StudentActions:
-    @staticmethod
-    def subscribe_course_callback(call: CallbackQuery, callback_data: List[Any]):
+    @classmethod
+    def subscribe_course_callback(cls, call: CallbackQuery, callback_data: List[Any]):
         chat_id = call.from_user.id
 
         try:
@@ -18,12 +19,12 @@ class StudentActions:
             request = PrivateCourseClient.enroll_in_course(user_id=chat_id, private_course_id=course_id)
 
             if not request.ok:
-                bot.send_message(chat_id=chat_id, text="Problem occurred", disable_notification=True)
+                log_exception(chat_id, cls.subscribe_course_callback, api_error=True)
                 return
 
             bot.edit_message_reply_markup(inline_message_id=call.inline_message_id, reply_markup=None)
             markup = ReplyKeyboardMarkupCreator.student_classroom_markup(chat_id, locale)
-            bot.send_message(chat_id=chat_id, text="You have successfully subscribed to the course",
+            bot.send_message(chat_id=chat_id, text=t(chat_id, "YouHaveSuccessfullySubscribedToTheCourse", locale),
                              disable_notification=True, reply_markup=markup)
 
         except Exception as e:

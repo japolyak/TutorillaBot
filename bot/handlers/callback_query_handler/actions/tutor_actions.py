@@ -35,7 +35,6 @@ class TutorActions:
             request = PrivateCourseClient.get_private_course(user_id=chat_id, private_course_id=private_course_id)
 
             if not request.ok:
-                bot.send_message(chat_id=chat_id, text="Shit, try later", disable_notification=True)
                 log_exception(chat_id, cls.back_to_private_course, api_error=True)
                 return
 
@@ -80,7 +79,6 @@ class TutorActions:
 
             if not request.ok:
                 log_exception(chat_id, cls.__add_course_price, api_error=True)
-
                 return
 
             bot.send_message(chat_id=chat_id, text=t(chat_id, "CourseAddedSuccessfully", locale),
