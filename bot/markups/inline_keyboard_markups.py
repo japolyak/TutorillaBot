@@ -6,6 +6,7 @@ from bot.enums import Emoji
 from bot.handlers.callback_query_handler.callback_prefix import CallBackPrefix
 from telebot import service_utils
 from bot.enums import Role
+from bot.i18n.i18n import t
 
 
 class InlineKeyboardMarkupCreator:
@@ -32,11 +33,11 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def choose_occupation(locale: str) -> InlineKeyboardMarkup:
+    def choose_occupation(user_id: int, locale: str) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 
-        teacher_btn = InlineKeyboardButton("Teach", callback_data=f"{CallBackPrefix.BecomeTutor} {locale}")
-        student_btn = InlineKeyboardButton("Study", callback_data=f"{CallBackPrefix.BecomeStudent} {locale}")
+        teacher_btn = InlineKeyboardButton(text=t(user_id, "TeachIKBtn", locale), callback_data=f"{CallBackPrefix.BecomeTutor} {locale}")
+        student_btn = InlineKeyboardButton(text=t(user_id, "StudyIKBtn", locale), callback_data=f"{CallBackPrefix.BecomeStudent} {locale}")
 
         markup.add(teacher_btn, student_btn)
 
@@ -76,12 +77,12 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def subscribe_course_markup(course_id: int, locale: str) -> InlineKeyboardMarkup:
+    def subscribe_course_markup(course_id: int, user_id: int, locale: str) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 
-        subscribe_btn = InlineKeyboardButton("Subscribe",
+        subscribe_btn = InlineKeyboardButton(text=t(user_id, "SubscribeIKBtn", locale),
                                              callback_data=f"{CallBackPrefix.SubscribeCourse} {course_id} {locale}")
-        return_btn = InlineKeyboardButton("Return to select subjects",
+        return_btn = InlineKeyboardButton(text=t(user_id, "ReturnToSelectSubjectsIKBtn", locale),
                                           callback_data=f"{CallBackPrefix.ReturnToSelect} {locale}")
 
         markup.add(subscribe_btn).add(return_btn)
@@ -89,17 +90,17 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def private_course_markup(private_course_id: int, role: Literal[Role.Tutor, Role.Student], locale) -> InlineKeyboardMarkup:
+    def private_course_markup(private_course_id: int, role: Literal[Role.Tutor, Role.Student], locale, user_id: int) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
         # TODO - think about adding role to an url
-        plan_class_btn = InlineKeyboardButton("Plan class",
+        plan_class_btn = InlineKeyboardButton(text=t(user_id, "PlanClassIKBtn", locale),
                                               web_app=WebAppInfo(
                                                   url=f"{web_app_link}/private-course/{private_course_id}"
                                               ))
 
-        all_classes_btn = InlineKeyboardButton("All classes",
+        all_classes_btn = InlineKeyboardButton(text=t(user_id, "AllClassesIKBtn", locale),
                                                callback_data=f"{CallBackPrefix.CourseClasses} {private_course_id} {role} {locale}")
-        back_btn = InlineKeyboardButton("Back",
+        back_btn = InlineKeyboardButton(text=t(user_id, "BackIKBtn", locale),
                                         callback_data=f"{CallBackPrefix.BackToChoosePrivateCourse} {role} {locale}")
 
         markup.add(plan_class_btn).add(all_classes_btn).add(back_btn)
@@ -118,7 +119,8 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def course_classes_markup(paginated_list: PaginatedList[PrivateClassBaseDto], go_back_id: int, role: str, inline_message_id: str, locale: str) -> InlineKeyboardMarkup:
+    def course_classes_markup(paginated_list: PaginatedList[PrivateClassBaseDto], go_back_id: int, role: str,
+                              inline_message_id: str, locale: str, user_id: int) -> InlineKeyboardMarkup:
         markup = CustomInlineKeyboardMarkup()
 
         for i in paginated_list.items:
@@ -149,7 +151,7 @@ class InlineKeyboardMarkupCreator:
         back_to_course_btn_callback = f"{CallBackPrefix.BackToPrivateCourse} {go_back_id} {inline_message_id} {role} {locale}"
 
         markup.add(
-            InlineKeyboardButton(text=f"{Emoji.BackArrow.value} Back to course",
+            InlineKeyboardButton(text=f"{Emoji.BackArrow.value} {t(user_id, "BackToCourseIKBtn", locale)}",
                                  callback_data=back_to_course_btn_callback
                                  )
         )
@@ -170,11 +172,11 @@ class InlineKeyboardMarkupCreator:
     def request_decision_markup(user_id: int, role: str, locale: str) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 
-        accept_btn = InlineKeyboardButton(text=f"{Emoji.Accept.value} Accept",
+        accept_btn = InlineKeyboardButton(text=f"{Emoji.Accept.value} {t(user_id, "AcceptIKBtn", locale)}",
                                           callback_data=f"{CallBackPrefix.AcceptRole} {user_id} {role} {locale}")
-        decline_btn = InlineKeyboardButton(text=f"{Emoji.Decline.value} Decline",
+        decline_btn = InlineKeyboardButton(text=f"{Emoji.Decline.value} {t(user_id, "DeclineIKBtn", locale)}",
                                            callback_data=f"{CallBackPrefix.DeclineRole} {user_id} {locale}")
-        back_to_requests = InlineKeyboardButton(text=f"{Emoji.BackArrow.value} Back",
+        back_to_requests = InlineKeyboardButton(text=f"{Emoji.BackArrow.value} {t(user_id, "BackToCourseIKBtn", locale)}",
                                                 callback_data=f"{CallBackPrefix.BackToUsersRequests} {role} {locale}")
 
         markup.add(accept_btn).add(decline_btn).add(back_to_requests)

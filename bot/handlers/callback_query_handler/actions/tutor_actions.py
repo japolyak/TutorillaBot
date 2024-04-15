@@ -39,7 +39,7 @@ class TutorActions:
                 log_exception(chat_id, cls.back_to_private_course, api_error=True)
                 return
 
-            markup = InlineKeyboardMarkupCreator.private_course_markup(private_course_id, role, locale)
+            markup = InlineKeyboardMarkupCreator.private_course_markup(private_course_id, role, locale, chat_id)
             bot.edit_message_reply_markup(inline_message_id=inline_message_id, reply_markup=markup)
 
         except Exception as e:

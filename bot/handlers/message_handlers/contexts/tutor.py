@@ -22,7 +22,7 @@ class Tutor:
 
             locale = r.hget(chat_id, "locale")
             markup = ReplyKeyboardMarkupCreator.tutor_office_markup(chat_id, locale)
-            bot.send_message(chat_id=chat_id,text=t(chat_id, "OfficeIsHere", locale),
+            bot.send_message(chat_id=chat_id, text=t(chat_id, "OfficeIsHere", locale),
                              disable_notification=True, reply_markup=markup)
 
         except Exception as e:

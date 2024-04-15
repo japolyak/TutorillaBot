@@ -59,7 +59,7 @@ class RegistrationActions:
 
                 return
 
-            markup = InlineKeyboardMarkupCreator.choose_occupation(locale)
+            markup = InlineKeyboardMarkupCreator.choose_occupation(chat_id, locale)
             bot.send_message(chat_id=chat_id,
                              text=t(chat_id, "WelcomeOnBoard", locale),
                              disable_notification=True,

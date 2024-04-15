@@ -29,6 +29,17 @@ en = {
     "NoAvailableSubjects": Template("No available subjects"),
     "YourClassroomIsHere": Template("Your classroom is here"),
 
+    "TeachIKBtn": Template("Teach"),
+    "StudyIKBtn": Template("Study"),
+    "SubscribeIKBtn": Template("Subscribe"),
+    "ReturnToSelectSubjectsIKBtn": Template("Return to select subjects"),
+    "PlanClassIKBtn": Template("Plan class"),
+    "AllClassesIKBtn": Template("All classes"),
+    "AcceptIKBtn": Template("Accept"),
+    "DeclineIKBtn": Template("Decline"),
+    "BackIKBtn": Template("Back"),
+    "BackToCourseIKBtn": Template("Back to course"),
+
     "ProfileKBtn": Template("Profile"),
     "SupportKBtn": Template("Support"),
     "OfficeKBtn": Template("Office"),
