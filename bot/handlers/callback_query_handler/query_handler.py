@@ -9,21 +9,30 @@ from bot.handlers.callback_query_handler.actions.registration_actions import Reg
 
 
 actions = {
+    # Registration actions
+    CallBackPrefix.SetUserLocale: RegistrationActions.registration_locale,
+    CallBackPrefix.SetTimeZone: RegistrationActions.registration_time_zone,
+    CallBackPrefix.BecomeTutor: RegistrationActions.select_role,
+    CallBackPrefix.BecomeStudent: RegistrationActions.select_role,
+
+    # Shared actions
+    CallBackPrefix.CourseClasses: SharedActions.get_course_classes,
+    CallBackPrefix.LoadPage: SharedActions.load_page,
+
+    # Tutor actions
     CallBackPrefix.AddCourse: TutorActions.add_course_callback,
     CallBackPrefix.BackToPrivateCourse: TutorActions.back_to_private_course,
     CallBackPrefix.BackToChoosePrivateCourse: TutorActions.back_to_choose_subject_callback,
+
+    # Student actions
+    CallBackPrefix.SubscribeCourse: StudentActions.subscribe_course_callback,
+    CallBackPrefix.ReturnToSelect: StudentActions.return_to_select_callback,
+
+    # Admin actions
     CallBackPrefix.RoleRequest: AdminActions.open_user_request,
     CallBackPrefix.AcceptRole: AdminActions.accept_user_request,
     CallBackPrefix.DeclineRole: AdminActions.decline_user_request,
     CallBackPrefix.BackToUsersRequests: AdminActions.back_to_requests,
-    CallBackPrefix.SetUserLocale: RegistrationActions.registration_locale,
-    CallBackPrefix.SetTimeZone: RegistrationActions.registration_time_zone,
-    CallBackPrefix.CourseClasses: SharedActions.get_course_classes,
-    CallBackPrefix.LoadPage: SharedActions.load_page,
-    CallBackPrefix.SubscribeCourse: StudentActions.subscribe_course_callback,
-    CallBackPrefix.ReturnToSelect: StudentActions.return_to_select_callback,
-    CallBackPrefix.BecomeTutor: RegistrationActions.select_role,
-    CallBackPrefix.BecomeStudent: RegistrationActions.select_role
 }
 
 

@@ -25,8 +25,10 @@ class Tutor(IContextBase):
     @__guard
     def my_office(chat_id: int):
         try:
-            markup = ReplyKeyboardMarkupCreator.tutor_office_markup()
-            bot.send_message(chat_id=chat_id, text="Office is here", disable_notification=True, reply_markup=markup)
+            locale = r.hget(chat_id, "locale")
+            markup = ReplyKeyboardMarkupCreator.tutor_office_markup(chat_id, locale)
+            bot.send_message(chat_id=chat_id, text=t(chat_id, "OfficeIsHere", locale),
+                             disable_notification=True, reply_markup=markup)
 
         except Exception as e:
             log_exception(chat_id, Tutor.my_office, e)
@@ -35,7 +37,8 @@ class Tutor(IContextBase):
     @__guard
     def tutor_courses(chat_id: int):
         try:
-            get_subjects(chat_id, "tutor")
+            locale = r.hget(chat_id, "locale")
+            get_subjects(chat_id, "tutor", locale)
 
         except Exception as e:
             log_exception(chat_id, Tutor.tutor_courses, e)
@@ -47,18 +50,20 @@ class Tutor(IContextBase):
             request = SubjectClient.get_available_subjects(user_id=chat_id, role="tutor")
 
             if not request.ok:
-                log_exception(chat_id, Tutor.add_course)
+                log_exception(chat_id, Tutor.add_course, api_error=True)
                 return
 
+            locale = r.hget(chat_id, "locale")
             if not len(request.json()):
-                bot.send_message(chat_id=chat_id, text="No available subjects", disable_notification=True)
+                bot.send_message(chat_id=chat_id, text=t(chat_id, "NoAvailableSubjects", locale),
+                                 disable_notification=True)
                 return
 
             response_data = [SubjectDto(**s) for s in request.json()]
 
-            msg_text = t(chat_id, "ChooseSubjectToTeach", "en-US")
+            msg_text = t(chat_id, "ChooseSubjectToTeach", locale)
 
-            markup = InlineKeyboardMarkupCreator.add_course_markup(courses=response_data)
+            markup = InlineKeyboardMarkupCreator.add_course_markup(response_data, locale)
 
             bot.send_message(chat_id=chat_id, text=msg_text, disable_notification=True, reply_markup=markup)
 
