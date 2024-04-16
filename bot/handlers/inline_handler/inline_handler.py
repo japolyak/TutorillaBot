@@ -6,13 +6,14 @@ from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.api.clients.tutor_course_client import TutorCourseClient
 from bot.api.clients.private_course_client import PrivateCourseClient
 from bot.exception_handler import log_exception
-from bot.decorators.message_decorator import MessageDecorator
 from bot.i18n.i18n import t
 from bot.enums import Role
+from bot.redis.redis_client import r
 
 
 def inline_handler_guard(query: InlineQuery):
     query_data = query.query.split(" ")
+    chat_id = query.from_user.id
 
     if len(query_data) < 2:
         return False
@@ -31,11 +32,11 @@ def inline_handler_guard(query: InlineQuery):
 
     match context:
         case "Tutor":
-            return MessageDecorator.tutor_guard(query.from_user.id)
+            return r.hget(chat_id, "is_tutor") == "1"
         case "Student":
-            return MessageDecorator.student_guard(query.from_user.id)
+            return r.hget(chat_id, "is_student") == "1"
         case "Subscribe":
-            return MessageDecorator.student_guard(query.from_user.id)
+            return r.hget(chat_id, "is_student") == "1"
         case _:
             return False
 

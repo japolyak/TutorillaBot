@@ -4,18 +4,24 @@ from bot.handlers.shared import send_available_subjects
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.handlers.shared import get_subjects
 from bot.exception_handler import log_exception
-from bot.decorators.message_decorator import MessageDecorator
+from bot.handlers.message_handlers.contexts.i_base import IBase
+from bot.redis.redis_client import r
 
 
-class Student:
+class Student(IBase):
     @staticmethod
-    def open_classroom(message: Message):
-        chat_id = message.from_user.id
+    def __guard(func) -> callable:
+        def wrapper(message: Message):
+            is_student = r.hget(message.from_user.id, "is_student")
+            if is_student == "1":
+                return func(message.from_user.id)
 
+        return wrapper
+
+    @staticmethod
+    @__guard
+    def open_classroom(chat_id: int):
         try:
-            if not MessageDecorator.student_guard(chat_id):
-                return
-
             markup = ReplyKeyboardMarkupCreator.student_classroom_markup()
 
             bot.send_message(chat_id=chat_id,
@@ -27,26 +33,18 @@ class Student:
             log_exception(chat_id, Student.open_classroom, e)
 
     @staticmethod
-    def student_courses(message: Message):
-        chat_id = message.from_user.id
-
+    @__guard
+    def student_courses(chat_id: int):
         try:
-            if not MessageDecorator.student_guard(chat_id):
-                return
-
             get_subjects(chat_id, "student")
 
         except Exception as e:
             log_exception(chat_id, Student.student_courses, e)
 
     @staticmethod
-    def subscribe_course(message: Message):
-        chat_id = message.from_user.id
-
+    @__guard
+    def subscribe_course(chat_id: int):
         try:
-            if not MessageDecorator.student_guard(chat_id):
-                return
-
             send_available_subjects(user_id=chat_id)
 
         except Exception as e:

@@ -6,19 +6,25 @@ from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.api.api_models import SubjectDto
 from bot.handlers.shared import get_subjects
 from bot.exception_handler import log_exception
-from bot.decorators.message_decorator import MessageDecorator
 from bot.i18n.i18n import t
+from bot.handlers.message_handlers.contexts.i_base import IBase
+from bot.redis.redis_client import r
 
 
-class Tutor:
+class Tutor(IBase):
     @staticmethod
-    def my_office(message: Message):
-        chat_id = message.from_user.id
+    def __guard(func) -> callable:
+        def wrapper(message: Message):
+            is_tutor = r.hget(message.from_user.id, "is_tutor")
+            if is_tutor == "1":
+                return func(message.from_user.id)
 
+        return wrapper
+
+    @staticmethod
+    @__guard
+    def my_office(chat_id: int):
         try:
-            if not MessageDecorator.tutor_guard(chat_id):
-                return
-
             markup = ReplyKeyboardMarkupCreator.tutor_office_markup()
             bot.send_message(chat_id=chat_id, text="Office is here", disable_notification=True, reply_markup=markup)
 
@@ -26,26 +32,18 @@ class Tutor:
             log_exception(chat_id, Tutor.my_office, e)
 
     @staticmethod
-    def tutor_courses(message: Message):
-        chat_id = message.from_user.id
-
+    @__guard
+    def tutor_courses(chat_id: int):
         try:
-            if not MessageDecorator.tutor_guard(chat_id):
-                return
-
             get_subjects(chat_id, "tutor")
 
         except Exception as e:
             log_exception(chat_id, Tutor.tutor_courses, e)
 
     @staticmethod
-    def add_course(message: Message):
-        chat_id = message.from_user.id
-
+    @__guard
+    def add_course(chat_id: int):
         try:
-            if not MessageDecorator.tutor_guard(chat_id):
-                return
-
             request = SubjectClient.get_available_subjects(user_id=chat_id, role="tutor")
 
             if not request.ok:

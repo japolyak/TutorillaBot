@@ -5,9 +5,10 @@ from bot.handlers.message_handlers.commands import command_handlers, translation
 
 @bot.message_handler(func=lambda message: True)
 def main_message_handler(message: Message):
-    for _, j in translations.items():
-        if message.text in j.keys():
-            action = command_handlers[j[message.text]]
-            action(message)
-
-            return
+    for _, commands in translations.items():
+        command_name = commands.get(message.text)
+        if command_name:
+            action = command_handlers.get(command_name)
+            if action:
+                action(message)
+                return
