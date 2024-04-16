@@ -1,6 +1,6 @@
 # TutorBot
 
-Before running Bot it's necessary to change the next features in BotFather:
+Before running Bot it's necessary to change the next features in `BotFather` in `Telegram`:
 
 * `/setprivacy` - change from ENABLED to DISABLED
 * `/setinline` - enable inline queries
@@ -12,10 +12,18 @@ For each new language it's necessary to:
 * update `i18n.py` file.
 * update all guards in `keyboard_button_guards.py` folder.
 
-## Guards
+## Handlers
 
-For each new `KeyboardButton()` it's necessary to add a new guard regarding context in `keyboard_button_guards.py` folder.
+### Message handler
 
-## Actions
+There is one main message handler. Because of custom `i18n` implementation, it's necessary to complete `commands.py` file.
 
-For each new action it's necessary to add a new function in `actions` folder regarding context.
+Each class that represents a users context should be inherited from `IContextBase` class.
+
+### Callback Query handler
+
+[//]: # (TODO)
+
+### Inline Handler
+
+[//]: # (TODO)

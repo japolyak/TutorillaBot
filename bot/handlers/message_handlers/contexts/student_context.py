@@ -4,20 +4,25 @@ from bot.handlers.shared import send_available_subjects
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.handlers.shared import get_subjects
 from bot.exception_handler import log_exception
-from bot.decorators.message_decorator import MessageDecorator
 from bot.i18n.i18n import t
 from bot.redis.redis_client import r
+from bot.handlers.message_handlers.contexts.i_context_base import IContextBase
 
 
-class Student:
-    @classmethod
-    def open_classroom(cls, message: Message):
-        chat_id = message.from_user.id
+class StudentContext(IContextBase):
+    @staticmethod
+    def __guard(func) -> callable:
+        def wrapper(message: Message):
+            is_student = r.hget(message.from_user.id, "is_student")
+            if is_student == "1":
+                return func(message.from_user.id)
 
+        return wrapper
+
+    @staticmethod
+    @__guard
+    def open_classroom(chat_id: int):
         try:
-            if not MessageDecorator.student_guard(chat_id):
-                return
-
             locale = r.hget(chat_id, "locale")
             markup = ReplyKeyboardMarkupCreator.student_classroom_markup(chat_id, locale)
 
@@ -27,32 +32,24 @@ class Student:
                              reply_markup=markup)
 
         except Exception as e:
-            log_exception(chat_id, cls.open_classroom, e)
+            log_exception(chat_id, StudentContext.open_classroom, e)
 
-    @classmethod
-    def student_courses(cls, message: Message):
-        chat_id = message.from_user.id
-
+    @staticmethod
+    @__guard
+    def student_courses(chat_id: int):
         try:
-            if not MessageDecorator.student_guard(chat_id):
-                return
-
             locale = r.hget(chat_id, "locale")
             get_subjects(chat_id, "student", locale)
 
         except Exception as e:
-            log_exception(chat_id, cls.student_courses, e)
+            log_exception(chat_id, StudentContext.student_courses, e)
 
-    @classmethod
-    def subscribe_course(cls, message: Message):
-        chat_id = message.from_user.id
-
+    @staticmethod
+    @__guard
+    def subscribe_course(chat_id: int):
         try:
-            if not MessageDecorator.student_guard(chat_id):
-                return
-
             locale = r.hget(chat_id, "locale")
             send_available_subjects(chat_id, locale)
 
         except Exception as e:
-            log_exception(chat_id, cls.subscribe_course, e)
+            log_exception(chat_id, StudentContext.subscribe_course, e)

@@ -1,34 +1,33 @@
-from bot.handlers.message_handlers.contexts.mainview import MainView
-from bot.handlers.message_handlers.contexts.tutor import Tutor
-from bot.handlers.message_handlers.contexts.student import Student
-from bot.handlers.message_handlers.contexts.admin import Admin
-
-
-command_handlers = {
-    MainView.main_menu.__name__: MainView.main_menu,
-    Tutor.my_office.__name__: Tutor.my_office,
-    Tutor.tutor_courses.__name__: Tutor.tutor_courses,
-    Tutor.add_course.__name__: Tutor.add_course,
-    Student.open_classroom.__name__: Student.open_classroom,
-    Student.student_courses.__name__: Student.student_courses,
-    Student.subscribe_course.__name__: Student.subscribe_course,
-    Admin.show_admin_panel.__name__: Admin.show_admin_panel,
-    Admin.get_tutor_role_requests.__name__: Admin.get_tutor_role_requests,
-    Admin.get_student_role_requests.__name__: Admin.get_student_role_requests,
-}
+from bot.handlers.message_handlers.contexts.main_view_context import MainViewContext
+from bot.handlers.message_handlers.contexts.tutor_context import TutorContext
+from bot.handlers.message_handlers.contexts.student_context import StudentContext
+from bot.handlers.message_handlers.contexts.admin_context import AdminContext
 
 
 translations = {
     "en-US": {
-        "Main menu": MainView.main_menu.__name__,
-        "Office": Tutor.my_office.__name__,
-        "My courses": Tutor.tutor_courses.__name__,
-        "Add course": Tutor.add_course.__name__,
-        "Classroom": Student.open_classroom.__name__,
-        "My classes": Student.student_courses.__name__,
-        "Subscribe course": Student.subscribe_course.__name__,
-        "Admin panel": Admin.show_admin_panel.__name__,
-        "Tutor requests": Admin.get_tutor_role_requests.__name__,
-        "Student requests": Admin.get_student_role_requests.__name__,
+        "Main menu": "main_menu",
+        "Office": "my_office",
+        "My courses": "tutor_courses",
+        "Add course": "add_course",
+        "Classroom": "open_classroom",
+        "My classes": "student_courses",
+        "Subscribe course": "subscribe_course",
+        "Admin panel": "show_admin_panel",
+        "Tutor requests": "get_tutor_role_requests",
+        "Student requests": "get_student_role_requests",
     }
+}
+
+command_handlers = {
+    "main_menu": MainViewContext.main_menu,
+    "my_office": TutorContext.my_office,
+    "tutor_courses": TutorContext.tutor_courses,
+    "add_course": TutorContext.add_course,
+    "open_classroom": StudentContext.open_classroom,
+    "student_courses": StudentContext.student_courses,
+    "subscribe_course": StudentContext.subscribe_course,
+    "show_admin_panel": AdminContext.show_admin_panel,
+    "get_tutor_role_requests": AdminContext.get_tutor_role_requests,
+    "get_student_role_requests": AdminContext.get_student_role_requests,
 }

@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, Request
-from .bot_token import bot
+from bot.bot_token import bot
 from telebot.types import Update
 
 
