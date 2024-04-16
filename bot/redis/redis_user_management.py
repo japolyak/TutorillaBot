@@ -1,5 +1,5 @@
 from bot.redis.redis_client import r
-from ..api.api_models import UserDto
+from bot.api.api_models import UserDto
 
 
 def add_user(user_id: int, user: UserDto):

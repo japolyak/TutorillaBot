@@ -4,11 +4,11 @@ from bot.handlers.shared import send_available_subjects
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.handlers.shared import get_subjects
 from bot.exception_handler import log_exception
-from bot.handlers.message_handlers.contexts.i_base import IBase
+from bot.handlers.message_handlers.contexts.i_context_base import IContextBase
 from bot.redis.redis_client import r
 
 
-class Student(IBase):
+class Student(IContextBase):
     @staticmethod
     def __guard(func) -> callable:
         def wrapper(message: Message):

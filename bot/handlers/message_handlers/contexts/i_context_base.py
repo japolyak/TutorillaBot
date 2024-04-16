@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class IBase(ABC):
+class IContextBase(ABC):
     @staticmethod
     @abstractmethod
     def __guard(func) -> callable:

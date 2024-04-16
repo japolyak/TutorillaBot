@@ -4,10 +4,10 @@ from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.exception_handler import log_exception
 from bot.handlers.shared import role_requests
 from bot.redis.redis_client import r
-from bot.handlers.message_handlers.contexts.i_base import IBase
+from bot.handlers.message_handlers.contexts.i_context_base import IContextBase
 
 
-class Admin(IBase):
+class Admin(IContextBase):
     @staticmethod
     def __guard(func) -> callable:
         def wrapper(message: Message):

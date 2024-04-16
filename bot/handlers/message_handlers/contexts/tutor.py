@@ -7,11 +7,11 @@ from bot.api.api_models import SubjectDto
 from bot.handlers.shared import get_subjects
 from bot.exception_handler import log_exception
 from bot.i18n.i18n import t
-from bot.handlers.message_handlers.contexts.i_base import IBase
+from bot.handlers.message_handlers.contexts.i_context_base import IContextBase
 from bot.redis.redis_client import r
 
 
-class Tutor(IBase):
+class Tutor(IContextBase):
     @staticmethod
     def __guard(func) -> callable:
         def wrapper(message: Message):
