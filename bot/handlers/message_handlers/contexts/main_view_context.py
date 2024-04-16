@@ -7,7 +7,7 @@ from bot.redis.redis_client import r
 from bot.handlers.message_handlers.contexts.i_context_base import IContextBase
 
 
-class MainView(IContextBase):
+class MainViewContext(IContextBase):
     @staticmethod
     def __guard(func) -> callable:
         def wrapper(message: Message):
@@ -27,4 +27,4 @@ class MainView(IContextBase):
                              disable_notification=True, reply_markup=markup)
 
         except Exception as e:
-            log_exception(chat_id, MainView.main_menu, e)
+            log_exception(chat_id, MainViewContext.main_menu, e)

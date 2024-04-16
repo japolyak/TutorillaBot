@@ -1,7 +1,7 @@
-from bot.handlers.message_handlers.contexts.main_view import MainView
-from bot.handlers.message_handlers.contexts.tutor import Tutor
-from bot.handlers.message_handlers.contexts.student import Student
-from bot.handlers.message_handlers.contexts.admin import Admin
+from bot.handlers.message_handlers.contexts.main_view_context import MainViewContext
+from bot.handlers.message_handlers.contexts.tutor_context import TutorContext
+from bot.handlers.message_handlers.contexts.student_context import StudentContext
+from bot.handlers.message_handlers.contexts.admin_context import AdminContext
 
 
 translations = {
@@ -20,14 +20,14 @@ translations = {
 }
 
 command_handlers = {
-    "main_menu": MainView.main_menu,
-    "my_office": Tutor.my_office,
-    "tutor_courses": Tutor.tutor_courses,
-    "add_course": Tutor.add_course,
-    "open_classroom": Student.open_classroom,
-    "student_courses": Student.student_courses,
-    "subscribe_course": Student.subscribe_course,
-    "show_admin_panel": Admin.show_admin_panel,
-    "get_tutor_role_requests": Admin.get_tutor_role_requests,
-    "get_student_role_requests": Admin.get_student_role_requests,
+    "main_menu": MainViewContext.main_menu,
+    "my_office": TutorContext.my_office,
+    "tutor_courses": TutorContext.tutor_courses,
+    "add_course": TutorContext.add_course,
+    "open_classroom": StudentContext.open_classroom,
+    "student_courses": StudentContext.student_courses,
+    "subscribe_course": StudentContext.subscribe_course,
+    "show_admin_panel": AdminContext.show_admin_panel,
+    "get_tutor_role_requests": AdminContext.get_tutor_role_requests,
+    "get_student_role_requests": AdminContext.get_student_role_requests,
 }

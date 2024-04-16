@@ -11,7 +11,7 @@ from bot.handlers.message_handlers.contexts.i_context_base import IContextBase
 from bot.redis.redis_client import r
 
 
-class Tutor(IContextBase):
+class TutorContext(IContextBase):
     @staticmethod
     def __guard(func) -> callable:
         def wrapper(message: Message):
@@ -31,7 +31,7 @@ class Tutor(IContextBase):
                              disable_notification=True, reply_markup=markup)
 
         except Exception as e:
-            log_exception(chat_id, Tutor.my_office, e)
+            log_exception(chat_id, TutorContext.my_office, e)
 
     @staticmethod
     @__guard
@@ -41,7 +41,7 @@ class Tutor(IContextBase):
             get_subjects(chat_id, "tutor", locale)
 
         except Exception as e:
-            log_exception(chat_id, Tutor.tutor_courses, e)
+            log_exception(chat_id, TutorContext.tutor_courses, e)
 
     @staticmethod
     @__guard
@@ -50,7 +50,7 @@ class Tutor(IContextBase):
             request = SubjectClient.get_available_subjects(user_id=chat_id, role="tutor")
 
             if not request.ok:
-                log_exception(chat_id, Tutor.add_course, api_error=True)
+                log_exception(chat_id, TutorContext.add_course, api_error=True)
                 return
 
             locale = r.hget(chat_id, "locale")
@@ -68,4 +68,4 @@ class Tutor(IContextBase):
             bot.send_message(chat_id=chat_id, text=msg_text, disable_notification=True, reply_markup=markup)
 
         except Exception as e:
-            log_exception(chat_id, Tutor.add_course, e)
+            log_exception(chat_id, TutorContext.add_course, e)
