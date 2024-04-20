@@ -1,13 +1,12 @@
 from typing import Literal, List
 from telebot.types import InputTextMessageContent, InlineQuery, InlineQueryResultArticle
-from bot.api.api_models import TutorCourseDto, PrivateCourseDto
+from bot.api.api_models import TutorCourseDto, PrivateCourseDto, Role
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.api.clients.tutor_course_client import TutorCourseClient
 from bot.api.clients.private_course_client import PrivateCourseClient
 from bot.exception_handler import log_exception
 from bot.i18n.i18n import t
-from bot.enums import Role
 from bot.redis.redis_client import r
 
 

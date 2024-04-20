@@ -1,11 +1,10 @@
 from typing import Literal, List
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
-from bot.api.api_models import PaginatedList, PrivateClassBaseDto, SubjectDto, UserRequestDto
+from bot.api.api_models import PaginatedList, PrivateClassBaseDto, SubjectDto, UserRequestDto, Role
 from bot.config import web_app_link
 from bot.enums import Emoji
 from bot.handlers.callback_query_handler.callback_prefix import CallBackPrefix
 from telebot import service_utils
-from bot.enums import Role
 from bot.i18n.i18n import t
 
 

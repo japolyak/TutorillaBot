@@ -3,7 +3,7 @@ from bot.api.clients.subject_client import SubjectClient
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
-from bot.api.api_models import SubjectDto
+from bot.api.api_models import SubjectDto, Role
 from bot.handlers.shared import get_subjects
 from bot.exception_handler import log_exception
 from bot.i18n.i18n import t
@@ -38,7 +38,7 @@ class TutorContext(IContextBase):
     def tutor_courses(chat_id: int):
         try:
             locale = r.hget(chat_id, "locale")
-            get_subjects(chat_id, "tutor", locale)
+            get_subjects(chat_id, Role.Tutor, locale)
 
         except Exception as e:
             log_exception(chat_id, TutorContext.tutor_courses, e)
@@ -47,7 +47,7 @@ class TutorContext(IContextBase):
     @__guard
     def add_course(chat_id: int):
         try:
-            request = SubjectClient.get_available_subjects(user_id=chat_id, role="tutor")
+            request = SubjectClient.get_users_subjects(chat_id, Role.Tutor, True)
 
             if not request.ok:
                 log_exception(chat_id, TutorContext.add_course, api_error=True)

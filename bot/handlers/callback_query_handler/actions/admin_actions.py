@@ -3,8 +3,7 @@ from bot.bot_token import bot
 from bot.handlers.shared import role_requests
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.api.clients.admin_client import AdminClient
-from bot.api.api_models import UserRequestDto, UserDto
-from bot.enums import Role
+from bot.api.api_models import UserRequestDto, UserDto, Role
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.redis.redis_client import r
 from bot.exception_handler import log_exception

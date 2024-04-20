@@ -1,4 +1,4 @@
-from enum import Enum, StrEnum
+from enum import Enum
 
 
 class Emoji(Enum):
@@ -9,9 +9,3 @@ class Emoji(Enum):
     NextArrow = u'\u27A1'
     Accept = u'\u2714'
     Decline = u'\u274C'
-
-
-class Role(StrEnum):
-    Tutor = "tutor"
-    Student = "student"
-    Admin = "admin"

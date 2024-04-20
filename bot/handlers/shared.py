@@ -1,5 +1,4 @@
-from bot.api.api_models import SubjectDto, UserRequestDto
-from bot.enums import Role
+from bot.api.api_models import SubjectDto, UserRequestDto, Role
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.bot_token import bot
 from bot.api.clients.subject_client import SubjectClient
@@ -11,7 +10,7 @@ from bot.exception_handler import log_exception
 
 
 def get_subjects(user_id: int, role: Literal[Role.Tutor, Role.Student], locale: str):
-    request = SubjectClient.get_users_subjects(user_id=user_id, role=role)
+    request = SubjectClient.get_users_subjects(user_id, role, False)
 
     if not request.ok:
         log_exception(user_id, get_subjects, api_error=True)
@@ -47,7 +46,7 @@ def role_requests(user_id: int, role: str, locale: str):
 
 
 def send_available_subjects(user_id: int, locale: str):
-    request = SubjectClient.get_available_subjects(user_id=user_id, role="student")
+    request = SubjectClient.get_users_subjects(user_id, Role.Student, True)
 
     if not request.ok:
         log_exception(user_id, send_available_subjects, api_error=True)
