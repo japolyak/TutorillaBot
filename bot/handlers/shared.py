@@ -1,4 +1,4 @@
-from bot.api.api_models import SubjectDto, UserRequestDto
+from bot.api.api_models import SubjectDto, UserRequestDto, Role, ItemsDto
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.bot_token import bot
 from bot.api.clients.subject_client import SubjectClient
@@ -9,20 +9,20 @@ from bot.i18n.i18n import t
 from bot.exception_handler import log_exception
 
 
-def get_subjects(user_id: int, role: Literal["tutor", "student"], locale: str):
-    request = SubjectClient.get_users_subjects(user_id=user_id, role=role)
+def get_subjects(user_id: int, role: Literal[Role.Tutor, Role.Student], locale: str):
+    request = SubjectClient.get_users_subjects(user_id, role, False)
 
     if not request.ok:
         log_exception(user_id, get_subjects, api_error=True)
         return
 
-    response_data = [SubjectDto(**subject) for subject in request.json()]
+    response_data: ItemsDto[SubjectDto] = ItemsDto[SubjectDto](**request.json())
 
-    if not len(response_data):
+    if not response_data.items:
         bot.send_message(chat_id=user_id, text=t(user_id, "YouHaveNoCourses", locale), disable_notification=True)
         return
 
-    markup = InlineKeyboardMarkupCreator.subjects_markup(courses=response_data, role=role.capitalize())
+    markup = InlineKeyboardMarkupCreator.subjects_markup(courses=response_data.items, role=role.capitalize())
 
     bot.send_message(chat_id=user_id, text=t(user_id, "ChooseSubject", locale),
                      disable_notification=True, reply_markup=markup)
@@ -35,34 +35,31 @@ def role_requests(user_id: int, role: str, locale: str):
         log_exception(user_id, role_requests, api_error=True)
         return
 
-    if not request.json():
+    response_data: ItemsDto[UserRequestDto] = ItemsDto[UserRequestDto](**request.json())
+
+    if not response_data.items:
         bot.send_message(chat_id=user_id, text=t(user_id, "NoRequests", locale), disable_notification=True)
         return
 
-    response_data: list[UserRequestDto] = [UserRequestDto(**item) for item in request.json()]
-    markup = InlineKeyboardMarkupCreator.requests_markup(response_data, locale)
+    markup = InlineKeyboardMarkupCreator.requests_markup(response_data.items, locale)
 
     bot.send_message(chat_id=user_id, text=t(user_id, "AllRequests", locale), disable_notification=True, reply_markup=markup)
 
 
 def send_available_subjects(user_id: int, locale: str):
-    request = SubjectClient.get_available_subjects(user_id=user_id, role="student")
+    request = SubjectClient.get_users_subjects(user_id, Role.Student, True)
 
     if not request.ok:
         log_exception(user_id, send_available_subjects, api_error=True)
         return
 
-    if not len(request.json()):
+    response_data: ItemsDto[SubjectDto] = ItemsDto[SubjectDto](**request.json())
+
+    if not response_data.items:
         bot.send_message(chat_id=user_id, text=t(user_id, "NoAvailableSubjects", locale), disable_notification=True)
         return
 
-    response_data = [SubjectDto(**s) for s in request.json()]
-
-    if not len(response_data):
-        bot.send_message(chat_id=user_id, text=t(user_id, "NoAvailableSubjects", locale), disable_notification=True)
-        return
-
-    markup = InlineKeyboardMarkupCreator.sub_course_markup(courses=response_data)
+    markup = InlineKeyboardMarkupCreator.sub_course_markup(courses=response_data.items)
 
     bot.send_message(chat_id=user_id, text=t(user_id, "ChooseSubjectToLearn", locale),
                      disable_notification=True, reply_markup=markup)
