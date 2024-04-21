@@ -1,6 +1,6 @@
 from typing import Literal, List
 from telebot.types import InputTextMessageContent, InlineQuery, InlineQueryResultArticle
-from bot.api.api_models import Role, PrivateCourseInlineDto, TutorCourseInlineDto
+from bot.api.api_models import Role, PrivateCourseInlineDto, TutorCourseInlineDto, ItemsDto
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.api.clients.tutor_course_client import TutorCourseClient
@@ -66,7 +66,11 @@ def subscribe_course(chat_id: int, subject: str, inline_query_id: str, locale: s
             log_exception(chat_id, query_text, api_error=True)
             return
 
-        response_data = [TutorCourseInlineDto(**c) for c in request.json()]
+        response_data = ItemsDto[TutorCourseInlineDto](**request.json())
+
+        if not response_data.items:
+            bot.send_message(chat_id=chat_id, text=t(chat_id, "NoCoursesFound", locale), disable_notification=True)
+            return
 
         courses = [
             InlineQueryResultArticle(
@@ -78,7 +82,7 @@ def subscribe_course(chat_id: int, subject: str, inline_query_id: str, locale: s
                                    tutor=i.tutor_name, price=f"{i.price}$")
                 ),
                 reply_markup=InlineKeyboardMarkupCreator.subscribe_course_markup(i.id, chat_id, locale)
-            ) for i in response_data
+            ) for i in response_data.items
         ]
 
         bot.answer_inline_query(inline_query_id=inline_query_id, results=courses, cache_time=0)
@@ -96,13 +100,13 @@ def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal[Rol
             log_exception(chat_id, query_text, api_error=True)
             return
 
-        if not request.json():
+        response_data = ItemsDto[PrivateCourseInlineDto](**request.json())
+
+        if not response_data.items:
             bot.send_message(chat_id=chat_id, text=t(chat_id, "NoCoursesFound", locale), disable_notification=True)
             return
 
-        response_data = [PrivateCourseInlineDto(**c) for c in request.json()]
-
-        courses = create_inline_query_courses(chat_id, role, response_data, locale)
+        courses = create_inline_query_courses(chat_id, role, response_data.items, locale)
 
         bot.answer_inline_query(inline_query_id=query.id, results=courses, cache_time=0)
     except Exception as e:

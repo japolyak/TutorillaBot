@@ -1,5 +1,4 @@
 from telebot.types import CallbackQuery, Message
-from bot.api.clients.private_course_client import PrivateCourseClient
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.handlers.shared import get_subjects, next_stepper

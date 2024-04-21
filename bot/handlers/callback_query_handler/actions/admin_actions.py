@@ -3,7 +3,7 @@ from bot.bot_token import bot
 from bot.handlers.shared import role_requests
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.api.clients.admin_client import AdminClient
-from bot.api.api_models import UserRequestDto, UserDto, Role
+from bot.api.api_models import UserRequestDto, UserDto
 from bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from bot.redis.redis_client import r
 from bot.exception_handler import log_exception
@@ -27,17 +27,15 @@ class AdminActions:
 
             role_request: UserRequestDto = UserRequestDto(**request.json())
 
-            role: Role | None = None
+            bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id)
 
-            if role_request.tutor_role:
-                role = Role.Tutor
-            elif role_request.student_role:
-                role = Role.Student
+            role = role_request.user_role
 
-            markup = InlineKeyboardMarkupCreator.request_decision_markup(role_request.user.id, role, locale)
+            markup = InlineKeyboardMarkupCreator.request_decision_markup(role_request.user_id, role, locale)
             bot.send_message(chat_id=chat_id,
-                             text=f"Role\n{role_request.user.first_name} {role_request.user.last_name}"
-                                  f"\n{role_request.user.email}",
+                             text=f"Role - {role}"
+                                  f"\n{role_request.user_first_name} {role_request.user_last_name}"
+                                  f"\n{role_request.user_email}",
                              disable_notification=True,
                              reply_markup=markup)
 

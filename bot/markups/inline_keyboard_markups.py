@@ -162,7 +162,8 @@ class InlineKeyboardMarkupCreator:
         markup = InlineKeyboardMarkup()
 
         [markup.add(
-            InlineKeyboardButton(text=f"{i.id}", callback_data=f"{CallBackPrefix.RoleRequest} {i.id} {locale}")
+            InlineKeyboardButton(text=f"{i.user_first_name} {i.user_last_name} - {i.id}",
+                                 callback_data=f"{CallBackPrefix.RoleRequest} {i.id} {locale}")
         ) for i in requests]
 
         return markup
