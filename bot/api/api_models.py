@@ -61,11 +61,24 @@ class TutorCourseDto(BaseModel):
     price: int
 
 
+class TutorCourseInlineDto(BaseModel):
+    id: int
+    tutor_name: str
+    subject_name: str
+    price: int
+
+
 class PrivateCourseDto(BaseModel):
     id: int
     student: UserDto
     course: TutorCourseDto
     price: int
+
+
+class PrivateCourseInlineDto(BaseModel):
+    id: int
+    person_name: str
+    subject_name: str
 
 
 class SourceDto(BaseModel):

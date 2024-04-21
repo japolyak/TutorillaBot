@@ -1,6 +1,6 @@
 from typing import Literal, List
 from telebot.types import InputTextMessageContent, InlineQuery, InlineQueryResultArticle
-from bot.api.api_models import TutorCourseDto, PrivateCourseDto, Role
+from bot.api.api_models import Role, PrivateCourseInlineDto, TutorCourseInlineDto
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.api.clients.tutor_course_client import TutorCourseClient
@@ -66,16 +66,16 @@ def subscribe_course(chat_id: int, subject: str, inline_query_id: str, locale: s
             log_exception(chat_id, query_text, api_error=True)
             return
 
-        response_data = [TutorCourseDto(**c) for c in request.json()]
+        response_data = [TutorCourseInlineDto(**c) for c in request.json()]
 
         courses = [
             InlineQueryResultArticle(
                 id=i.id,
-                title=f"{i.subject.name} {i.price}$",
-                description=f"{i.tutor.first_name}",
+                title=f"{i.subject_name} {i.price}$",
+                description=f"{i.tutor_name}",
                 input_message_content=InputTextMessageContent(
-                    message_text=t(chat_id, "SubscribeCourse", locale, subject=i.subject.name,
-                                   tutor=i.tutor.first_name, price=f"{i.price}$")
+                    message_text=t(chat_id, "SubscribeCourse", locale, subject=i.subject_name,
+                                   tutor=i.tutor_name, price=f"{i.price}$")
                 ),
                 reply_markup=InlineKeyboardMarkupCreator.subscribe_course_markup(i.id, chat_id, locale)
             ) for i in response_data
@@ -90,11 +90,7 @@ def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal[Rol
     chat_id = query.from_user.id
 
     try:
-        request = PrivateCourseClient.get_private_courses_by_course_name(
-            user_id=chat_id,
-            subject_name=subject_name,
-            role=role
-        )
+        request = PrivateCourseClient.get_private_courses_by_course_name(chat_id, subject_name, role)
 
         if not request.ok:
             log_exception(chat_id, query_text, api_error=True)
@@ -104,7 +100,7 @@ def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal[Rol
             bot.send_message(chat_id=chat_id, text=t(chat_id, "NoCoursesFound", locale), disable_notification=True)
             return
 
-        response_data = [PrivateCourseDto(**c) for c in request.json()]
+        response_data = [PrivateCourseInlineDto(**c) for c in request.json()]
 
         courses = create_inline_query_courses(chat_id, role, response_data, locale)
 
@@ -113,17 +109,17 @@ def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal[Rol
         log_exception(chat_id, get_courses_by_role, e)
 
 
-def create_inline_query_courses(chat_id: int, role: Role, payload: List[PrivateCourseDto], locale):
+def create_inline_query_courses(chat_id: int, role: Role, payload: List[PrivateCourseInlineDto], locale):
     return [
         InlineQueryResultArticle(
             id=i.id,
-            title=i.student.first_name if role == Role.Tutor else i.course.tutor.first_name,
-            description=f"{i.course.subject.name}",
+            title=i.person_name,
+            description=f"{i.subject_name}",
             input_message_content=InputTextMessageContent(
                 message_text=t(chat_id, "SubjectAndRoleInCourse", locale,
-                               subject=i.course.subject.name,
+                               subject=i.subject_name,
                                role=role.capitalize(),
-                               name=i.student.first_name if role == Role.Tutor else i.course.tutor.first_name)
+                               name=i.person_name)
             ),
             reply_markup=InlineKeyboardMarkupCreator.private_course_markup(i.id, role, locale, chat_id)
         ) for i in payload
