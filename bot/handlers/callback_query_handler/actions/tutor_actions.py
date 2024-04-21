@@ -1,5 +1,4 @@
 from telebot.types import CallbackQuery, Message
-from bot.api.clients.private_course_client import PrivateCourseClient
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.handlers.shared import get_subjects, next_stepper
@@ -31,12 +30,6 @@ class TutorActions:
 
         try:
             private_course_id, inline_message_id, role, locale = callback_data
-
-            request = PrivateCourseClient.get_private_course(user_id=chat_id, private_course_id=private_course_id)
-
-            if not request.ok:
-                log_exception(chat_id, cls.back_to_private_course, api_error=True)
-                return
 
             markup = InlineKeyboardMarkupCreator.private_course_markup(private_course_id, role, locale, chat_id)
             bot.edit_message_reply_markup(inline_message_id=inline_message_id, reply_markup=markup)

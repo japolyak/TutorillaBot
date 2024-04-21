@@ -5,6 +5,12 @@ Before running Bot it's necessary to change the next features in `BotFather` in 
 * `/setprivacy` - change from ENABLED to DISABLED
 * `/setinline` - enable inline queries
 
+## Code style
+
+For Classes, Enum and `i18n` dictionaries keys used `PascalCase`.
+
+For functions, methods, variables, and arguments used `snake_case`.
+
 ## i18n
 
 For each new language it's necessary to:

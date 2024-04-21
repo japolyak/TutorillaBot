@@ -5,7 +5,7 @@ from bot.redis.redis_client import r
 from bot.i18n.i18n import t
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from bot.api.clients.registration_client import RegistrationClient
-from bot.enums import Role
+from bot.api.api_models import Role
 from bot.handlers.callback_query_handler.callback_prefix import CallBackPrefix
 import json
 from requests import Response
