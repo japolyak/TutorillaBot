@@ -2,7 +2,7 @@ from telebot.types import CallbackQuery
 from bot.api.clients.private_course_client import PrivateCourseClient
 from bot.bot_token import bot
 from bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
-from bot.api.api_models import PaginatedList, PrivateClassBaseDto
+from bot.api.api_models import PaginatedList, PrivateClassDto
 from bot.exception_handler import log_exception
 from typing import Any, List
 from bot.i18n.i18n import t
@@ -18,14 +18,14 @@ class SharedActions:
 
             inline_message_id = call.inline_message_id
 
-            request = PrivateCourseClient.get_classes(private_course_id=private_course_id, role=role)
+            request = PrivateCourseClient.get_classes(private_course_id=private_course_id, role=role, user_id=chat_id)
 
             if not request.ok:
                 log_exception(chat_id, SharedActions.get_course_classes)
 
                 return
 
-            request_data: PaginatedList[PrivateClassBaseDto] = PaginatedList[PrivateClassBaseDto](**request.json())
+            request_data = PaginatedList[PrivateClassDto](**request.json())
 
             if not len(request_data.items):
                 bot.send_message(chat_id=chat_id, text=t(chat_id, "YouDontHaveClasses", locale), disable_notification=True)
@@ -46,13 +46,13 @@ class SharedActions:
         try:
             page, private_course_id, role, inline_message_id, locale = callback_data
 
-            request = PrivateCourseClient.get_classes(private_course_id, role, page)
+            request = PrivateCourseClient.get_classes(private_course_id, role, chat_id,  page)
 
             if not request.ok:
                 log_exception(chat_id, SharedActions.load_page)
                 return
 
-            rsp_data: PaginatedList[PrivateClassBaseDto] = PaginatedList[PrivateClassBaseDto](**request.json())
+            rsp_data = PaginatedList[PrivateClassDto](**request.json())
 
             markup = InlineKeyboardMarkupCreator.course_classes_markup(rsp_data, private_course_id,
                                                                        role, inline_message_id, locale, chat_id)
