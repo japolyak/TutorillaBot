@@ -1,6 +1,6 @@
 from typing import Literal, List
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
-from bot.api.api_models import PaginatedList, PrivateClassBaseDto, SubjectDto, UserRequestDto, Role
+from bot.api.api_models import PaginatedList, SubjectDto, UserRequestDto, Role, PrivateClassDto, ClassStatus
 from bot.config import web_app_link
 from bot.enums import Emoji
 from bot.handlers.callback_query_handler.callback_prefix import CallBackPrefix
@@ -118,18 +118,23 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def course_classes_markup(paginated_list: PaginatedList[PrivateClassBaseDto], go_back_id: int, role: str,
+    def course_classes_markup(paginated_list: PaginatedList[PrivateClassDto], go_back_id: int, role: str,
                               inline_message_id: str, locale: str, user_id: int) -> InlineKeyboardMarkup:
         markup = CustomInlineKeyboardMarkup()
 
         for i in paginated_list.items:
             callback_data = f"{CallBackPrefix.PrivateClass} {i.id} {locale}"
+            button_date = i.schedule_datetime.strftime("%d-%m-%Y %H:%M")
 
-            markup.add(
-                InlineKeyboardButton(
-                    text=f"{Emoji.ClassPaid.value if i.is_paid else (Emoji.ClassOccurred.value if i.has_occurred else Emoji.ClassScheduled.value)} {i.schedule_datetime.strftime("%d-%m-%Y %H:%M")}",
-                    callback_data=callback_data)
-            )
+            match i.status:
+                case ClassStatus.Paid:
+                    button_text = f"{Emoji.ClassPaid.value} {button_date}"
+                case ClassStatus.Occurred:
+                    button_text = f"{Emoji.ClassOccurred.value} {button_date}"
+                case _:
+                    button_text = f"{Emoji.ClassScheduled.value} {button_date}"
+
+            markup.add(InlineKeyboardButton(text=button_text, callback_data=callback_data))
 
         back_btn_text = f"{Emoji.BackArrow.value}"
         current_btn_text = f"{paginated_list.current_page}/{paginated_list.pages}"

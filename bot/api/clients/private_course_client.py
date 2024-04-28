@@ -6,8 +6,8 @@ class PrivateCourseClient:
     __link = f"{api_link}/private-courses"
 
     @classmethod
-    def get_classes(cls, private_course_id: int, role: str, page: int = 1):
-        url = f"{cls.__link}/{private_course_id}/classes/?role={role}&page={page}"
+    def get_classes(cls, private_course_id: int, role: str, user_id: int, page: int = 1):
+        url = f"{cls.__link}/{private_course_id}/classes/?role={role}&page={page}&user_id={user_id}"
         r = requests.get(url)
 
         return r
