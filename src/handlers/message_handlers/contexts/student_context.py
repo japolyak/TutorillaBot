@@ -5,7 +5,7 @@ from src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from src.handlers.shared import get_subjects
 from src.exception_handler import log_exception
 from src.i18n.i18n import t
-from src.redis.redis_client import r
+from src.redis_service.redis_client import r
 from src.handlers.message_handlers.contexts.i_context_base import IContextBase
 
 

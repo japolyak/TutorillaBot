@@ -1,4 +1,4 @@
-from src.redis.redis_client import r
+from src.redis_service.redis_client import r
 from src.api.api_models import UserDto
 
 

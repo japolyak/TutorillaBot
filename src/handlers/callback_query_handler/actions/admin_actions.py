@@ -5,7 +5,7 @@ from src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.api.clients.admin_client import AdminClient
 from src.api.api_models import UserRequestDto, UserDto
 from src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
-from src.redis.redis_client import r
+from src.redis_service.redis_client import r
 from src.exception_handler import log_exception
 from typing import Any, List
 from src.i18n.i18n import t

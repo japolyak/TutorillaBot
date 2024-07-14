@@ -25,8 +25,8 @@ if webhook_enabled:
     init_webhook()
 
 if __name__ == '__main__':
+    # Does not run on production
     if webhook_enabled:
-        # Does not run on production
         init_webhook()
         uvicorn.run(app, host="0.0.0.0", port=app_port)
     else:

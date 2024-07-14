@@ -1,6 +1,6 @@
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from telebot import service_utils
-from src.redis.redis_client import r
+from src.redis_service.redis_client import r
 from typing import List
 from src.i18n.i18n import t
 

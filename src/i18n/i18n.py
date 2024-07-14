@@ -1,6 +1,6 @@
 from string import Template
 from src.i18n.locales.en_US import en
-from src.redis.redis_client import r
+from src.redis_service.redis_client import r
 
 
 locales = {

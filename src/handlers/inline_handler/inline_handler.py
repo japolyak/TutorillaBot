@@ -7,7 +7,7 @@ from src.api.clients.tutor_course_client import TutorCourseClient
 from src.api.clients.private_course_client import PrivateCourseClient
 from src.exception_handler import log_exception
 from src.i18n.i18n import t
-from src.redis.redis_client import r
+from src.redis_service.redis_client import r
 
 
 def inline_handler_guard(query: InlineQuery):

@@ -1,13 +1,13 @@
 from telebot.types import Message
 from src.bot_token import bot
-from src.redis.redis_client import r
+from src.redis_service.redis_client import r
 from src.i18n.i18n import t
 from src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from src.api.clients.registration_client import RegistrationClient
 from src.validators import Validator
 from src.api.api_models import UserDto
-from src.redis.redis_user_management import add_user
+from src.redis_service.redis_user_management import add_user
 from src.exception_handler import log_exception
 from src.handlers.shared import next_stepper, register_next_step
 

@@ -1,7 +1,7 @@
 from telebot.types import ReplyKeyboardRemove, CallbackQuery
 from typing import List, Any
 from src.bot_token import bot
-from src.redis.redis_client import r
+from src.redis_service.redis_client import r
 from src.i18n.i18n import t
 from src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.api.clients.registration_client import RegistrationClient

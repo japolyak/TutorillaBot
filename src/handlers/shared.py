@@ -4,7 +4,7 @@ from src.bot_token import bot
 from src.api.clients.subject_client import SubjectClient
 from typing import Literal, Callable
 from src.api.clients.admin_client import AdminClient
-from src.redis.redis_client import r
+from src.redis_service.redis_client import r
 from src.i18n.i18n import t
 from src.exception_handler import log_exception
 
@@ -101,10 +101,10 @@ def register_next_step(chat_id: int, func: Callable, field_to_save: str | None, 
     :param func: The callback function which next new message arrives.
     :type func: :obj:`Callable[[telebot.types.Message], None]`
 
-    :param field_to_save: The field to save in redis.
+    :param field_to_save: The field to save in redis_service.
     :type field_to_save: :obj:`str`
 
-    :param data: The data to save in redis.
+    :param data: The data to save in redis_service.
     :type data: :obj:`str`
 
     :param msg_text: The text of the message.
