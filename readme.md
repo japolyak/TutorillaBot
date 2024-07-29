@@ -26,7 +26,7 @@ Telegram related variables:
 * `BOT_TOKEN` - bot token
 * `WEB_APP_LINK` - link to the web app
 * `USE_WEBHOOK` - use webhook or polling - `True` or `False` values. Not required in production.
-* `WEBHOOK_URL` - webhook url
+* `WEBHOOK_URL` - webhook url - url of deployed app.
 
 Redis related variables:
 * `REDIS_USERNAME` - redis username
@@ -39,7 +39,7 @@ Redis related variables:
 * `PascalCase` - Classes, Enum and `i18n` dictionaries keys
 * `snake_case` - functions, methods, variables, and arguments
 
-## i18n
+## Internalization
 
 For each new language it's necessary to:
 * add a new file in `i18n` folder.

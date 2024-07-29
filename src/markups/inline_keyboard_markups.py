@@ -89,31 +89,30 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def private_course_markup(private_course_id: int, role: Literal[Role.Tutor, Role.Student], locale, user_id: int) -> InlineKeyboardMarkup:
+    def private_course_markup(
+            private_course_id: int,
+            role: Literal[Role.Tutor, Role.Student],
+            locale,
+            user_id: int,
+            hide_all_classes_btn = False
+    ) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
         # TODO - think about adding role to an url
         plan_class_btn = InlineKeyboardButton(text=t(user_id, "PlanClassIKBtn", locale),
                                               web_app=WebAppInfo(
                                                   url=f"{web_app_link}/private-course/{private_course_id}"
                                               ))
+        markup.add(plan_class_btn)
 
-        all_classes_btn = InlineKeyboardButton(text=t(user_id, "AllClassesIKBtn", locale),
-                                               callback_data=f"{CallBackPrefix.CourseClasses} {private_course_id} {role} {locale}")
+        if not hide_all_classes_btn:
+            all_classes_btn = InlineKeyboardButton(text=t(user_id, "AllClassesIKBtn", locale),
+                                                   callback_data=f"{CallBackPrefix.CourseClasses} {private_course_id} {role} {locale}")
+            markup.add(all_classes_btn)
+
         back_btn = InlineKeyboardButton(text=t(user_id, "BackIKBtn", locale),
                                         callback_data=f"{CallBackPrefix.BackToChoosePrivateCourse} {role} {locale}")
 
-        markup.add(plan_class_btn).add(all_classes_btn).add(back_btn)
-
-        return markup
-
-    @staticmethod
-    def test_markup() -> InlineKeyboardMarkup:
-        markup = InlineKeyboardMarkup()
-
-        test_btn = InlineKeyboardButton("Test", callback_data="Test")
-        back_btn = InlineKeyboardButton("Back", callback_data="Back")
-
-        markup.add(test_btn).add(back_btn)
+        markup.add(back_btn)
 
         return markup
 

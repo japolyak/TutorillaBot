@@ -93,6 +93,7 @@ class PrivateCourseInlineDto(BaseModel):
     id: int
     person_name: str
     subject_name: str
+    number_of_classes: int
 
 
 class SourceDto(BaseModel):

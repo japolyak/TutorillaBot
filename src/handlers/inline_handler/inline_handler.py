@@ -125,6 +125,6 @@ def create_inline_query_courses(chat_id: int, role: Role, payload: List[PrivateC
                                role=role.capitalize(),
                                name=i.person_name)
             ),
-            reply_markup=InlineKeyboardMarkupCreator.private_course_markup(i.id, role, locale, chat_id)
+            reply_markup=InlineKeyboardMarkupCreator.private_course_markup(i.id, role, locale, chat_id, i.number_of_classes > 0)
         ) for i in payload
     ]
