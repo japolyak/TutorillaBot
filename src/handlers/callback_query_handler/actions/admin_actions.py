@@ -20,7 +20,8 @@ class AdminActions:
         request = AdminClient.role_request(role_request_id)
 
         if not request.ok:
-            log_exception(chat_id, cls.open_user_request, api_error=True)
+            bot.send_message(chat_id=chat_id, text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
+                             disable_notification=True)
             return
 
         role_request: UserRequestDto = UserRequestDto(**request.json())
@@ -47,7 +48,9 @@ class AdminActions:
         request = AdminClient.accept_user_request(user_id=user_id, role=role)
 
         if not request.ok:
-            log_exception(chat_id, cls.accept_user_request, api_error=True)
+            bot.send_message(chat_id=chat_id,
+                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
+                             disable_notification=True)
             return
 
         user: UserDto = UserDto(**request.json())
@@ -71,7 +74,9 @@ class AdminActions:
         request = AdminClient.decline_user_request(user_id)
 
         if not request.ok:
-            log_exception(chat_id, cls.decline_user_request, api_error=True)
+            bot.send_message(chat_id=chat_id,
+                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
+                             disable_notification=True)
             return
 
         bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id)

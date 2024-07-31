@@ -12,7 +12,9 @@ def get_subjects(user_id: int, role: Literal[Role.Tutor, Role.Student], locale: 
     request = SubjectClient.get_users_subjects(user_id, role, False)
 
     if not request.ok:
-        log_exception(user_id, get_subjects, api_error=True)
+        bot.send_message(chat_id=user_id,
+                         text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
+                         disable_notification=True)
         return
 
     response_data: ItemsDto[SubjectDto] = ItemsDto[SubjectDto](**request.json())
@@ -31,7 +33,9 @@ def role_requests(user_id: int, role: str, locale: str):
     request = AdminClient.role_requests(role=role)
 
     if not request.ok:
-        log_exception(user_id, role_requests, api_error=True)
+        bot.send_message(chat_id=user_id,
+                         text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
+                         disable_notification=True)
         return
 
     response_data: ItemsDto[UserRequestDto] = ItemsDto[UserRequestDto](**request.json())
@@ -49,7 +53,9 @@ def send_available_subjects(user_id: int, locale: str):
     request = SubjectClient.get_users_subjects(user_id, Role.Student, True)
 
     if not request.ok:
-        log_exception(user_id, send_available_subjects, api_error=True)
+        bot.send_message(chat_id=user_id,
+                         text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
+                         disable_notification=True)
         return
 
     response_data: ItemsDto[SubjectDto] = ItemsDto[SubjectDto](**request.json())

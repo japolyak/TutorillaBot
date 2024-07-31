@@ -17,7 +17,9 @@ class StudentActions:
         request = PrivateCourseClient.enroll_in_course(user_id=chat_id, private_course_id=course_id)
 
         if not request.ok:
-            log_exception(chat_id, cls.subscribe_course_callback, api_error=True)
+            bot.send_message(chat_id=chat_id,
+                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
+                             disable_notification=True)
             return
 
         bot.edit_message_reply_markup(inline_message_id=call.inline_message_id, reply_markup=None)

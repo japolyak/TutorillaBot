@@ -40,7 +40,9 @@ class TutorContext(IContextBase):
         request = SubjectClient.get_users_subjects(chat_id, Role.Tutor, True)
 
         if not request.ok:
-            log_exception(chat_id, TutorContext.add_course, api_error=True)
+            bot.send_message(chat_id=chat_id,
+                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
+                             disable_notification=True)
             return
 
         locale = r.hget(chat_id, "locale")

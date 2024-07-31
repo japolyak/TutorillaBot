@@ -20,13 +20,6 @@ class PrivateCourseClient:
         return r
 
     @classmethod
-    def get_private_course(cls, user_id: int, private_course_id: int):
-        url = f"{cls.__link}/{private_course_id}/users/{user_id}/"
-        r = requests.get(url)
-
-        return r
-
-    @classmethod
     def enroll_in_course(cls, user_id: int, private_course_id: int):
         url = f"{cls.__link}/{private_course_id}/users/{user_id}/"
         r = requests.post(url)

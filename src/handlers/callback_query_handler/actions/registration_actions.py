@@ -46,7 +46,6 @@ class RegistrationActions:
 
             [r.hdel(chat_id, x) for x in fields_to_pop]
 
-            log_exception(chat_id, RegistrationActions.registration_time_zone)
             bot.send_message(chat_id=chat_id,
                              text=t(chat_id, "SomethingWentWrong", locale),
                              disable_notification=True)
@@ -73,7 +72,9 @@ class RegistrationActions:
             request = RegistrationClient.apply_for_role(chat_id, Role.Student)
 
         if not request.ok:
-            log_exception(chat_id, RegistrationActions.select_role, api_error=True)
+            bot.send_message(chat_id=chat_id,
+                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
+                             disable_notification=True)
 
             return
 

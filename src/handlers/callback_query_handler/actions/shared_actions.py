@@ -19,7 +19,9 @@ class SharedActions:
         request = PrivateCourseClient.get_classes(private_course_id=private_course_id, role=role, user_id=chat_id)
 
         if not request.ok:
-            log_exception(chat_id, SharedActions.get_course_classes)
+            bot.send_message(chat_id=chat_id,
+                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
+                             disable_notification=True)
 
             return
 
@@ -43,7 +45,9 @@ class SharedActions:
         request = PrivateCourseClient.get_classes(private_course_id, role, chat_id,  page)
 
         if not request.ok:
-            log_exception(chat_id, SharedActions.load_page)
+            bot.send_message(chat_id=chat_id,
+                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
+                             disable_notification=True)
             return
 
         rsp_data = PaginatedList[PrivateClassDto](**request.json())

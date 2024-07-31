@@ -57,7 +57,9 @@ class TutorActions:
         request = TutorCourseClient.add_course(user_id=chat_id, payload=payload)
 
         if not request.ok:
-            log_exception(chat_id, cls.__add_course_price, api_error=True)
+            bot.send_message(chat_id=chat_id,
+                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
+                             disable_notification=True)
             return
 
         bot.send_message(chat_id=chat_id, text=t(chat_id, "CourseAddedSuccessfully", locale),
