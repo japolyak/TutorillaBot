@@ -1,7 +1,6 @@
 from telebot.types import Message
 from src.bot_token import bot
 from src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
-from src.exception_handler import log_exception
 from src.i18n.i18n import t
 from src.redis_service.redis_client import r
 from src.handlers.message_handlers.contexts.i_context_base import IContextBase
@@ -20,11 +19,7 @@ class MainViewContext(IContextBase):
     @staticmethod
     @__guard
     def main_menu(chat_id: int):
-        try:
-            locale = r.hget(chat_id, "locale")
-            markup = ReplyKeyboardMarkupCreator.main_menu_markup(chat_id, locale)
-            bot.send_message(chat_id=chat_id, text=t(chat_id, "MainMenu", locale),
-                             disable_notification=True, reply_markup=markup)
-
-        except Exception as e:
-            log_exception(chat_id, MainViewContext.main_menu, e)
+        locale = r.hget(chat_id, "locale")
+        markup = ReplyKeyboardMarkupCreator.main_menu_markup(chat_id, locale)
+        bot.send_message(chat_id=chat_id, text=t(chat_id, "MainMenu", locale),
+                         disable_notification=True, reply_markup=markup)

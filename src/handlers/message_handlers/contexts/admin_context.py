@@ -1,7 +1,6 @@
 from telebot.types import Message
 from src.bot_token import bot
 from src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
-from src.exception_handler import log_exception
 from src.handlers.shared import role_requests
 from src.i18n.i18n import t
 from src.redis_service.redis_client import r
@@ -21,33 +20,21 @@ class AdminContext(IContextBase):
     @staticmethod
     @__guard
     def show_admin_panel(chat_id: int):
-        try:
-            locale = r.hget(chat_id, "locale")
-            markup = ReplyKeyboardMarkupCreator.admin_panel_markup(chat_id, locale)
-            bot.send_message(chat_id=chat_id,
-                             text=t(chat_id, "AdminPanelIsHere", locale),
-                             disable_notification=True,
-                             reply_markup=markup)
-
-        except Exception as e:
-            log_exception(chat_id, AdminContext.show_admin_panel, e)
+        locale = r.hget(chat_id, "locale")
+        markup = ReplyKeyboardMarkupCreator.admin_panel_markup(chat_id, locale)
+        bot.send_message(chat_id=chat_id,
+                         text=t(chat_id, "AdminPanelIsHere", locale),
+                         disable_notification=True,
+                         reply_markup=markup)
 
     @staticmethod
     @__guard
     def get_tutor_role_requests(chat_id: int):
-        try:
-            locale = r.hget(chat_id, "locale")
-            role_requests(chat_id, "tutor", locale)
-
-        except Exception as e:
-            log_exception(chat_id, AdminContext.get_tutor_role_requests, e)
+        locale = r.hget(chat_id, "locale")
+        role_requests(chat_id, "tutor", locale)
 
     @staticmethod
     @__guard
     def get_student_role_requests(chat_id: int):
-        try:
-            locale = r.hget(chat_id, "locale")
-            role_requests(chat_id, "student", locale)
-
-        except Exception as e:
-            log_exception(chat_id, AdminContext.get_student_role_requests, e)
+        locale = r.hget(chat_id, "locale")
+        role_requests(chat_id, "student", locale)

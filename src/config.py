@@ -13,6 +13,7 @@ token = os.getenv("BOT_TOKEN", "")
 webhook_enabled = os.getenv("USE_WEBHOOK", "True") == "True"
 webhook_url = os.getenv("WEBHOOK_URL", "")
 web_app_link = os.getenv("WEB_APP_LINK", "")
+dev_tg_id = int(os.getenv("DEV_TG_ID", 0))
 
 # REDIS
 redis_host = os.getenv("REDIS_HOST", "localhost")

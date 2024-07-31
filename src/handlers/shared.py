@@ -6,7 +6,6 @@ from typing import Literal, Callable
 from src.api.clients.admin_client import AdminClient
 from src.redis_service.redis_client import r
 from src.i18n.i18n import t
-from src.exception_handler import log_exception
 
 
 def get_subjects(user_id: int, role: Literal[Role.Tutor, Role.Student], locale: str):

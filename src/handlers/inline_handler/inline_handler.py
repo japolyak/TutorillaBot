@@ -5,7 +5,6 @@ from src.bot_token import bot
 from src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.api.clients.tutor_course_client import TutorCourseClient
 from src.api.clients.private_course_client import PrivateCourseClient
-from src.exception_handler import log_exception
 from src.i18n.i18n import t
 from src.redis_service.redis_client import r
 
@@ -59,58 +58,52 @@ def query_text(query: InlineQuery):
 
 
 def subscribe_course(chat_id: int, subject: str, inline_query_id: str, locale: str):
-    try:
-        request = TutorCourseClient.course_tutors(user_id=chat_id, subject_name=subject)
+    request = TutorCourseClient.course_tutors(user_id=chat_id, subject_name=subject)
 
-        if not request.ok:
-            log_exception(chat_id, query_text, api_error=True)
-            return
+    if not request.ok:
+        log_exception(chat_id, query_text, api_error=True)
+        return
 
-        response_data = ItemsDto[TutorCourseInlineDto](**request.json())
+    response_data = ItemsDto[TutorCourseInlineDto](**request.json())
 
-        if not response_data.items:
-            bot.send_message(chat_id=chat_id, text=t(chat_id, "NoCoursesFound", locale), disable_notification=True)
-            return
+    if not response_data.items:
+        bot.send_message(chat_id=chat_id, text=t(chat_id, "NoCoursesFound", locale), disable_notification=True)
+        return
 
-        courses = [
-            InlineQueryResultArticle(
-                id=i.id,
-                title=f"{i.subject_name} {i.price}$",
-                description=f"{i.tutor_name}",
-                input_message_content=InputTextMessageContent(
-                    message_text=t(chat_id, "SubscribeCourse", locale, subject=i.subject_name,
-                                   tutor=i.tutor_name, price=f"{i.price}$")
-                ),
-                reply_markup=InlineKeyboardMarkupCreator.subscribe_course_markup(i.id, chat_id, locale)
-            ) for i in response_data.items
-        ]
+    courses = [
+        InlineQueryResultArticle(
+            id=i.id,
+            title=f"{i.subject_name} {i.price}$",
+            description=f"{i.tutor_name}",
+            input_message_content=InputTextMessageContent(
+                message_text=t(chat_id, "SubscribeCourse", locale, subject=i.subject_name,
+                               tutor=i.tutor_name, price=f"{i.price}$")
+            ),
+            reply_markup=InlineKeyboardMarkupCreator.subscribe_course_markup(i.id, chat_id, locale)
+        ) for i in response_data.items
+    ]
 
-        bot.answer_inline_query(inline_query_id=inline_query_id, results=courses, cache_time=0)
-    except Exception as e:
-        log_exception(chat_id, subscribe_course, e)
+    bot.answer_inline_query(inline_query_id=inline_query_id, results=courses, cache_time=0)
 
 
 def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal[Role.Tutor, Role.Student], locale: str):
     chat_id = query.from_user.id
 
-    try:
-        request = PrivateCourseClient.get_private_courses_by_course_name(chat_id, subject_name, role)
+    request = PrivateCourseClient.get_private_courses_by_course_name(chat_id, subject_name, role)
 
-        if not request.ok:
-            log_exception(chat_id, query_text, api_error=True)
-            return
+    if not request.ok:
+        log_exception(chat_id, query_text, api_error=True)
+        return
 
-        response_data = ItemsDto[PrivateCourseInlineDto](**request.json())
+    response_data = ItemsDto[PrivateCourseInlineDto](**request.json())
 
-        if not response_data.items:
-            bot.send_message(chat_id=chat_id, text=t(chat_id, "NoCoursesFound", locale), disable_notification=True)
-            return
+    if not response_data.items:
+        bot.send_message(chat_id=chat_id, text=t(chat_id, "NoCoursesFound", locale), disable_notification=True)
+        return
 
-        courses = create_inline_query_courses(chat_id, role, response_data.items, locale)
+    courses = create_inline_query_courses(chat_id, role, response_data.items, locale)
 
-        bot.answer_inline_query(inline_query_id=query.id, results=courses, cache_time=0)
-    except Exception as e:
-        log_exception(chat_id, get_courses_by_role, e)
+    bot.answer_inline_query(inline_query_id=query.id, results=courses, cache_time=0)
 
 
 def create_inline_query_courses(chat_id: int, role: Role, payload: List[PrivateCourseInlineDto], locale):
