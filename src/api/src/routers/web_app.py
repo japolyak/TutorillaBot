@@ -1,13 +1,15 @@
 from fastapi import APIRouter, Request, status, Depends
 from sqlalchemy.orm import Session
-from src.functions.telegram_valdiator import init_data_is_valid
-from src.database.crud import user_crud
-from src.database.db_setup import session
-from urllib.parse import parse_qs
 import json
-from src.models import UserDto
-from src.builders.response_builder import ResponseBuilder
-from src.routers.api_enpoints import APIEndpoints
+from urllib.parse import parse_qs
+
+from src.common.models import UserDto
+
+from src.api.src.builders.response_builder import ResponseBuilder
+from src.api.src.database.crud import user_crud
+from src.api.src.database.db_setup import session
+from src.api.src.functions.telegram_valdiator import init_data_is_valid
+from src.api.src.routers.api_enpoints import APIEndpoints
 
 
 router = APIRouter()

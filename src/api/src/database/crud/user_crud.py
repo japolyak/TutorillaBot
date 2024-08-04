@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
-from src.database.models import User, UserRequest
 from typing import Literal
-from src.models import Role
+
+from src.common.models import Role
+
+from src.api.src.database.models import User, UserRequest
 
 
 def get_user(db: Session, user_id: int):

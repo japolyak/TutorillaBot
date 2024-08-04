@@ -1,8 +1,10 @@
-from sqlalchemy.orm import Session
-from src.database.models import UserRequest, User
-from typing import Literal
-from src.models import Role
 from sqlalchemy import case, literal_column
+from sqlalchemy.orm import Session
+from typing import Literal
+
+from src.common.models import Role
+
+from src.api.src.database.models import UserRequest, User
 
 
 def get_users_requests(db: Session, role: Literal[Role.Tutor, Role.Student]):

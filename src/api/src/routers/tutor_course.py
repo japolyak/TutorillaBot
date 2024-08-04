@@ -1,10 +1,12 @@
 from fastapi import status, APIRouter, Depends
-from src.models import TutorCourseDto, NewTutorCourseDto, TutorCourseInlineDto, ItemsDto
-from src.database.crud import tutor_course_crud
 from sqlalchemy.orm import Session
-from src.database.db_setup import session
-from src.builders.response_builder import ResponseBuilder
-from src.routers.api_enpoints import APIEndpoints
+
+from src.common.models import TutorCourseDto, NewTutorCourseDto, TutorCourseInlineDto, ItemsDto
+
+from src.api.src.builders.response_builder import ResponseBuilder
+from src.api.src.database.crud import tutor_course_crud
+from src.api.src.database.db_setup import session
+from src.api.src.routers.api_enpoints import APIEndpoints
 
 
 router = APIRouter()

@@ -1,16 +1,18 @@
-import json
-from typing import Literal
-from sqlalchemy.orm import Session
-from src.database.db_setup import session
 from fastapi import status, APIRouter, Depends
-from src.routers.api_enpoints import APIEndpoints
-from src.database.crud import private_courses_crud
-from src.builders.response_builder import ResponseBuilder
-from src.routers.sql_statement_repository import sql_statements
-from src.functions.time_transformator import transform_class_time
-from src.bot_client.message_sender import send_notification_about_new_class
-from src.models import (PaginatedList, NewClassDto, ClassDto, Role, PrivateCourseInlineDto, ItemsDto,
-                        PrivateClassDto)
+import json
+from sqlalchemy.orm import Session
+from typing import Literal
+
+from src.common.models import (PaginatedList, NewClassDto, ClassDto, Role, PrivateCourseInlineDto, ItemsDto,
+                               PrivateClassDto)
+
+from src.api.src.bot_client.message_sender import send_notification_about_new_class
+from src.api.src.builders.response_builder import ResponseBuilder
+from src.api.src.database.crud import private_courses_crud
+from src.api.src.database.db_setup import session
+from src.api.src.functions.time_transformator import transform_class_time
+from src.api.src.routers.api_enpoints import APIEndpoints
+from src.api.src.routers.sql_statement_repository import sql_statements
 
 
 router = APIRouter()

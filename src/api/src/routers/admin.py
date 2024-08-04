@@ -1,12 +1,14 @@
 from fastapi import status, Depends, APIRouter
-from src.bot_client.message_sender import send_decline_message
-from src.builders.response_builder import ResponseBuilder
-from src.models import UserDto, UserRequestDto, Role, ItemsDto
-from src.database.crud import admin_crud, user_crud
 from sqlalchemy.orm import Session
-from src.database.db_setup import session
 from typing import Literal
-from src.routers.api_enpoints import APIEndpoints
+
+from src.common.models import UserDto, UserRequestDto, Role, ItemsDto
+
+from src.api.src.bot_client.message_sender import send_decline_message
+from src.api.src.builders.response_builder import ResponseBuilder
+from src.api.src.database.crud import admin_crud, user_crud
+from src.api.src.database.db_setup import session
+from src.api.src.routers.api_enpoints import APIEndpoints
 
 
 router = APIRouter()

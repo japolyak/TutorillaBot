@@ -1,9 +1,11 @@
-from src.database.models import TutorCourse, Subject, PrivateCourse, User, PrivateClass
-from src.models import Role, ClassStatus
-from sqlalchemy import asc, func, case, literal_column, select
-from sqlalchemy.orm import Session, joinedload
 from datetime import datetime
+from sqlalchemy import func, case, literal_column, select
+from sqlalchemy.orm import Session, joinedload
 from typing import Literal
+
+from src.common.models import Role, ClassStatus
+
+from src.api.src.database.models import TutorCourse, Subject, PrivateCourse, User, PrivateClass
 
 
 def get_private_course_classes_for_month(db: Session, course_id: int, month: int, year: int):

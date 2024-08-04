@@ -1,13 +1,12 @@
-import logging
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import logging
 
 from src.common.config import allowed_origins
-from .database.db_setup import initialize_database
-
-from router import api_router
 from src.common.logger import configure_logger
+
+from src.api.src.database.db_setup import initialize_database
+from src.api.src.router import api_router
 
 
 log = logging.getLogger(__name__)

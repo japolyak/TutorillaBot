@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
-from src.database.models import TutorCourse, Subject, User
-from src.models import NewTutorCourseDto
+
+from src.common.models import NewTutorCourseDto
+
+from src.api.src.database.models import TutorCourse, Subject, User
 
 
 def add_course(db: Session, user_id: int, course: NewTutorCourseDto):

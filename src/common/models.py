@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Generic, TypeVar
+from typing import List, Generic, TypeVar, Tuple
 from datetime import datetime
 from enum import StrEnum
 
@@ -37,20 +37,26 @@ class ItemsDto(BaseModel, Generic[T]):
 
 
 class UserBaseDto(BaseModel):
-    locale: str
     id: int
     first_name: str
     last_name: str
     email: str
     time_zone: float
+    locale: str
+
+    class Config:
+        from_attributes = True
 
 
 class UserDto(UserBaseDto):
-    normalized_email: str
-    is_active: bool
-    is_tutor: bool
-    is_student: bool
-    is_admin: bool
+    normalized_email: str | None = None
+    is_active: bool | None = None
+    is_tutor: bool | None = None
+    is_student: bool | None = None
+    is_admin: bool | None = None
+
+    class Config:
+        from_attributes = True
 
 
 class UserRequestDto(BaseModel):
@@ -61,10 +67,16 @@ class UserRequestDto(BaseModel):
     user_email: str
     user_role: Role
 
+    class Config:
+        from_attributes = True
+
 
 class SubjectDto(BaseModel):
     id: int
     name: str
+
+    class Config:
+        from_attributes = True
 
 
 class TutorCourseDto(BaseModel):
@@ -74,12 +86,18 @@ class TutorCourseDto(BaseModel):
     is_active: bool
     price: int
 
+    class Config:
+        from_attributes = True
+
 
 class TutorCourseInlineDto(BaseModel):
     id: int
     tutor_name: str
     subject_name: str
     price: int
+
+    class Config:
+        from_attributes = True
 
 
 class PrivateCourseDto(BaseModel):
@@ -88,6 +106,9 @@ class PrivateCourseDto(BaseModel):
     course: TutorCourseDto
     price: int
 
+    class Config:
+        from_attributes = True
+
 
 class PrivateCourseInlineDto(BaseModel):
     id: int
@@ -95,10 +116,40 @@ class PrivateCourseInlineDto(BaseModel):
     subject_name: str
     number_of_classes: int
 
+    @classmethod
+    def from_tuple(cls, values: Tuple[int, str, str, int]):
+        if len(values) != 4:
+            raise ValueError("List must contain exactly two elements: [name, age]")
+
+        return cls(id=values[0], person_name=values[1], subject_name=values[2], number_of_classes=values[3])
+
+    class Config:
+        from_attributes = True
+
 
 class SourceDto(BaseModel):
     title: str
     assignment: str
+
+    class Config:
+        from_attributes = True
+
+
+class NewClassDto(BaseModel):
+    date: datetime
+    sources: List[SourceDto]
+
+    class Config:
+        from_attributes = True
+
+
+class PrivateClassDto(BaseModel):
+    id: int
+    schedule_datetime: datetime
+    status: ClassStatus
+
+    class Config:
+        from_attributes = True
 
 
 class PrivateClassBaseDto(BaseModel):
@@ -109,16 +160,21 @@ class PrivateClassBaseDto(BaseModel):
     has_occurred: bool
     is_paid: bool
 
-
-class PrivateClassDto(BaseModel):
-    id: int
-    schedule_datetime: datetime
-    status: ClassStatus
+    class Config:
+        from_attributes = True
 
 
 class NewTutorCourseDto(BaseModel):
     subject_id: int
     price: int
+
+    class Config:
+        from_attributes = True
+
+
+class ClassDto(BaseModel):
+    date: datetime
+    status: ClassStatus
 
     class Config:
         from_attributes = True

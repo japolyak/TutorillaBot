@@ -1,13 +1,15 @@
-from fastapi import status, Depends, APIRouter
-from src.models import UserDto, UserBaseDto, Role
-from src.database.crud import user_crud
-from sqlalchemy.orm import Session
-from src.database.db_setup import session
-from src.routers.sql_statement_repository import sql_statements
 from datetime import datetime
+from fastapi import status, Depends, APIRouter
+from sqlalchemy.orm import Session
 from typing import Literal
-from src.builders.response_builder import ResponseBuilder
-from src.routers.api_enpoints import APIEndpoints
+
+from src.common.models import UserDto, UserBaseDto, Role
+
+from src.api.src.builders.response_builder import ResponseBuilder
+from src.api.src.database.crud import user_crud
+from src.api.src.database.db_setup import session
+from src.api.src.routers.api_enpoints import APIEndpoints
+from src.api.src.routers.sql_statement_repository import sql_statements
 
 
 router = APIRouter()
