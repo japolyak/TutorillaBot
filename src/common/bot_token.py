@@ -5,9 +5,10 @@ from src.common.config import dev_tg_id, is_development, bot_token
 
 log = logging.getLogger(__name__)
 
-class CustomExceptionHandler(ExceptionHandler):
+
+class BotExceptionHandler(ExceptionHandler):
     def handle(self, exception: Exception):
-        logging.exception(msg="Caught an exception: ", exc_info=exception)
+        log.exception(msg="Caught an exception: ", exc_info=exception)
 
         if is_development:
             bot.send_message(chat_id=dev_tg_id, text=exception.__str__(), disable_notification=True)
@@ -15,4 +16,9 @@ class CustomExceptionHandler(ExceptionHandler):
         return True
 
 
-bot = TeleBot(bot_token, threaded=False, exception_handler=CustomExceptionHandler())
+bot = TeleBot(
+    token=bot_token,
+    threaded=False,
+    disable_notification=is_development,
+    exception_handler=BotExceptionHandler()
+)
