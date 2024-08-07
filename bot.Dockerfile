@@ -2,9 +2,12 @@ FROM python:3.12
 
 ENV PYTHONUNBUFFERED True
 
-WORKDIR /code
+WORKDIR /src
 
-COPY ../.. .
+COPY src/bot /src/bot
+COPY src/common /src/common
+
+WORKDIR /src/bot
 
 RUN pip install --no-cache-dir -r requirements.txt
 

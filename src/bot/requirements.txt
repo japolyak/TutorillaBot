@@ -3,8 +3,6 @@ anyio==4.2.0
 astroid==3.0.2
 async-timeout==4.0.3
 attrs==23.1.0
-Babel==2.14.0
-black==23.12.1
 cachetools==5.3.3
 certifi==2023.11.17
 cffi==1.16.0
@@ -14,12 +12,6 @@ colorama==0.4.6
 cryptography==41.0.5
 dill==0.3.7
 fastapi==0.109.2
-google-api-core==2.18.0
-google-api-python-client==2.125.0
-google-auth==2.29.0
-google-auth-httplib2==0.2.0
-google-auth-oauthlib==1.2.0
-googleapis-common-protos==1.63.0
 h11==0.14.0
 httplib2==0.22.0
 idna==3.5
