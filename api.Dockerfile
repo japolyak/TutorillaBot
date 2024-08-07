@@ -2,9 +2,12 @@ FROM python:3.12-slim
 
 ENV PYTHONUNBUFFERED True
 
-WORKDIR /code
+WORKDIR /src
 
-COPY ../TutorBotApi .
+COPY src/api /src/api
+COPY src/common /src/common
+
+WORKDIR /src/api
 
 RUN pip install --no-cache-dir -r requirements.txt
 
