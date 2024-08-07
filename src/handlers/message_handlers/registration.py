@@ -13,7 +13,6 @@ from src.handlers.shared import next_stepper, register_next_step
 
 @bot.message_handler(commands=["start"])
 def welcome(message: Message):
-    a = int('asfaf')
     chat_id = message.from_user.id
 
     request = RegistrationClient.get_user(chat_id)
