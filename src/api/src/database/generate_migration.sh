@@ -1,10 +1,7 @@
 echo 'Enter migration name'
-read -p '' migvar
+read -p '' name
 
 cd ..
 
 echo
-echo "This is your migration name - $migvar"
-
-echo
-alembic revision --autogenerate -m "$migvar"
+alembic revision --autogenerate -m "$name"
