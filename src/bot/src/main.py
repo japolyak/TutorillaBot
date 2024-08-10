@@ -8,6 +8,7 @@ from src.common.bot_token import bot
 from src.common.config import is_development
 from src.common.logger import configure_logger
 
+from src.bot.src.webhook.webhook_app import app
 from src.bot.src.webhook.webhook_initializer import initialize_webhook
 
 from src.bot.src.handlers.callback_query_handler import query_handler
