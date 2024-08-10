@@ -16,8 +16,8 @@ allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173&http://127
 bot_token = os.getenv("BOT_TOKEN", "")
 webhook_url = os.getenv("WEBHOOK_URL", "")
 web_app_link = os.getenv("WEB_APP_LINK")
-dev_tg_id = int(os.getenv("DEV_TG_ID", 0))
-admin_tg_id = int(os.getenv("ADMIN_TG_ID", 0))
+dev_tg_id = int(os.getenv("DEV_TG_ID", 228))
+admin_tg_id = int(os.getenv("ADMIN_TG_ID", 322))
 
 # Database
 _database_username = os.getenv(f"DB_USER")

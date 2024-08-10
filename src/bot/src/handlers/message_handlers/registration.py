@@ -1,3 +1,4 @@
+import logging
 from telebot.types import Message
 
 from src.common.bot_token import bot
@@ -13,9 +14,14 @@ from src.bot.src.services.redis_service.redis_user_management import add_user
 from src.bot.src.validators import Validator
 
 
+log = logging.getLogger(__name__)
+
+
 @bot.message_handler(commands=["start"])
 def welcome(message: Message):
     chat_id = message.from_user.id
+
+    log.info(msg="Start command was triggered")
 
     request = RegistrationClient.get_user(chat_id)
 
