@@ -4,8 +4,8 @@ ENV PYTHONUNBUFFERED True
 
 WORKDIR /src
 
-COPY src/api /src/api
-COPY src/common /src/common
+COPY api /src/api
+COPY common /src/common
 
 WORKDIR /src/api
 
