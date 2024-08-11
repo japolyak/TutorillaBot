@@ -8,4 +8,6 @@ do
   sed -i 's|VITE_APP_IS_DEV_PLACEHOLDER|'${VITE_APP_IS_DEV}'|g' $file
 done
 
+sed -i 's|listen       PORT;|listen       '${PORT}';|g' /etc/nginx/nginx.conf
+
 exec "$@"
