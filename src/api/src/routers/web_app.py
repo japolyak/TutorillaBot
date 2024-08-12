@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request, status, Depends
-from sqlalchemy.orm import Session
 import json
+import logging
+from sqlalchemy.orm import Session
 from urllib.parse import parse_qs
 
 from src.common.models import UserDto
@@ -13,6 +14,7 @@ from src.api.src.routers.api_enpoints import APIEndpoints
 
 
 router = APIRouter()
+log = logging.getLogger(__name__)
 
 
 @router.get(path=APIEndpoints.WebApp.Me, status_code=status.HTTP_200_OK, response_model=UserDto,
@@ -23,7 +25,7 @@ async def validate_telegram_user(request: Request, db: Session = Depends(session
     if not init_data:
         return ResponseBuilder.error_response(message='Telegram Init-Data is missing')
 
-    print(init_data)
+    log.info(msg=init_data)
 
     if not init_data_is_valid(init_data):
         return ResponseBuilder.error_response(message='Telegram Init-Data validation failed')
