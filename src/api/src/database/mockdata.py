@@ -76,8 +76,8 @@ def insert_mock_data(engine: Engine):
         session.add_all([private_course1, private_course2, private_course3, private_course4, private_course5, private_course6])
         session.commit()
 
-        source_one = SourceDto(title="Assignment 1", assignment="Do this").model_dump_json()
-        source_two = SourceDto(title="Assignment 2", assignment="Do this again").model_dump_json()
+        source_one = SourceDto(title="Assignment 1", description="Do this").model_dump_json()
+        source_two = SourceDto(title="Assignment 2", description="Do this again").model_dump_json()
 
         assignments = {
             "sources": [source_one, source_two]

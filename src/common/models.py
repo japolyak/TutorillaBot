@@ -127,9 +127,17 @@ class PrivateCourseInlineDto(BaseModel):
         from_attributes = True
 
 
+class TextbookDto(BaseModel):
+    id: int
+    title: str
+
+    class Config:
+        from_attributes = True
+
+
 class SourceDto(BaseModel):
     title: str
-    assignment: str
+    description: str
 
     class Config:
         from_attributes = True
@@ -152,16 +160,16 @@ class PrivateClassDto(BaseModel):
         from_attributes = True
 
 
-class PrivateClassBaseDto(BaseModel):
-    id: int
-    schedule_datetime: datetime
-    assignment: List[SourceDto]
-    is_scheduled: bool
-    has_occurred: bool
-    is_paid: bool
-
-    class Config:
-        from_attributes = True
+# class PrivateClassBaseDto(BaseModel):
+#     id: int
+#     schedule_datetime: datetime
+#     assignment: List[SourceDto]
+#     is_scheduled: bool
+#     has_occurred: bool
+#     is_paid: bool
+#
+#     class Config:
+#         from_attributes = True
 
 
 class NewTutorCourseDto(BaseModel):

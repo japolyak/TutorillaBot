@@ -1,7 +1,7 @@
 from fastapi import status, APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from src.common.models import TutorCourseDto, NewTutorCourseDto, TutorCourseInlineDto, ItemsDto
+from src.common.models import TutorCourseDto, NewTutorCourseDto, TutorCourseInlineDto, ItemsDto, TextbookDto
 
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.database.crud import tutor_course_crud
@@ -36,3 +36,9 @@ async def get_available_tutor_courses(user_id: int, subject_name: str, db: Sessi
     response_model = ItemsDto[TutorCourseInlineDto](items=tutor_courses)
 
     return ResponseBuilder.success_response(content=response_model)
+
+
+@router.get(path=APIEndpoints.TutorCourse.GetTextbooks, status_code=status.HTTP_200_OK,
+            response_model=ItemsDto[TextbookDto], description="Get text books for tutor course")
+async def get_text_books(course_id: int, db: Session = Depends(session)):
+    print(12)

@@ -2,11 +2,11 @@ from typing import Any, List
 from telebot.types import CallbackQuery
 
 from src.common.bot_token import bot
+from src.common.models import UserRequestDto, UserDto
 
 from src.bot.src.handlers.shared import role_requests
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
-from src.bot.src.services.api.api_models import UserRequestDto, UserDto
 from src.bot.src.services.api.clients.admin_client import AdminClient
 from src.bot.src.services.i18n.i18n import t
 from src.bot.src.services.redis_service.redis_client import r

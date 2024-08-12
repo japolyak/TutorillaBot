@@ -4,12 +4,12 @@ from telebot.types import ReplyKeyboardRemove, CallbackQuery
 from typing import List, Any
 
 from src.common.bot_token import bot
+from src.common.models import Role
 
 from src.bot.src.services.redis_service.redis_client import r
 from src.bot.src.services.i18n.i18n import t
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.services.api.clients.registration_client import RegistrationClient
-from src.bot.src.services.api.api_models import Role
 from src.bot.src.handlers.callback_query_handler.callback_prefix import CallBackPrefix
 from src.bot.src.handlers.shared import next_stepper
 from src.bot.src.handlers.message_handlers.registration import registration_first_name
