@@ -22,7 +22,7 @@ export const useUserStore = defineStore('user-store', () => {
 	const isTutorInPrivateCourse = computed(() => (userRoleInPrivateCourse.value === Role.Tutor));
 
 	const userInfo = computed(() => user.value);
-	const userTimeZone = computed(() => user.value?.time_zone ?? null);
+	const userTimeZone = computed(() => user.value?.timeZone ?? null);
 	const locale = computed(() => user.value?.locale ?? 'en-US');
 
 	function setUser(payload: UserDto | null) {

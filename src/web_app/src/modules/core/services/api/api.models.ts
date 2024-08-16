@@ -16,19 +16,19 @@ export interface ItemsDto<T> {
 
 interface UserBaseDto {
 	id: number
-    first_name: string
-    last_name: string
+    firstName: string
+    lastName: string
     email: string
-    time_zone: number
+    timeZone: number
     locale: string
 }
 
 export interface UserDto extends UserBaseDto {
-	normalized_email: boolean
-    is_active: boolean
-    is_tutor: boolean
-    is_student: boolean
-    is_admin: boolean
+	normalizedEmail: boolean
+    isActive: boolean
+    isTutor: boolean
+    isStudent: boolean
+    isAdmin: boolean
 }
 
 export interface CourseMemberDto {
