@@ -11,7 +11,7 @@ export async function telegramUserAuthentication(initData: string, next: Navigat
         next(false);
         return;
     }
-	console.log('initData', initData);
+
     const response = await AuthenticationClient.validateInitData(initData);
     if (response.isSuccess) {
 		const { setUser } = useUserStore();
