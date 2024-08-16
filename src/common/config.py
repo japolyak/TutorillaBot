@@ -20,7 +20,7 @@ dev_tg_id = int(os.getenv("DEV_TG_ID", 228))
 admin_tg_id = int(os.getenv("ADMIN_TG_ID", 322))
 
 # Database
-_database_username = os.getenv(f"DB_USER")
+_database_username = os.getenv(f"DB_USER", "postgres")
 _database_password = os.getenv(f"DB_PASSWORD")
 database_host = os.getenv(f"DB_HOST")
 database_port = int(os.getenv("DB_PORT") or 5432)

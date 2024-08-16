@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from src.common.models import NewTutorCourseDto
 
-from src.api.src.database.models import TutorCourse, Subject, User
+from src.api.src.database.models import TutorCourse, Subject, User, Textbook
 
 
 def add_course(db: Session, user_id: int, course: NewTutorCourseDto):
@@ -22,5 +22,11 @@ def get_available_courses_by_subject(db: Session, user_id: int, subject_name: st
         .join(TutorCourse.tutor)
         .filter(subject_name == Subject.name, TutorCourse.is_active, user_id != TutorCourse.tutor_id)
     )
+
+    return query.all()
+
+
+def get_tutor_course_textbooks(db: Session, tutor_course_id: int):
+    query = db.query(Textbook.id, Textbook.title).filter(tutor_course_id == Textbook.tutor_course_id)
 
     return query.all()

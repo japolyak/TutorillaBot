@@ -40,5 +40,16 @@ async def get_available_tutor_courses(user_id: int, subject_name: str, db: Sessi
 
 @router.get(path=APIEndpoints.TutorCourse.GetTextbooks, status_code=status.HTTP_200_OK,
             response_model=ItemsDto[TextbookDto], description="Get text books for tutor course")
-async def get_text_books(course_id: int, db: Session = Depends(session)):
-    print(12)
+async def get_text_books(tutor_course_id: int, db: Session = Depends(session)):
+    db_textbooks = tutor_course_crud.get_tutor_course_textbooks(db, tutor_course_id)
+
+    if not db_textbooks:
+        return ResponseBuilder.success_response(content=ItemsDto(items=[]))
+
+    textbooks = [
+        TextbookDto(id=tb[0], title=tb[1]) for tb in db_textbooks
+    ]
+
+    response_model = ItemsDto[TextbookDto](items=textbooks)
+
+    return ResponseBuilder.success_response(content=response_model)

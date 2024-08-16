@@ -23,8 +23,8 @@ async def validate_telegram_user(request: Request, db: Session = Depends(session
     if not init_data:
         return ResponseBuilder.error_response(message='Telegram Init-Data is missing')
 
-    if not init_data_is_valid(init_data):
-        return ResponseBuilder.error_response(message='Telegram Init-Data validation failed')
+    # if not init_data_is_valid(init_data):
+    #     return ResponseBuilder.error_response(message='Telegram Init-Data validation failed')
 
     parsed_query = parse_qs(init_data)
     parsed_user = json.loads(parsed_query.get('user', [''])[0])
