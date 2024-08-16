@@ -1,49 +1,49 @@
 <template>
-    <date-picker :request-fn="sendRequest" :course-id="privateCourseId" />
-	<assignment v-if="isTutor" ref="assignmentRef" :application-theme="applicationTheme"  />
+    <date-picker @plan-class="planClass" />
+	<assignment v-if="isTutorInPrivateCourse" ref="assignmentRef" :application-theme="applicationTheme" />
 </template>
 
 <script setup lang="ts">
-import DatePicker from '@/components/date-picker.vue';
-import Assignment from '@/components/assignment.vue';
-import { computed, onMounted, ref } from 'vue';
+import DatePicker from '@/modules/class-planer/components/date-picker.vue';
+import Assignment from '@/modules/class-planer/components/assignment.vue';
+import { PrivateCourseClient } from '@/modules/core/services/api-clients/private-course-client';
+import { useActionSnackbarStore } from '@/modules/core/store/snackbar-store';
+import { useClassPlannerStore } from '@/modules/class-planer/services/class-planner-store';
+import { useUserStore } from '@/modules/core/store/user-store';
+import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { PrivateCourseClient } from '@/services/api/clients/private-course-client';
-import { type NewClassDto, Role } from '@/services/api/api.models'
-import { useActionSnackbarStore } from '@/stores/snackbar-store';
-import { useUserStore } from '@/stores/user-store';
+import { storeToRefs } from 'pinia';
 
 const route = useRoute();
+
 const { showSnackbar } = useActionSnackbarStore();
-const { isTutor } = useUserStore();
+
+const { isTutorInPrivateCourse, privateCourseId, userRoleInPrivateCourse } = storeToRefs(useUserStore());
+const { setPrivateCourse } = useUserStore();
+
+const { newClass } = storeToRefs(useClassPlannerStore());
+const { restoreClassPlanner, setFlatTextbookAssignmentsList } = useClassPlannerStore();
 
 const applicationTheme = ref<string | null>(null);
 const assignmentRef = ref<InstanceType<typeof Assignment> | null>(null);
 
-const privateCourseId = computed(() => {
-  if (Array.isArray(route.params.privateCourseId)) return null;
+async function loadPrivateCourse(privateCourseId: number) {
+	const response = await PrivateCourseClient.loadPrivateCourse(privateCourseId);
 
-  const privateCourseIdFromRoute = parseInt(route.params.privateCourseId);
-  return isNaN(privateCourseIdFromRoute) ? null : privateCourseIdFromRoute;
-});
+	if (!response) return;
 
-const sendRequest = async (planedDate: Date): Promise<void> => {
-    if (privateCourseId.value == null) return;
+	setPrivateCourse(response);
+	setFlatTextbookAssignmentsList(response.textbooks);
+}
 
-    const payload: NewClassDto = {
-        date: planedDate,
-        sources: []
-    };
+async function planClass() {
+    if (!privateCourseId.value || !userRoleInPrivateCourse.value) return;
 
-    if (assignmentRef.value != null && assignmentRef.value.setAssignment) {
-        payload.sources = assignmentRef.value.items
-            .filter((item) => item.include && item.value)
-            .map((item) => ({ title: item.title, assignment: item.value  as string }));
-    }
-
-	const role = isTutor ? Role.tutor : Role.student;
-
-    const response = await PrivateCourseClient.planNewClass(privateCourseId.value, payload, role);
+    const response = await PrivateCourseClient.planNewClass(
+		privateCourseId.value,
+		newClass.value,
+		userRoleInPrivateCourse.value,
+	);
 
 	if (response?.status !== 201) {
 		showSnackbar({
@@ -58,10 +58,21 @@ const sendRequest = async (planedDate: Date): Promise<void> => {
 		status: 'success',
 	});
 
-	if (isTutor) assignmentRef.value?.resetAssignment();
-};
+	restoreClassPlanner(isTutorInPrivateCourse.value);
 
-onMounted(() => {
+	window.Telegram.WebApp.MainButton.hide();
+}
+
+onMounted(async () => {
     applicationTheme.value = window.Telegram.WebApp.themeParams.secondary_bg_color === '#1c1c1d' ? 'dark' : 'bright';
+	window.Telegram.WebApp.MainButton.text = 'Plan class';
+
+	if (Array.isArray(route.params.privateCourseId)) return;
+
+	const privateCourseIdFromRoute = parseInt(route.params.privateCourseId);
+
+	if (isNaN(privateCourseIdFromRoute)) return;
+
+	await loadPrivateCourse(privateCourseIdFromRoute);
 });
 </script>

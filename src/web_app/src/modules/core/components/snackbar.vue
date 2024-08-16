@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { useActionSnackbarStore } from '@/stores/snackbar-store';
+import { useActionSnackbarStore } from '@/modules/core/store/snackbar-store';
 
 const { isVisible, snackbarAnswer } = storeToRefs(useActionSnackbarStore());
 </script>

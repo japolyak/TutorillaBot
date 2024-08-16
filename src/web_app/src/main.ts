@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import vuetify from '@/plugins/vuetify/vuetify';
+import vuetify from '@/plugins/vuetify';
 import router from '@/plugins/router/index';
 import pinia from '@/plugins/pinia';
 

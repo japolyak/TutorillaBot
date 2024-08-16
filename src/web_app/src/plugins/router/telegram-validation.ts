@@ -1,6 +1,6 @@
-import { TelegramUserClient } from '@/services/api/clients/telegram-user-client';
+import { AuthenticationClient } from '@/modules/core/services/api-clients/authentication-client';
+import { useUserStore } from '@/modules/core/store/user-store';
 import type { NavigationGuardNext } from 'vue-router';
-import { useUserStore } from '@/stores/user-store';
 
 export async function telegramUserAuthentication(initData: string, next: NavigationGuardNext): Promise<void> {
 	if (import.meta.env.VITE_APP_IS_DEV === 'true') {
@@ -13,7 +13,7 @@ export async function telegramUserAuthentication(initData: string, next: Navigat
         return;
     }
 
-    const request = await TelegramUserClient.validateInitData(initData);
+    const request = await AuthenticationClient.validateInitData(initData);
     if (request) {
 		const { setUser } = useUserStore();
 		setUser(request);
