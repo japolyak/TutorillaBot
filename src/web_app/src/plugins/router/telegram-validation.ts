@@ -3,13 +3,9 @@ import { useUserStore } from '@/modules/core/store/user-store';
 import type { NavigationGuardNext } from 'vue-router';
 
 export async function telegramUserAuthentication(initData: string, next: NavigationGuardNext): Promise<void> {
-	const test = initData.split('auth_date');
-
-	test.forEach((item) => { console.log(item); })
-
 	if (import.meta.env.VITE_APP_IS_DEV === 'true') {
-		next();
-		return;
+		console.info('Mock .env');
+		initData = import.meta.env.VITE_APP_WEB_APP_INIT_DATA;
 	}
 
 	if (!initData) {
