@@ -4,7 +4,6 @@ import type { NavigationGuardNext } from 'vue-router';
 
 export async function telegramUserAuthentication(initData: string, next: NavigationGuardNext): Promise<void> {
 	if (import.meta.env.VITE_APP_IS_DEV === 'true') {
-		console.info('Mock .env');
 		initData = import.meta.env.VITE_APP_WEB_APP_INIT_DATA;
 	}
 
@@ -12,7 +11,7 @@ export async function telegramUserAuthentication(initData: string, next: Navigat
         next(false);
         return;
     }
-
+	console.log('initData', initData);
     const response = await AuthenticationClient.validateInitData(initData);
     if (response.isSuccess) {
 		const { setUser } = useUserStore();
