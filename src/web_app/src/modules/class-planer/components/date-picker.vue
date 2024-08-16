@@ -78,7 +78,12 @@ async function loadClasses(month: number, year: number): Promise<ClassDto[]> {
 
 	loading.value = false;
 
-	return response?.items ?? [];
+	if (!response.isSuccess) {
+		//TODO - Show snackbar
+		return [];
+	}
+
+	return response.data.items;
 }
 
 const handleMonthYear = async (value: MonthYearChange) => {

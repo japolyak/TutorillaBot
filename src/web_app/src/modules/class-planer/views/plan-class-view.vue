@@ -30,10 +30,10 @@ const assignmentRef = ref<InstanceType<typeof Assignment> | null>(null);
 async function loadPrivateCourse(privateCourseId: number) {
 	const response = await PrivateCourseClient.loadPrivateCourse(privateCourseId);
 
-	if (!response) return;
+	if (!response.isSuccess) return;
 
-	setPrivateCourse(response);
-	setFlatTextbookAssignmentsList(response.textbooks);
+	setPrivateCourse(response.data);
+	setFlatTextbookAssignmentsList(response.data.textbooks);
 }
 
 async function planClass() {
@@ -45,7 +45,7 @@ async function planClass() {
 		userRoleInPrivateCourse.value,
 	);
 
-	if (response?.status !== 201) {
+	if (!response.isSuccess) {
 		showSnackbar({
 			message: 'Error occurred',
 			status: 'error',

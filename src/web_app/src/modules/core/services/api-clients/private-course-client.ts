@@ -1,46 +1,35 @@
 import { httpClient } from '@/modules/core/services/api/http-client';
 import type { NewClassDto, Role, ClassDto, ItemsDto, PrivateCourseDto } from '@/modules/core/services/api/api.models'
 import { type KyResponse} from 'ky';
+import { type ApiResponse, ApiUtils } from '@/modules/core/services/api/api.utils';
 
 export class PrivateCourseClient {
 	private static readonly urlBase = 'private-courses';
 
-	public static async loadPrivateCourse(privateCourseId: number): Promise<PrivateCourseDto | null> {
+	public static async loadPrivateCourse(privateCourseId: number): Promise<ApiResponse<PrivateCourseDto>> {
 		const url = `${this.urlBase}/${privateCourseId}/`;
 
-		try {
-			return await httpClient.get(url).json<PrivateCourseDto>();
-		} catch {
-			return null;
-		}
+		const request = httpClient.get(url).json<PrivateCourseDto>();
+		return  await ApiUtils.createApiResponse(request);
 	}
 
-    public static async planNewClass(privateCourseId: number, payload: NewClassDto, role: Role): Promise<KyResponse | null> {
+    public static async planNewClass(privateCourseId: number, payload: NewClassDto, role: Role): Promise<ApiResponse<any>> {
 		const url = `${this.urlBase}/${privateCourseId}/new-class/${role}/`;
 
-		try {
-			return await httpClient.post(url, { json: payload });
-		} catch {
-			return null;
-		}
+		const request = httpClient.post(url, { json: payload });
+		return  await ApiUtils.createApiResponse(request);
     }
 
-	public static async getClassesByDate(privateCourseId: number, month: number, year: number): Promise<ItemsDto<ClassDto> | null> {
+	public static async getClassesByDate(privateCourseId: number, month: number, year: number): Promise<ApiResponse<ItemsDto<ClassDto>>> {
 		const url = `${this.urlBase}/${privateCourseId}/classes/month/${month}/year/${year}/`;
 
-		try {
-			return await httpClient.get(url).json<ItemsDto<ClassDto>>();
-		} catch {
-			return null;
-		}
+		const request = httpClient.get(url).json<ItemsDto<ClassDto>>();
+		return  await ApiUtils.createApiResponse(request);
     }
 
-	public static async test(): Promise<KyResponse | null> {
-		try {
-			return await httpClient.post(`test/`, { json: { test: 'test' } });
-		}
-		catch {
-			return null;
-		}
+	public static async test(): Promise<ApiResponse<any>> {
+		const request = httpClient.post(`test/`, { json: { test: 'test' } });
+
+		return await ApiUtils.createApiResponse(request)
     }
 }

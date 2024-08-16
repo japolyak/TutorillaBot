@@ -13,10 +13,10 @@ export async function telegramUserAuthentication(initData: string, next: Navigat
         return;
     }
 
-    const request = await AuthenticationClient.validateInitData(initData);
-    if (request) {
+    const response = await AuthenticationClient.validateInitData(initData);
+    if (response.isSuccess) {
 		const { setUser } = useUserStore();
-		setUser(request);
+		setUser(response.data);
 		next();
 	}
 }

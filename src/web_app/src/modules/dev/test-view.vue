@@ -11,7 +11,7 @@ const { showSnackbar } = useActionSnackbarStore();
 const sendRequest = async () => {
 	const response = await PrivateCourseClient.test();
 
-	if (response?.status !== 200) {
+	if (!response.isSuccess) {
 		showSnackbar({
 			message: 'Error occurred',
 			status: 'error',
