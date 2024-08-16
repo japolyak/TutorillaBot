@@ -48,15 +48,15 @@
 </template>
 
 <script setup lang="ts">
-import VueDatePicker, { type DatePickerMarker, type DatePickerInstance } from '@vuepic/vue-datepicker'
-import { ref, watchEffect } from 'vue';
 import { useUserStore } from '@/modules/core/store/user-store';
-import { format } from 'date-fns'
 import { type ClassDto, ClassStatus } from '@/modules/core/services/api/api.models'
 import { PrivateCourseClient } from '@/modules/core/services/api-clients/private-course-client';
 import { useClassPlannerStore } from '@/modules/class-planer/services/class-planner-store';
-import { storeToRefs } from 'pinia';
 import type { MonthYearChange } from '@/modules/class-planer/models';
+import VueDatePicker, { type DatePickerMarker, type DatePickerInstance } from '@vuepic/vue-datepicker'
+import { ref, watchEffect } from 'vue';
+import { format } from 'date-fns'
+import { storeToRefs } from 'pinia';
 
 defineEmits(['planClass']);
 
