@@ -21,7 +21,7 @@ router = APIRouter()
 @router.get(path=APIEndpoints.PrivateCourses.GetClasses, status_code=status.HTTP_200_OK,
             response_model=PaginatedList[PrivateClassDto], summary="Get classes of the course")
 async def get_classes_for_bot(course_id: int, user_id: int, role: Literal[Role.Tutor, Role.Student], page: int, db: Session = Depends(session)):
-    result = db.execute(sql_statements.get_classes, {"p1": user_id, "p2": course_id, "p3": page, "p4": role})
+    result = db.execute(sql_statements.get_classes, {"p1": user_id, "p2": course_id, "p3": page, "p4": role}).fetchall()
 
     total_count = None
     user_timezone = None
