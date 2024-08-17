@@ -11,9 +11,9 @@ export const useClassPlannerStore = defineStore('class-planner-store', () => {
 
 	const textbookAssignments = ref<TextbookAssignment[]>([]);
 
-	const newClass = computed(() => {
+	function newClass(date: Date) {
 		const data: NewClassDto = {
-			date: new Date(),
+			date,
 			assignments: textbookAssignments.value
 				.filter(a => a.include && a.description)
 				.map(a => {
@@ -27,7 +27,7 @@ export const useClassPlannerStore = defineStore('class-planner-store', () => {
 		};
 
 		return data;
-	});
+	}
 
 	function setFlatTextbookAssignmentsList(list: TextbookDto[]) {
 		textbookAssignments.value = list.map(i => {

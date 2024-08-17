@@ -58,7 +58,7 @@ import { ref, watchEffect } from 'vue';
 import { format } from 'date-fns'
 import { storeToRefs } from 'pinia';
 
-defineEmits(['planClass']);
+const emit = defineEmits(['planClass']);
 
 const { userTimeZone, locale, privateCourseId } = storeToRefs(useUserStore());
 const { date } = storeToRefs(useClassPlannerStore());
@@ -174,6 +174,8 @@ function planClass() {
 		date.value.getMinutes(),
 		date.value.getSeconds()
 	));
+
+	emit('planClass', payload);
 }
 
 watchEffect(() => window.Telegram.WebApp.onEvent('mainButtonClicked', planClass));

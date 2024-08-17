@@ -2,7 +2,14 @@
 	<template v-if="!!privateCourseId">
 		<date-picker @plan-class="planClass" />
 		<assignment v-if="isTutorInPrivateCourse" />
-		<v-btn v-if="isDev" id="debug button" text="Plan class" class="my-2" :color="testBtnColor" @click="planClass" />
+		<v-btn
+			v-if="isDev"
+			id="debug button"
+			text="Plan class"
+			class="my-2"
+			:color="testBtnColor"
+			@click="planClass(new Date())"
+		/>
 	</template>
 	<template v-else>
 		<!--TODO-->
@@ -31,8 +38,7 @@ const { isTutorInPrivateCourse, privateCourseId, userRoleInPrivateCourse } = sto
 
 const { setMainButton, setWebAppTheme } = useTelegramWebAppStore();
 
-const { newClass } = storeToRefs(useClassPlannerStore());
-const { restoreClassPlanner, setFlatTextbookAssignmentsList } = useClassPlannerStore();
+const { restoreClassPlanner, setFlatTextbookAssignmentsList, newClass } = useClassPlannerStore();
 
 const isDev = computed(() => import.meta.env.VITE_APP_IS_DEV === 'true');
 const testBtnColor = computed(() => window.Telegram.WebApp.colorScheme === 'light' ? 'blue' : 'green');
@@ -46,12 +52,12 @@ async function loadPrivateCourse(privateCourseId: number) {
 	setFlatTextbookAssignmentsList(response.data.tutorCourse.textbooks);
 }
 
-async function planClass() {
+async function planClass(classDate: Date) {
     if (!privateCourseId.value || !userRoleInPrivateCourse.value) return;
 
     const response = await PrivateCourseClient.planNewClass(
 		privateCourseId.value,
-		newClass.value,
+		newClass(classDate),
 		userRoleInPrivateCourse.value,
 	);
 
