@@ -1,10 +1,10 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { ref } from 'vue';
 
-type TelegramTheme = 'default' | 'night' | 'dark';
+type TelegramTheme = 'light' | 'dark';
 
 export const useTelegramWebAppStore = defineStore('telegram-web-app-store', () => {
-	const applicationTheme = ref<TelegramTheme | null>(null);
+	const applicationTheme = ref<TelegramTheme>('light');
 
 	function setWebAppTheme() {
 		applicationTheme.value = window.Telegram.WebApp.colorScheme;
