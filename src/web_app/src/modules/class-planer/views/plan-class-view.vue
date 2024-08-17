@@ -2,7 +2,7 @@
 	<template v-if="!!privateCourseId">
 		<date-picker @plan-class="planClass" />
 		<assignment v-if="isTutorInPrivateCourse" />
-		<v-btn v-if="isDev" id="debug button" text="Plan class" class="my-2" @click="planClass" />
+		<v-btn v-if="isDev" id="debug button" text="Plan class" class="my-2" :color="testBtnColor" @click="planClass" />
 	</template>
 	<template v-else>
 		<!--TODO-->
@@ -35,6 +35,7 @@ const { newClass } = storeToRefs(useClassPlannerStore());
 const { restoreClassPlanner, setFlatTextbookAssignmentsList } = useClassPlannerStore();
 
 const isDev = computed(() => import.meta.env.VITE_APP_IS_DEV === 'true');
+const testBtnColor = computed(() => window.Telegram.WebApp.colorScheme === 'light' ? 'blue' : 'green');
 
 async function loadPrivateCourse(privateCourseId: number) {
 	const response = await PrivateCourseClient.loadPrivateCourse(privateCourseId);
