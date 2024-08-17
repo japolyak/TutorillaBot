@@ -1,6 +1,10 @@
 from src.common.bot_token import bot
 
 
+def send_error_message(tg_user_id, message):
+    bot.send_message(chat_id=tg_user_id, text=message, parse_mode="MarkdownV2")
+
+
 def send_decline_message(tg_user_id):
     bot.send_message(chat_id=tg_user_id, text='Not today')
 

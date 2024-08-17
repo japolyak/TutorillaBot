@@ -1,5 +1,5 @@
 import logging
-from telebot import ExceptionHandler, TeleBot
+from telebot import ExceptionHandler, TeleBot, apihelper
 
 from src.common.config import dev_tg_id, is_development, bot_token
 
@@ -15,6 +15,9 @@ class BotExceptionHandler(ExceptionHandler):
 
         return True
 
+
+if is_development:
+    apihelper.API_URL = "https://api.telegram.org/bot{0}/test/{1}"
 
 bot = TeleBot(
     token=bot_token,
