@@ -29,7 +29,7 @@ const { showSnackbar } = useActionSnackbarStore();
 const { setPrivateCourse } = useUserStore();
 const { isTutorInPrivateCourse, privateCourseId, userRoleInPrivateCourse } = storeToRefs(useUserStore());
 
-const { applicationTheme } = storeToRefs(useTelegramWebAppStore());
+const { setMainButton, setWebAppTheme } = useTelegramWebAppStore();
 
 const { newClass } = storeToRefs(useClassPlannerStore());
 const { restoreClassPlanner, setFlatTextbookAssignmentsList } = useClassPlannerStore();
@@ -73,8 +73,8 @@ async function planClass() {
 }
 
 onMounted(async () => {
-    applicationTheme.value = window.Telegram.WebApp.themeParams.secondary_bg_color === '#1c1c1d' ? 'dark' : 'bright';
-	window.Telegram.WebApp.MainButton.text = 'Plan class';
+	setWebAppTheme();
+	setMainButton('Plan class');
 
 	if (Array.isArray(route.params.privateCourseId)) return;
 
