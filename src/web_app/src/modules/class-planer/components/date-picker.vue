@@ -78,21 +78,19 @@ async function loadClasses(month: number, year: number): Promise<ClassDto[]> {
 
 	loading.value = false;
 
-	if (!response.isSuccess) {
-		//TODO - Show snackbar
-		return [];
-	}
+	//TODO - Show snackbar
+	if (!response.isSuccess) return [];
 
 	return response.data.items;
 }
 
-const handleMonthYear = async (value: MonthYearChange) => {
+async function handleMonthYear(value: MonthYearChange) {
 	const classes = await loadClasses(value.month + 1, value.year);
 
 	markers.value = mapToDatePickerMarker(classes);
 }
 
-const openPlanner = async () => {
+async function openPlanner() {
 	const currentDate = new Date();
 
 	openDate.value = currentDate;
@@ -100,15 +98,15 @@ const openPlanner = async () => {
 	const classes = await loadClasses(currentDate.getMonth() + 1, currentDate.getFullYear());
 
 	markers.value = mapToDatePickerMarker(classes);
-};
+}
 
-const closePlanner = () => {
+function closePlanner() {
 	openDate.value = null;
 	markers.value = [];
-};
+}
 
 function mapToDatePickerMarker(data: ClassDto[]): DatePickerMarker[] {
-	return data.map((day) => {
+	return data.map(day => {
 		let color = '';
 		let tooltipText = '';
 		const occurredAt = formatDate(day.date, 'HH:mm');
@@ -138,17 +136,17 @@ function mapToDatePickerMarker(data: ClassDto[]): DatePickerMarker[] {
 	});
 }
 
-const closeMenu = () => {
+function closeMenu() {
 	datepicker.value?.closeMenu();
-};
+}
 
-const confirmationAllowed = (value: Date | null) => {
+function confirmationAllowed(value: Date | null) {
 	if (!value) return false;
 	// TODO - rethink implementation
 	return formatDate(value, 'HH:mm') !== formatDate(openDate.value, 'HH:mm');
-};
+}
 
-const setTelegramMainButtonState = (): void => {
+function setTelegramMainButtonState() {
     if (date.value) {
         if (window.Telegram.WebApp.MainButton.isVisible) return;
 
@@ -157,16 +155,16 @@ const setTelegramMainButtonState = (): void => {
     }
 
     window.Telegram.WebApp.MainButton.hide();
-};
+}
 
-const formatDate = (date: Date | null, datetimeFormat: string = 'dd.MM.yyyy, HH:mm') => {
+function formatDate(date: Date | null, datetimeFormat: string = 'dd.MM.yyyy, HH:mm') {
 	if (!date) return '';
 
 	return format(date, datetimeFormat);
-};
+}
 
-const planClass = (): void => {
-    if (!date.value || !userTimeZone.value) return;
+function planClass() {
+	if (!date.value || !userTimeZone.value) return;
 
 	const payload = new Date(Date.UTC(
 		date.value.getFullYear(),
@@ -176,7 +174,7 @@ const planClass = (): void => {
 		date.value.getMinutes(),
 		date.value.getSeconds()
 	));
-};
+}
 
 watchEffect(() => window.Telegram.WebApp.onEvent('mainButtonClicked', planClass));
 </script>

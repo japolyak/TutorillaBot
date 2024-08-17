@@ -15,11 +15,11 @@ export const useClassPlannerStore = defineStore('class-planner-store', () => {
 		const data: NewClassDto = {
 			date: new Date(),
 			assignments: textbookAssignments.value
-				.filter(a => a.include)
+				.filter(a => a.include && a.description)
 				.map(a => {
 					const assignment: AssignmentDto = {
 						textbookId: a.id,
-						description: a.description,
+						description: a.description!,
 					};
 
 					return assignment;
@@ -34,18 +34,27 @@ export const useClassPlannerStore = defineStore('class-planner-store', () => {
 			const assignment: TextbookAssignment = {
 				id: i.id,
 				title: i.title,
-				description: null,
+				description: undefined,
 				include: false,
 			};
 
 			return assignment;
-		})
+		});
+
+		const generalAssignment: TextbookAssignment = {
+			id: -1,
+			title: 'General assignment',
+			description: undefined,
+			include: false,
+		};
+
+		textbookAssignments.value.push(generalAssignment);
 	}
 
 	function resetAssignment() {
 		setAssignment.value = false;
 		textbookAssignments.value.forEach(item => {
-			item.description = null;
+			item.description = undefined;
 			item.include = false;
 		});
 	}

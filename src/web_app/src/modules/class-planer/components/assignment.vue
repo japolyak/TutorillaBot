@@ -27,21 +27,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, type PropType } from 'vue';
+import { computed } from 'vue';
 import { useClassPlannerStore } from '@/modules/class-planer/services/class-planner-store';
+import { useTelegramWebAppStore } from '@/modules/core/store/telegram-web-app-store';
 import { storeToRefs } from 'pinia';
 
 const { textbookAssignments, setAssignment } = storeToRefs(useClassPlannerStore());
+const { applicationTheme } = storeToRefs(useTelegramWebAppStore());
 
-const props = defineProps({
-    applicationTheme: {
-        type: String as PropType<string | null>,
-        default: null,
-    },
-});
-
-const elementTheme = computed(() => props.applicationTheme === 'dark' ? 'dark-theme' : 'bright-theme');
-const textareaBgColor = computed(() => props.applicationTheme === 'dark' ? '#f1f1f1' : '');
+const elementTheme = computed(() => applicationTheme.value === 'dark' ? 'dark-theme' : 'bright-theme');
+const textareaBgColor = computed(() => applicationTheme.value === 'dark' ? '#f1f1f1' : '');
 </script>
 
 

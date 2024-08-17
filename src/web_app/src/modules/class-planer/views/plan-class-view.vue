@@ -1,6 +1,13 @@
 <template>
-    <date-picker @plan-class="planClass" />
-	<assignment v-if="isTutorInPrivateCourse" ref="assignmentRef" :application-theme="applicationTheme" />
+	<template v-if="!!privateCourseId">
+		<date-picker @plan-class="planClass" />
+		<assignment v-if="isTutorInPrivateCourse" />
+		<v-btn v-if="isDev" id="debug button" text="Plan class" class="my-2" @click="planClass" />
+	</template>
+	<template v-else>
+		<!--TODO-->
+		Implement redirection to empty state
+	</template>
 </template>
 
 <script setup lang="ts">
@@ -10,7 +17,8 @@ import { PrivateCourseClient } from '@/modules/core/services/api-clients/private
 import { useActionSnackbarStore } from '@/modules/core/store/snackbar-store';
 import { useClassPlannerStore } from '@/modules/class-planer/services/class-planner-store';
 import { useUserStore } from '@/modules/core/store/user-store';
-import { onMounted, ref } from 'vue';
+import { useTelegramWebAppStore } from '@/modules/core/store/telegram-web-app-store';
+import { onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
@@ -18,14 +26,15 @@ const route = useRoute();
 
 const { showSnackbar } = useActionSnackbarStore();
 
-const { isTutorInPrivateCourse, privateCourseId, userRoleInPrivateCourse } = storeToRefs(useUserStore());
 const { setPrivateCourse } = useUserStore();
+const { isTutorInPrivateCourse, privateCourseId, userRoleInPrivateCourse } = storeToRefs(useUserStore());
+
+const { applicationTheme } = storeToRefs(useTelegramWebAppStore());
 
 const { newClass } = storeToRefs(useClassPlannerStore());
 const { restoreClassPlanner, setFlatTextbookAssignmentsList } = useClassPlannerStore();
 
-const applicationTheme = ref<string | null>(null);
-const assignmentRef = ref<InstanceType<typeof Assignment> | null>(null);
+const isDev = computed(() => import.meta.env.VITE_APP_IS_DEV === 'true');
 
 async function loadPrivateCourse(privateCourseId: number) {
 	const response = await PrivateCourseClient.loadPrivateCourse(privateCourseId);
@@ -33,7 +42,7 @@ async function loadPrivateCourse(privateCourseId: number) {
 	if (!response.isSuccess) return;
 
 	setPrivateCourse(response.data);
-	setFlatTextbookAssignmentsList(response.data.textbooks);
+	setFlatTextbookAssignmentsList(response.data.tutorCourse.textbooks);
 }
 
 async function planClass() {

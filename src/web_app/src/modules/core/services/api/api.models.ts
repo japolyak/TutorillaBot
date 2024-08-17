@@ -5,9 +5,9 @@ export enum Role {
 }
 
 export enum ClassStatus {
-	Scheduled = 'scheduled',
-	Occurred = 'occurred',
-	Paid = 'paid',
+	Scheduled = 'Scheduled',
+	Occurred = 'Occurred',
+	Paid = 'Paid',
 }
 
 export interface ItemsDto<T> {
@@ -48,8 +48,9 @@ export interface TextbookDto {
 
 export interface TutorCourseDto {
 	id: number;
-	subject: SubjectDto;
 	tutor: CourseMemberDto;
+	subject: SubjectDto;
+	textbooks: TextbookDto[];
 	price: number | null;
 }
 
@@ -57,7 +58,6 @@ export interface PrivateCourseDto {
 	id: number;
 	tutorCourse: TutorCourseDto;
 	student: CourseMemberDto;
-	textbooks: TextbookDto[];
 	price: number;
 }
 
@@ -68,7 +68,7 @@ export interface ClassDto {
 
 export interface AssignmentDto {
     textbookId: number;
-    description: string | null;
+    description: string;
 }
 
 export interface NewClassDto {
