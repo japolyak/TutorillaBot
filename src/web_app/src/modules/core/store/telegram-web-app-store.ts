@@ -7,19 +7,7 @@ export const useTelegramWebAppStore = defineStore('telegram-web-app-store', () =
 	const applicationTheme = ref<TelegramTheme | null>(null);
 
 	function setWebAppTheme() {
-		console.log(window.Telegram.WebApp.themeParams);
-		console.log(window.Telegram.WebApp.colorScheme);
-		switch (window.Telegram.WebApp.themeParams.secondary_bg_color) {
-			case '#1c1c1d':
-				applicationTheme.value = 'dark';
-				break;
-			case '#18222d':
-				applicationTheme.value = 'dark';
-				break;
-			default:
-				applicationTheme.value = 'default';
-				break;
-		}
+		applicationTheme.value = window.Telegram.WebApp.colorScheme;
 	}
 
 	function setMainButton(value: string) {
