@@ -6,7 +6,7 @@ from src.common.models import Role
 from src.api.src.database.models import User, UserRequest
 
 
-def get_user(db: Session, user_id: int):
+def get_user(db: Session, user_id: int) -> User | None:
     query = db.query(User).filter(user_id == User.id)
 
     return query.first()

@@ -2,7 +2,6 @@ class APIEndpoints:
     class TutorCourse:
         Prefix = "/tutor-courses"
         AddCourse: str = "/users/{user_id}/"
-        GetTextbooks: str = "{tutor_course_id}/textbooks/"
         AvailableCourses: str = "/users/{user_id}/subject-name/{subject_name}/"
 
     class Users:
@@ -13,6 +12,7 @@ class APIEndpoints:
 
     class PrivateCourses:
         Prefix = "/private-courses"
+        GetPrivateCourse = "/{private_course_id}/"
         GetClasses = "/{course_id}/classes/"
         GetClassesByDate = "/{private_course_id}/classes/month/{month}/year/{year}/"
         Get = "/users/{user_id}/subjects/{subject_name}/"

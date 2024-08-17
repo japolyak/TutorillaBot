@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import func, case, literal_column, select
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 from typing import Literal
 
 from src.common.models import Role, ClassStatus
@@ -51,22 +51,17 @@ def get_private_courses(db: Session, user_id: int, subject_name: str, role: Lite
     return query.all()
 
 
-def get_private_course_by_course_id(db: Session, private_course_id: int):
-    query = (
-        db.query(PrivateCourse)
-        .options(
-            joinedload(PrivateCourse.student),
-            joinedload(PrivateCourse.tutor_course).joinedload(TutorCourse.tutor),
-            joinedload(PrivateCourse.tutor_course).joinedload(TutorCourse.subject))
-        .filter(private_course_id == PrivateCourse.id))
+def get_private_course_by_course_id(db: Session, private_course_id: int) -> PrivateCourse | None:
+    # TODO - find solution how load ONLY some fields for Tutor and Student relations
+    query = db.query(PrivateCourse).filter(private_course_id == PrivateCourse.id)
 
     return query.first()
 
 
-def enroll_student_to_course(db: Session, user_id: int, course_id: int):
+def enroll_student_to_course(db: Session, user_id: int, course_id: int) -> PrivateCourse:
     db_course = db.query(TutorCourse).filter(course_id == TutorCourse.id).first()
 
-    db_course = PrivateCourse(student_id=user_id, course_id=course_id, price=db_course.price)
+    db_course = PrivateCourse(student_id=user_id, tutor_course_id=course_id, price=db_course.price)
     db.add(db_course)
     db.commit()
     db.refresh(db_course)

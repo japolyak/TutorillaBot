@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from typing import Literal
 
 from src.common.models import (PaginatedList, NewClassDto, ClassDto, Role, PrivateCourseInlineDto, ItemsDto,
-                               PrivateClassDto)
+                               PrivateClassDto, PrivateCourseDto, CourseMemberDto)
 
 from src.api.src.bot_client.message_sender import send_notification_about_new_class
 from src.api.src.builders.response_builder import ResponseBuilder
@@ -27,7 +27,7 @@ async def get_classes_for_bot(course_id: int, user_id: int, role: Literal[Role.T
     user_timezone = None
     classes: list[PrivateClassDto] = []
 
-    for row in result.fetchall():
+    for row in result:
         if row[0] is None:
             return ResponseBuilder.error_response(message=row[4])
 
@@ -91,7 +91,7 @@ async def add_new_class(private_course_id: int, role: Literal[Role.Tutor, Role.S
                         new_class: NewClassDto, db: Session = Depends(session)):
     schedule = new_class.date
     assignment = {
-        "sources": [source.model_dump_json() for source in new_class.sources]
+        "assignments": [a.model_dump_json() for a in new_class.assignments]
     }
 
     params = {
@@ -112,6 +112,7 @@ async def add_new_class(private_course_id: int, role: Literal[Role.Tutor, Role.S
 
     db.commit()
     db.close()
+
     recipient_id, recipient_timezone, sender_name, subject_name, error_msg = result_row
 
     if error_msg:
@@ -122,3 +123,16 @@ async def add_new_class(private_course_id: int, role: Literal[Role.Tutor, Role.S
     send_notification_about_new_class(recipient_id, sender_name, subject_name, class_date)
 
     return ResponseBuilder.success_response(status.HTTP_201_CREATED)
+
+
+@router.get(path=APIEndpoints.PrivateCourses.GetPrivateCourse, status_code=status.HTTP_200_OK,
+            response_model=PrivateCourseDto[CourseMemberDto], summary="Get private courses by course id")
+async def get_private_courses(private_course_id: int, db: Session = Depends(session)):
+    private_course = private_courses_crud.get_private_course_by_course_id(db, private_course_id)
+
+    if private_course is None:
+        return ResponseBuilder.error_response(message="Course does not exist.")
+
+    private_course = PrivateCourseDto[CourseMemberDto].model_validate(private_course)
+
+    return ResponseBuilder.success_response(content=private_course)

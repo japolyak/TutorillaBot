@@ -1,7 +1,7 @@
 from fastapi import status, APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from src.common.models import TutorCourseDto, NewTutorCourseDto, TutorCourseInlineDto, ItemsDto, TextbookDto
+from src.common.models import TutorCourseDto, NewTutorCourseDto, TutorCourseInlineDto, ItemsDto, UserDto
 
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.database.crud import tutor_course_crud
@@ -13,12 +13,14 @@ router = APIRouter()
 
 
 @router.post(path=APIEndpoints.TutorCourse.AddCourse, status_code=status.HTTP_201_CREATED,
-             response_model=TutorCourseDto, description="Add course for tutor")
+             response_model=TutorCourseDto[UserDto], description="Add course for tutor")
 async def add_course(new_tutor_course: NewTutorCourseDto, user_id: int, db: Session = Depends(session)):
     # TODO - rewrite
-    db_course = tutor_course_crud.add_course(db=db, user_id=user_id, course=new_tutor_course)
+    new_tutor_course = tutor_course_crud.add_course(db=db, user_id=user_id, course=new_tutor_course)
 
-    return ResponseBuilder.success_response(content=db_course)
+    new_tutor_course = TutorCourseDto[UserDto].model_validate(new_tutor_course)
+
+    return ResponseBuilder.success_response(content=new_tutor_course)
 
 
 @router.get(path=APIEndpoints.TutorCourse.AvailableCourses, status_code=status.HTTP_200_OK,
@@ -34,22 +36,5 @@ async def get_available_tutor_courses(user_id: int, subject_name: str, db: Sessi
     ]
 
     response_model = ItemsDto[TutorCourseInlineDto](items=tutor_courses)
-
-    return ResponseBuilder.success_response(content=response_model)
-
-
-@router.get(path=APIEndpoints.TutorCourse.GetTextbooks, status_code=status.HTTP_200_OK,
-            response_model=ItemsDto[TextbookDto], description="Get text books for tutor course")
-async def get_text_books(tutor_course_id: int, db: Session = Depends(session)):
-    db_textbooks = tutor_course_crud.get_tutor_course_textbooks(db, tutor_course_id)
-
-    if not db_textbooks:
-        return ResponseBuilder.success_response(content=ItemsDto(items=[]))
-
-    textbooks = [
-        TextbookDto(id=tb[0], title=tb[1]) for tb in db_textbooks
-    ]
-
-    response_model = ItemsDto[TextbookDto](items=textbooks)
 
     return ResponseBuilder.success_response(content=response_model)

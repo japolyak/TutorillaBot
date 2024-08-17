@@ -10,7 +10,7 @@ is_development = os.getenv("IS_DEVELOPMENT", "False") == "True"
 api_link = os.getenv("API_LINK", "http://127.0.0.1:8000")
 
 # App
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173&http://127.0.0.1:4040&http://127.0.0.1:5173&http://localhost:4040").split('&')
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split('&')
 
 # Telegram
 bot_token = os.getenv("BOT_TOKEN", "")

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import Engine
 
-from src.common.models import SourceDto
+from src.common.models import AssignmentDto
 from src.common.config import dev_tg_id, admin_tg_id
 
 from src.api.src.database.models import User, Subject, TutorCourse, PrivateCourse, PrivateClass, Textbook
@@ -76,11 +76,11 @@ def insert_mock_data(engine: Engine):
         session.add_all([private_course1, private_course2, private_course3, private_course4, private_course5, private_course6])
         session.commit()
 
-        source_one = SourceDto(title="Assignment 1", description="Do this").model_dump_json()
-        source_two = SourceDto(title="Assignment 2", description="Do this again").model_dump_json()
+        assignment_one = AssignmentDto(textbookId=hurra_1.id, description="Do this").model_dump_json()
+        assignment_two = AssignmentDto(textbookId=hurra_2.id, description="Do this again").model_dump_json()
 
         assignments = {
-            "sources": [source_one, source_two]
+            "assignments": [assignment_one, assignment_two]
         }
 
         private_class1 = PrivateClass(private_course_id=private_course1.id, schedule_datetime="2021-06-01 12:00:00", assignment=assignments)
