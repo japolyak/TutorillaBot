@@ -1,12 +1,12 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import type { UserDto, PrivateCourseDto } from '@/modules/core/services/api/api.models';
+import type { UserDto, PrivateCourseDto, CourseMemberDto } from '@/modules/core/services/api/api.models';
 import { Role } from '@/modules/core/services/api/api.models';
 
 
 export const useUserStore = defineStore('user-store', () => {
 	const user = ref<UserDto | null>(null);
-	const privateCourse = ref<PrivateCourseDto | null>(null);
+	const privateCourse = ref<PrivateCourseDto<CourseMemberDto> | null>(null);
 
 	const privateCourseId = computed(() => privateCourse.value?.id ?? null);
 
@@ -34,7 +34,7 @@ export const useUserStore = defineStore('user-store', () => {
 		user.value = payload;
 	}
 
-	function setPrivateCourse(payload: PrivateCourseDto) {
+	function setPrivateCourse(payload: PrivateCourseDto<CourseMemberDto>) {
 		privateCourse.value = payload;
 	}
 

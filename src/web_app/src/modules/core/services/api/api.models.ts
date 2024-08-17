@@ -46,18 +46,18 @@ export interface TextbookDto {
 	title: string;
 }
 
-export interface TutorCourseDto {
+export interface TutorCourseDto<TUser> {
 	id: number;
-	tutor: CourseMemberDto;
+	tutor: TUser;
 	subject: SubjectDto;
 	textbooks: TextbookDto[];
 	price: number | null;
 }
 
-export interface PrivateCourseDto {
+export interface PrivateCourseDto<TUser> {
 	id: number;
-	tutorCourse: TutorCourseDto;
-	student: CourseMemberDto;
+	tutorCourse: TutorCourseDto<TUser>;
+	student: TUser;
 	price: number;
 }
 

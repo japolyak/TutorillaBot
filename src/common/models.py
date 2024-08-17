@@ -129,20 +129,14 @@ class PrivateCourseInlineDto(BaseModel):
         from_attributes = True
 
 
-class AssignmentDto(BaseModel):
-    textbookId: int
+class AssignmentDto(BaseDto):
+    textbook_id: int
     description: str
 
-    class Config:
-        from_attributes = True
 
-
-class NewClassDto(BaseModel):
+class NewClassDto(BaseDto):
     date: datetime
     assignments: List[AssignmentDto]
-
-    class Config:
-        from_attributes = True
 
 
 class PrivateClassDto(BaseModel):
