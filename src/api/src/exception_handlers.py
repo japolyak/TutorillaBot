@@ -2,8 +2,9 @@ from fastapi import FastAPI, Request
 
 from src.api.src.bot_client.message_sender import send_error_message
 from src.api.src.builders.response_builder import ResponseBuilder
-from src.api.src.utils.string_utils import StringUtils
+
 from src.common.config import admin_tg_id
+from src.common.string_utils import StringUtils
 
 
 def apply_exception_handlers(app: FastAPI) -> None:
