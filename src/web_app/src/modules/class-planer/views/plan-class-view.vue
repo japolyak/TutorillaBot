@@ -53,9 +53,6 @@ async function loadPrivateCourse(privateCourseId: number) {
 }
 
 async function planClass(classDate: Date) {
-	console.log("classDate - ", classDate);
-	console.log("privateCourseId - ", privateCourseId.value);
-	console.log("userRoleInPrivateCourse - ", userRoleInPrivateCourse.value);
     if (!privateCourseId.value || !userRoleInPrivateCourse.value) return;
 
     const response = await PrivateCourseClient.planNewClass(
