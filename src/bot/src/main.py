@@ -5,7 +5,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 from src.common.bot_token import bot
-from src.common.config import is_development
+from src.common.config import use_webhook
 from src.common.logger import configure_logger
 
 from src.bot.src.webhook.webhook_app import app
@@ -23,7 +23,7 @@ configure_logger()
 log.info(msg="Starting bot...")
 
 
-if not is_development:
+if use_webhook:
     initialize_webhook()
 else:
     log.info(msg='Removing webhook..')

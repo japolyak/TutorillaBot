@@ -14,6 +14,7 @@ allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split('&')
 
 # Telegram
 bot_token = os.getenv("BOT_TOKEN", "")
+use_webhook = os.getenv("USE_WEBHOOK", "True") == "True"
 webhook_url = os.getenv("WEBHOOK_URL", "")
 web_app_link = os.getenv("WEB_APP_LINK")
 admin_tg_id = int(os.getenv("ADMIN_TG_ID"))
