@@ -1,7 +1,7 @@
 from fastapi import status, APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from src.common.models import TutorCourseDto, NewTutorCourseDto, TutorCourseInlineDto, ItemsDto
+from src.common.models import TutorCourseDto, NewTutorCourseDto, TutorCourseInlineDto, ItemsDto, UserDto
 
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.database.crud import tutor_course_crud
@@ -13,12 +13,14 @@ router = APIRouter()
 
 
 @router.post(path=APIEndpoints.TutorCourse.AddCourse, status_code=status.HTTP_201_CREATED,
-             response_model=TutorCourseDto, description="Add course for tutor")
+             response_model=TutorCourseDto[UserDto], description="Add course for tutor")
 async def add_course(new_tutor_course: NewTutorCourseDto, user_id: int, db: Session = Depends(session)):
     # TODO - rewrite
-    db_course = tutor_course_crud.add_course(db=db, user_id=user_id, course=new_tutor_course)
+    new_tutor_course = tutor_course_crud.add_course(db=db, user_id=user_id, course=new_tutor_course)
 
-    return ResponseBuilder.success_response(content=db_course)
+    new_tutor_course = TutorCourseDto[UserDto].model_validate(new_tutor_course)
+
+    return ResponseBuilder.success_response(content=new_tutor_course)
 
 
 @router.get(path=APIEndpoints.TutorCourse.AvailableCourses, status_code=status.HTTP_200_OK,

@@ -9,8 +9,8 @@
 </template>
 
 <script setup lang="ts">
+import { useActionSnackbarStore } from '@/modules/core/store/snackbar-store';
 import { storeToRefs } from 'pinia';
-import { useActionSnackbarStore } from '@/stores/snackbar-store';
 
 const { isVisible, snackbarAnswer } = storeToRefs(useActionSnackbarStore());
 </script>

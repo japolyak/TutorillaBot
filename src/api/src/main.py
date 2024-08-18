@@ -12,6 +12,7 @@ from src.common.logger import configure_logger
 
 from src.api.src.database.db_setup import initialize_database
 from src.api.src.router import api_router
+from src.api.src.exception_handlers import apply_exception_handlers
 
 
 log = logging.getLogger(__name__)
@@ -32,3 +33,5 @@ app.add_middleware(
 
 initialize_database()
 app.include_router(api_router)
+
+apply_exception_handlers(app)

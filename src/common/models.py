@@ -2,21 +2,30 @@ from pydantic import BaseModel
 from typing import List, Generic, TypeVar, Tuple
 from datetime import datetime
 from enum import StrEnum
+from pydantic.alias_generators import to_camel
 
 
 T = TypeVar('T')
 
 
+class BaseDto(BaseModel):
+    class Config:
+        from_attributes = True
+        # Next 2 convert snake_case to camelCase
+        populate_by_name = True
+        alias_generator = to_camel
+
+
 class ClassStatus(StrEnum):
-    Scheduled = 'scheduled'
-    Occurred = 'occurred'
-    Paid = 'paid'
+    Scheduled = 'Scheduled'
+    Occurred = 'Occurred'
+    Paid = 'Paid'
 
 
 class Role(StrEnum):
-    Admin = 'admin'
-    Tutor = 'tutor'
-    Student = 'student'
+    Admin = 'Admin'
+    Tutor = 'Tutor'
+    Student = 'Student'
 
 
 class PaginatedList(BaseModel, Generic[T]):
@@ -29,23 +38,17 @@ class PaginatedList(BaseModel, Generic[T]):
         from_attributes = True
 
 
-class ItemsDto(BaseModel, Generic[T]):
+class ItemsDto(BaseDto, Generic[T]):
     items: List[T]
 
-    class Config:
-        from_attributes = True
 
-
-class UserBaseDto(BaseModel):
+class UserBaseDto(BaseDto):
     id: int
     first_name: str
     last_name: str
     email: str
     time_zone: float
     locale: str
-
-    class Config:
-        from_attributes = True
 
 
 class UserDto(UserBaseDto):
@@ -54,9 +57,6 @@ class UserDto(UserBaseDto):
     is_tutor: bool | None = None
     is_student: bool | None = None
     is_admin: bool | None = None
-
-    class Config:
-        from_attributes = True
 
 
 class UserRequestDto(BaseModel):
@@ -71,23 +71,9 @@ class UserRequestDto(BaseModel):
         from_attributes = True
 
 
-class SubjectDto(BaseModel):
+class SubjectDto(BaseDto):
     id: int
     name: str
-
-    class Config:
-        from_attributes = True
-
-
-class TutorCourseDto(BaseModel):
-    id: int
-    tutor: UserDto
-    subject: SubjectDto
-    is_active: bool
-    price: int
-
-    class Config:
-        from_attributes = True
 
 
 class TutorCourseInlineDto(BaseModel):
@@ -100,14 +86,30 @@ class TutorCourseInlineDto(BaseModel):
         from_attributes = True
 
 
-class PrivateCourseDto(BaseModel):
+class TextbookDto(BaseDto):
     id: int
-    student: UserDto
-    course: TutorCourseDto
+    title: str
+
+
+class CourseMemberDto(BaseDto):
+    id: int
+    first_name: str
+
+
+class TutorCourseDto(BaseDto, Generic[T]):
+    id: int
+    tutor: T
+    subject: SubjectDto
+    textbooks: List[TextbookDto]
+    is_active: bool
     price: int
 
-    class Config:
-        from_attributes = True
+
+class PrivateCourseDto(BaseDto, Generic[T]):
+    id: int
+    tutor_course: TutorCourseDto[T]
+    student: T
+    price: int
 
 
 class PrivateCourseInlineDto(BaseModel):
@@ -127,20 +129,14 @@ class PrivateCourseInlineDto(BaseModel):
         from_attributes = True
 
 
-class SourceDto(BaseModel):
-    title: str
-    assignment: str
-
-    class Config:
-        from_attributes = True
+class AssignmentDto(BaseDto):
+    textbook_id: int
+    description: str
 
 
-class NewClassDto(BaseModel):
+class NewClassDto(BaseDto):
     date: datetime
-    sources: List[SourceDto]
-
-    class Config:
-        from_attributes = True
+    assignments: List[AssignmentDto]
 
 
 class PrivateClassDto(BaseModel):
@@ -152,16 +148,16 @@ class PrivateClassDto(BaseModel):
         from_attributes = True
 
 
-class PrivateClassBaseDto(BaseModel):
-    id: int
-    schedule_datetime: datetime
-    assignment: List[SourceDto]
-    is_scheduled: bool
-    has_occurred: bool
-    is_paid: bool
-
-    class Config:
-        from_attributes = True
+# class PrivateClassBaseDto(BaseModel):
+#     id: int
+#     schedule_datetime: datetime
+#     assignment: List[SourceDto]
+#     is_scheduled: bool
+#     has_occurred: bool
+#     is_paid: bool
+#
+#     class Config:
+#         from_attributes = True
 
 
 class NewTutorCourseDto(BaseModel):
@@ -172,9 +168,6 @@ class NewTutorCourseDto(BaseModel):
         from_attributes = True
 
 
-class ClassDto(BaseModel):
+class ClassDto(BaseDto):
     date: datetime
     status: ClassStatus
-
-    class Config:
-        from_attributes = True

@@ -25,13 +25,13 @@ def get_subjects(user_id: int, role: Literal[Role.Tutor, Role.Student], locale: 
         bot.send_message(chat_id=user_id, text=t(user_id, "YouHaveNoCourses", locale), disable_notification=True)
         return
 
-    markup = InlineKeyboardMarkupCreator.subjects_markup(courses=response_data.items, role=role.capitalize())
+    markup = InlineKeyboardMarkupCreator.subjects_markup(courses=response_data.items, role=role)
 
     bot.send_message(chat_id=user_id, text=t(user_id, "ChooseSubject", locale),
                      disable_notification=True, reply_markup=markup)
 
 
-def role_requests(user_id: int, role: str, locale: str):
+def role_requests(user_id: int, role: Literal[Role.Student, Role.Tutor], locale: str):
     request = AdminClient.role_requests(role=role)
 
     if not request.ok:

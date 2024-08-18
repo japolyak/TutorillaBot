@@ -1,51 +1,67 @@
 <template>
-    <date-picker :request-fn="sendRequest" :course-id="privateCourseId" />
-	<assignment v-if="isTutor" ref="assignmentRef" :application-theme="applicationTheme"  />
+	<template v-if="!!privateCourseId">
+		<date-picker @plan-class="planClass" />
+		<assignment v-if="isTutorInPrivateCourse" />
+		<v-btn
+			v-if="isDev"
+			id="debug button"
+			text="Plan class"
+			class="my-2"
+			:color="testBtnColor"
+			@click="planClass(new Date())"
+		/>
+	</template>
+	<template v-else>
+		<!--TODO-->
+		Loading...
+	</template>
 </template>
 
 <script setup lang="ts">
-import DatePicker from '@/components/date-picker.vue';
-import Assignment from '@/components/assignment.vue';
-import { computed, onMounted, ref } from 'vue';
+import DatePicker from '@/modules/class-planer/components/date-picker.vue';
+import Assignment from '@/modules/class-planer/components/assignment.vue';
+import { PrivateCourseClient } from '@/modules/core/services/api-clients/private-course-client';
+import { useActionSnackbarStore } from '@/modules/core/store/snackbar-store';
+import { useClassPlannerStore } from '@/modules/class-planer/services/class-planner-store';
+import { useUserStore } from '@/modules/core/store/user-store';
+import { useTelegramWebAppStore } from '@/modules/core/store/telegram-web-app-store';
+import { onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { PrivateCourseClient } from '@/services/api/clients/private-course-client';
-import { type NewClassDto, Role } from '@/services/api/api.models'
-import { useActionSnackbarStore } from '@/stores/snackbar-store';
-import { useUserStore } from '@/stores/user-store';
+import { storeToRefs } from 'pinia';
 
 const route = useRoute();
+
 const { showSnackbar } = useActionSnackbarStore();
-const { isTutor } = useUserStore();
 
-const applicationTheme = ref<string | null>(null);
-const assignmentRef = ref<InstanceType<typeof Assignment> | null>(null);
+const { setPrivateCourse } = useUserStore();
+const { isTutorInPrivateCourse, privateCourseId, userRoleInPrivateCourse } = storeToRefs(useUserStore());
 
-const privateCourseId = computed(() => {
-  if (Array.isArray(route.params.privateCourseId)) return null;
+const { setMainButton, setWebAppTheme } = useTelegramWebAppStore();
 
-  const privateCourseIdFromRoute = parseInt(route.params.privateCourseId);
-  return isNaN(privateCourseIdFromRoute) ? null : privateCourseIdFromRoute;
-});
+const { restoreClassPlanner, setFlatTextbookAssignmentsList, newClass } = useClassPlannerStore();
 
-const sendRequest = async (planedDate: Date): Promise<void> => {
-    if (privateCourseId.value == null) return;
+const isDev = computed(() => import.meta.env.VITE_APP_IS_DEV === 'true');
+const testBtnColor = computed(() => window.Telegram.WebApp.colorScheme === 'light' ? 'blue' : 'green');
 
-    const payload: NewClassDto = {
-        date: planedDate,
-        sources: []
-    };
+async function loadPrivateCourse(privateCourseId: number) {
+	const response = await PrivateCourseClient.loadPrivateCourse(privateCourseId);
 
-    if (assignmentRef.value != null && assignmentRef.value.setAssignment) {
-        payload.sources = assignmentRef.value.items
-            .filter((item) => item.include && item.value)
-            .map((item) => ({ title: item.title, assignment: item.value  as string }));
-    }
+	if (!response.isSuccess) return;
 
-	const role = isTutor ? Role.tutor : Role.student;
+	setPrivateCourse(response.data);
+	setFlatTextbookAssignmentsList(response.data.tutorCourse.textbooks);
+}
 
-    const response = await PrivateCourseClient.planNewClass(privateCourseId.value, payload, role);
+async function planClass(classDate: Date) {
+    if (!privateCourseId.value || !userRoleInPrivateCourse.value) return;
 
-	if (response?.status !== 201) {
+    const response = await PrivateCourseClient.planNewClass(
+		privateCourseId.value,
+		newClass(classDate),
+		userRoleInPrivateCourse.value,
+	);
+
+	if (!response.isSuccess) {
 		showSnackbar({
 			message: 'Error occurred',
 			status: 'error',
@@ -58,10 +74,21 @@ const sendRequest = async (planedDate: Date): Promise<void> => {
 		status: 'success',
 	});
 
-	if (isTutor) assignmentRef.value?.resetAssignment();
-};
+	restoreClassPlanner(isTutorInPrivateCourse.value);
 
-onMounted(() => {
-    applicationTheme.value = window.Telegram.WebApp.themeParams.secondary_bg_color === '#1c1c1d' ? 'dark' : 'bright';
+	window.Telegram.WebApp.MainButton.hide();
+}
+
+onMounted(async () => {
+	setWebAppTheme();
+	setMainButton('Plan class');
+
+	if (Array.isArray(route.params.privateCourseId)) return;
+
+	const privateCourseIdFromRoute = parseInt(route.params.privateCourseId);
+
+	if (isNaN(privateCourseIdFromRoute)) return;
+
+	await loadPrivateCourse(privateCourseIdFromRoute);
 });
 </script>

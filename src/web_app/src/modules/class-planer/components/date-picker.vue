@@ -48,59 +48,49 @@
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from '@/modules/core/store/user-store';
+import { type ClassDto, ClassStatus } from '@/modules/core/services/api/api.models'
+import { PrivateCourseClient } from '@/modules/core/services/api-clients/private-course-client';
+import { useClassPlannerStore } from '@/modules/class-planer/services/class-planner-store';
+import type { MonthYearChange } from '@/modules/class-planer/models';
 import VueDatePicker, { type DatePickerMarker, type DatePickerInstance } from '@vuepic/vue-datepicker'
-import { onMounted, ref, watchEffect, type PropType } from 'vue';
-import { useUserStore } from '@/stores/user-store';
+import { ref, watchEffect } from 'vue';
 import { format } from 'date-fns'
-import { type ClassDto, ClassStatus } from '@/services/api/api.models'
-import { PrivateCourseClient } from '@/services/api/clients/private-course-client';
+import { storeToRefs } from 'pinia';
 
-const props = defineProps({
-    requestFn: {
-        type: Function,
-        required: true,
-    },
-	courseId: {
-		type: Number as PropType<number | null>,
-		required: true,
-		default: null,
-	},
-});
+const emit = defineEmits(['planClass']);
 
-const { userTimeZone, locale } = useUserStore();
+const { userTimeZone, locale, privateCourseId } = storeToRefs(useUserStore());
+const { date } = storeToRefs(useClassPlannerStore());
 
-const date = ref<Date | null>(null);
 const loading = ref(false);
 const openDate = ref<Date | null>(null);
 const markers = ref<DatePickerMarker[]>([]);
 const dateFormat = ref('dd-MM-yyyy HH:mm');
 const datepicker = ref<DatePickerInstance>(null);
 
-interface MonthYearChange {
-	instance: number;
-	month: number;
-	year: number;
-}
-
 async function loadClasses(month: number, year: number): Promise<ClassDto[]> {
-	if (props.courseId == null) return [];
+	if (!privateCourseId.value) return [];
 
 	loading.value = true;
 
-	const response = await PrivateCourseClient.getClassesByDate(props.courseId, month, year);
+	const response = await PrivateCourseClient.getClassesByDate(privateCourseId.value, month, year);
 
 	loading.value = false;
 
-	return response?.items ?? [];
+	//TODO - Show snackbar
+	if (!response.isSuccess) return [];
+
+	return response.data.items;
 }
 
-const handleMonthYear = async (a: MonthYearChange) => {
-	const classes = await loadClasses(a.month + 1, a.year);
+async function handleMonthYear(value: MonthYearChange) {
+	const classes = await loadClasses(value.month + 1, value.year);
 
 	markers.value = mapToDatePickerMarker(classes);
 }
 
-const openPlanner = async () => {
+async function openPlanner() {
 	const currentDate = new Date();
 
 	openDate.value = currentDate;
@@ -108,30 +98,31 @@ const openPlanner = async () => {
 	const classes = await loadClasses(currentDate.getMonth() + 1, currentDate.getFullYear());
 
 	markers.value = mapToDatePickerMarker(classes);
-};
+}
 
-const closePlanner = () => {
+function closePlanner() {
 	openDate.value = null;
 	markers.value = [];
-};
+}
 
 function mapToDatePickerMarker(data: ClassDto[]): DatePickerMarker[] {
-	return data.map((day) => {
+	return data.map(day => {
 		let color = '';
 		let tooltipText = '';
+		const occurredAt = formatDate(day.date, 'HH:mm');
 
 		switch (day.status) {
 			case ClassStatus.Occurred:
 				color = 'red';
-				tooltipText = `Occurred at ${formatDate(day.date, 'HH:mm')}`;
+				tooltipText = `Occurred at ${occurredAt}`;
 				break;
 			case ClassStatus.Scheduled:
 				color = 'green';
-				tooltipText = `Scheduled at ${formatDate(day.date, 'HH:mm')}`;
+				tooltipText = `Scheduled at ${occurredAt}`;
 				break;
 			case ClassStatus.Paid:
 				color = 'blue';
-				tooltipText = `Paid. Occurred at ${formatDate(day.date, 'HH:mm')}`;
+				tooltipText = `Paid. Occurred at ${occurredAt}`;
 				break;
 		}
 
@@ -145,17 +136,17 @@ function mapToDatePickerMarker(data: ClassDto[]): DatePickerMarker[] {
 	});
 }
 
-const closeMenu = () => {
+function closeMenu() {
 	datepicker.value?.closeMenu();
-};
+}
 
-const confirmationAllowed = (value: Date | null) => {
-	if (value == null) return false;
+function confirmationAllowed(value: Date | null) {
+	if (!value) return false;
 	// TODO - rethink implementation
 	return formatDate(value, 'HH:mm') !== formatDate(openDate.value, 'HH:mm');
-};
+}
 
-const setTelegramMainButtonState = (): void => {
+function setTelegramMainButtonState() {
     if (date.value) {
         if (window.Telegram.WebApp.MainButton.isVisible) return;
 
@@ -164,35 +155,30 @@ const setTelegramMainButtonState = (): void => {
     }
 
     window.Telegram.WebApp.MainButton.hide();
-};
+}
 
-const formatDate = (date: Date | null, datetimeFormat: string = 'dd.MM.yyyy, HH:mm') => {
-	if (date == null) return '';
+function formatDate(date: Date | null, datetimeFormat: string = 'dd.MM.yyyy, HH:mm') {
+	if (!date) return '';
 
 	return format(date, datetimeFormat);
-};
+}
 
-const planClass = (): void => {
-    if (date.value == null || userTimeZone == null) return;
+function planClass() {
+	if (!date.value || !userTimeZone.value) return;
 
 	const payload = new Date(Date.UTC(
 		date.value.getFullYear(),
 		date.value.getMonth(),
 		date.value.getDate(),
-		date.value.getHours() - userTimeZone,
+		date.value.getHours() - userTimeZone.value,
 		date.value.getMinutes(),
 		date.value.getSeconds()
 	));
 
-    props.requestFn(payload);
-
-    window.Telegram.WebApp.MainButton.hide();
-    date.value = null;
-};
+	emit('planClass', payload);
+}
 
 watchEffect(() => window.Telegram.WebApp.onEvent('mainButtonClicked', planClass));
-
-onMounted(() => window.Telegram.WebApp.MainButton.text = 'Plan class');
 </script>
 
 <style lang="scss">

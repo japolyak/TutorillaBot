@@ -2,9 +2,9 @@ from telebot.types import InputTextMessageContent, InlineQuery, InlineQueryResul
 from typing import Literal, List
 
 from src.common.bot_token import bot
+from src.common.models import Role, PrivateCourseInlineDto, TutorCourseInlineDto, ItemsDto
 
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
-from src.bot.src.services.api.api_models import Role, PrivateCourseInlineDto, TutorCourseInlineDto, ItemsDto
 from src.bot.src.services.api.clients.private_course_client import PrivateCourseClient
 from src.bot.src.services.api.clients.tutor_course_client import TutorCourseClient
 from src.bot.src.services.i18n.i18n import t

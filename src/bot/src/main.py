@@ -26,9 +26,6 @@ log.info(msg="Starting bot...")
 if not is_development:
     initialize_webhook()
 else:
-    from telebot import apihelper
-    apihelper.API_URL = "https://api.telegram.org/bot{0}/test/{1}"
-
     log.info(msg='Removing webhook..')
 
     bot.remove_webhook()

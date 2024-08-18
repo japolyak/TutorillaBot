@@ -10,17 +10,16 @@ is_development = os.getenv("IS_DEVELOPMENT", "False") == "True"
 api_link = os.getenv("API_LINK", "http://127.0.0.1:8000")
 
 # App
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173&http://127.0.0.1:4040&http://127.0.0.1:5173&http://localhost:4040").split('&')
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split('&')
 
 # Telegram
 bot_token = os.getenv("BOT_TOKEN", "")
 webhook_url = os.getenv("WEBHOOK_URL", "")
 web_app_link = os.getenv("WEB_APP_LINK")
-dev_tg_id = int(os.getenv("DEV_TG_ID", 228))
-admin_tg_id = int(os.getenv("ADMIN_TG_ID", 322))
+admin_tg_id = int(os.getenv("ADMIN_TG_ID"))
 
 # Database
-_database_username = os.getenv(f"DB_USER")
+_database_username = os.getenv(f"DB_USER", "postgres")
 _database_password = os.getenv(f"DB_PASSWORD")
 database_host = os.getenv(f"DB_HOST")
 database_port = int(os.getenv("DB_PORT") or 5432)

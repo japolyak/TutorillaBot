@@ -1,6 +1,7 @@
 from telebot.types import Message
 
 from src.common.bot_token import bot
+from src.common.models import Role
 
 from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from src.bot.src.handlers.message_handlers.contexts.i_context_base import IContextBase
@@ -35,7 +36,7 @@ class StudentContext(IContextBase):
     @__guard
     def student_courses(chat_id: int):
         locale = r.hget(chat_id, "locale")
-        get_subjects(chat_id, "student", locale)
+        get_subjects(chat_id, Role.Student, locale)
 
     @staticmethod
     @__guard

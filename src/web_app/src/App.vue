@@ -5,7 +5,10 @@
 
 <script setup lang="ts">
 import '@vuepic/vue-datepicker/dist/main.css';
-import Snackbar from './components/snackbar.vue';
+import Snackbar from '@/modules/core/components/snackbar.vue';
+import { onBeforeMount } from 'vue';
+
+onBeforeMount(() => (document.body.style.backgroundColor = window.Telegram.WebApp.backgroundColor));
 </script>
 
 <style lang="scss">
