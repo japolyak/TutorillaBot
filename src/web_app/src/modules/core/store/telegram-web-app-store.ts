@@ -8,8 +8,8 @@ export const useTelegramWebAppStore = defineStore('telegram-web-app-store', () =
 
 	function setWebAppTheme() {
 		window.Telegram.WebApp.setHeaderColor('#FF0000');
-		window.Telegram.WebApp.themeParams.bg_color = '#FF0000';
-		window.Telegram.WebApp.setBackgroundColor('#FF0000');
+		// window.Telegram.WebApp.setBackgroundColor('#FF0000');
+		document.body.style.backgroundColor = window.Telegram.WebApp.backgroundColor;
 		applicationTheme.value = window.Telegram.WebApp.colorScheme;
 	}
 
