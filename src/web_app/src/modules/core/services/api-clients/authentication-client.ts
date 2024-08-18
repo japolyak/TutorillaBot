@@ -4,7 +4,7 @@ import { type ApiResponse, ApiUtils } from '@/modules/core/services/api/api.util
 
 export class AuthenticationClient {
     public static async validateInitData(initData: string): Promise<ApiResponse<UserDto>> {
-		const request = httpClient.get('auth/me/', { headers: { 'Init-Data': initData } }).json<UserDto>();
+		const request = httpClient.get('auth/me/', { headers: { 'Init-Data': initData }, timeout: 30000 }).json<UserDto>();
 
 		return await ApiUtils.createApiResponse(request);
     }
