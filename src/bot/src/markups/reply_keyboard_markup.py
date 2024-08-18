@@ -15,8 +15,6 @@ class ReplyKeyboardMarkupCreator:
 
         markup = CustomReplyKeyboardMarkup(resize_keyboard=True)
 
-        # profile_btn = KeyboardButton(text=t(user_id, "ProfileKBtn", locale))
-        # support_btn = KeyboardButton(text=t(user_id, "SupportKBtn", locale))
         top_row = []
 
         if is_tutor:
@@ -27,12 +25,19 @@ class ReplyKeyboardMarkupCreator:
             classroom_btn = KeyboardButton(text=t(user_id, "ClassroomKBtn", locale))
             top_row.append(classroom_btn)
 
+        if top_row.__len__() > 0:
+            markup.add_row(top_row)
+
         if is_admin:
             admin_panel_btn = KeyboardButton(text=t(user_id, "AdminPanelKBtn", locale))
-            top_row.append(admin_panel_btn)
+            markup.add(admin_panel_btn)
 
-        markup.add_row(top_row)
         # TODO markup.add(profile_btn, support_btn)
+        # bottom_row = []
+        # profile_btn = KeyboardButton(text=t(user_id, "ProfileKBtn", locale))
+        # support_btn = KeyboardButton(text=t(user_id, "SupportKBtn", locale))
+        # if bottom_row.__len__() > 0:
+        #     markup.add_row(bottom_row)
 
         return markup
 
