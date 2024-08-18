@@ -21,11 +21,11 @@ admin_tg_id = int(os.getenv("ADMIN_TG_ID"))
 
 # Database
 _database_username = os.getenv(f"DB_USER", "postgres")
-_database_password = os.getenv(f"DB_PASSWORD")
-database_host = os.getenv(f"DB_HOST")
-database_port = int(os.getenv("DB_PORT") or 5432)
-database_name = os.getenv(f"DB_NAME")
-sqlalchemy_database_url = f"postgresql+psycopg2://{_database_username}:{_database_password}@{database_host}:{database_port}/{database_name}"
+_database_password = os.getenv(f"DB_PASSWORD", "postgres")
+_database_host = os.getenv(f"DB_HOST", "127.0.0.1")
+_database_port = int(os.getenv("DB_PORT") or 5432)
+_database_name = os.getenv(f"DB_NAME", "postgres")
+sqlalchemy_database_url = f"postgresql+psycopg2://{_database_username}:{_database_password}@{_database_host}:{_database_port}/{_database_name}"
 
 # REDIS
 redis_host = os.getenv("REDIS_HOST", "localhost")
