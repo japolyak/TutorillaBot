@@ -13,7 +13,7 @@ To facilitate debugging and development, you need to deploy the application to `
 ### Steps to Set Up Development Environment:
 
 1. **Deploy the Application on Netlify**:
-    - Choose the repository that contains your web app for deployment in `Netlify`.
+    - Choose the repository that contains your WebApp and branch for deployment in `Netlify`.
     - Set the `Base directory` to `src/web_app`.
     - Use `npm run build` command as the `Build command`.
 
@@ -21,21 +21,25 @@ To facilitate debugging and development, you need to deploy the application to `
     - Once the application is successfully deployed, update the WebApp URL in the `BOT` application to point to the newly deployed `WebApp` on `Netlify`.
 
 3. **Run Applications in Development Mode**:
-    - Start both the `BOT` application in development mode.
+    - Start the `BOT` application with disabled webhooks.
     - Open the `WebApp` in Telegram by clicking on the `Plan class` button. Ensure that the user opening the app has the same ID that was used for database mocking.
-    - Inspect opened WebApp and find request to url with `/auth/me/`.
+    - Inspect opened WebApp and find request to url that ends with `/auth/me/`.
     - Copy from Request value for `init-data` header
 
-4. **Configure Local Web App**:
+4. **Configure Local WebApp**:
     - In the root directory of your `WebApp`, create a `.env` file and define the `VITE_APP_WEB_APP_INIT_DATA` variable with the copied `init-data` value, enclosed in double quotes.
 
-This setup will allow your locally running web app to connect with the API.
+This setup will allow your locally running web application to connect to locally running `API`, but Telegram WebApp API will not be available.
+
+To be able to debug application with Telegram WebApp API, do first of above steps and serve `API` over https.
+Add url to `API` as `VITE_APP_API_URL` environment variable on `netlify`.
+At this point local database should be the same as remote.
 
 ## Production
 
 The production environment uses **Docker** containers and is deployed on **Google Cloud Platform** to ensure reliability and scalability.
 The following environment variables are required for configuring the services:
 
-* `PORT` - Port used by **nginx** to run the application.
-* `VITE_APP_API_URL` - URL of the *API*.
-* `VITE_APP_IS_DEV` - Indicates whether the build is in development mode.
+* `PORT` - Port used by `nginx` to run the application.
+* `VITE_APP_API_URL` - URL to the `API`.
+* `VITE_APP_IS_DEV` - Indicates whether the build is in development mode - `true` or `false`
