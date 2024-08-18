@@ -1,6 +1,7 @@
 from telebot.types import Message
 
 from src.common.bot_token import bot
+from src.common.models import Role
 
 from src.bot.src.handlers.message_handlers.contexts.i_context_base import IContextBase
 from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
@@ -33,10 +34,10 @@ class AdminContext(IContextBase):
     @__guard
     def get_tutor_role_requests(chat_id: int):
         locale = r.hget(chat_id, "locale")
-        role_requests(chat_id, "tutor", locale)
+        role_requests(chat_id, Role.Tutor, locale)
 
     @staticmethod
     @__guard
     def get_student_role_requests(chat_id: int):
         locale = r.hget(chat_id, "locale")
-        role_requests(chat_id, "student", locale)
+        role_requests(chat_id, Role.Student, locale)

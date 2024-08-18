@@ -13,7 +13,7 @@
 	</template>
 	<template v-else>
 		<!--TODO-->
-		Implement redirection to empty state
+		Loading...
 	</template>
 </template>
 

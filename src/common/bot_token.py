@@ -1,7 +1,7 @@
 import logging
 from telebot import ExceptionHandler, TeleBot, apihelper
 
-from src.common.config import dev_tg_id, is_development, bot_token
+from src.common.config import admin_tg_id, is_development, bot_token
 
 log = logging.getLogger(__name__)
 
@@ -10,8 +10,7 @@ class BotExceptionHandler(ExceptionHandler):
     def handle(self, exception: Exception):
         log.exception(msg="Caught an exception: ", exc_info=exception)
 
-        if is_development:
-            bot.send_message(chat_id=dev_tg_id, text=exception.__str__(), disable_notification=True)
+        bot.send_message(chat_id=admin_tg_id, text=exception.__str__(), disable_notification=True)
 
         return True
 

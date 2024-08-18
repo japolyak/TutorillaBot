@@ -2,9 +2,20 @@ from sqlalchemy.orm import Session
 from sqlalchemy import Engine
 
 from src.common.models import AssignmentDto
-from src.common.config import dev_tg_id, admin_tg_id
+from src.common.config import admin_tg_id
 
 from src.api.src.database.models import User, Subject, TutorCourse, PrivateCourse, PrivateClass, Textbook
+
+
+def create_admin(engine: Engine, is_dev: bool):
+    with Session(engine) as session:
+        admin = User(
+            id=admin_tg_id, first_name="Tutorilla", last_name="Admin", email="admin@tutorilla.com", normalized_email="admin@tutorilla.com",
+            time_zone=1, is_active=True, is_admin=True, is_tutor=is_dev, is_student=is_dev, locale="en-US"
+        )
+
+        session.add_all([admin])
+        session.commit()
 
 
 def insert_mock_data(engine: Engine):
@@ -33,26 +44,18 @@ def insert_mock_data(engine: Engine):
             id=6, is_active=True, time_zone=1, first_name="Firstname9", last_name="Lastname9", email="test9@test.com",
             normalized_email="test9@test.com", is_student=True, locale="en-US"
         )
-        artem = User(
-            id=dev_tg_id, first_name="Dummy", is_active=True, time_zone=1, last_name="User", email="test@mail.com",
-            normalized_email="test@mail.com", is_tutor=True, is_student=True, locale="en-US"
-        )
-        admin = User(
-            id=admin_tg_id, first_name="Admin", is_active=True, time_zone=1, last_name="Main", email="admin@admin.com",
-            normalized_email="admin@admin.com", is_admin=True, locale="en-US"
-        )
 
         polish = Subject(name="Polish")
         english = Subject(name="English")
 
-        session.add_all([user1, user2, user3, user4, user5, user6, artem, admin])
+        session.add_all([user1, user2, user3, user4, user5, user6])
         session.add_all([polish, english])
         session.commit()
 
         tutor_course1 = TutorCourse(tutor_id=user1.id, subject_id=polish.id, price=10)
         tutor_course2 = TutorCourse(tutor_id=user2.id, subject_id=english.id, price=10)
         tutor_course3 = TutorCourse(tutor_id=user3.id, subject_id=english.id, price=10)
-        tutor_course4 = TutorCourse(tutor_id=dev_tg_id, subject_id=english.id, price=10)
+        tutor_course4 = TutorCourse(tutor_id=admin_tg_id, subject_id=english.id, price=10)
 
         session.add_all([tutor_course1, tutor_course2, tutor_course3, tutor_course4])
         session.commit()
@@ -69,9 +72,9 @@ def insert_mock_data(engine: Engine):
         private_course1 = PrivateCourse(student_id=user4.id, tutor_course_id=tutor_course4.id, price=10)
         private_course2 = PrivateCourse(student_id=user5.id, tutor_course_id=tutor_course4.id, price=10)
         private_course3 = PrivateCourse(student_id=user6.id, tutor_course_id=tutor_course4.id, price=10)
-        private_course4 = PrivateCourse(student_id=dev_tg_id, tutor_course_id=tutor_course1.id, price=10)
-        private_course5 = PrivateCourse(student_id=dev_tg_id, tutor_course_id=tutor_course2.id, price=10)
-        private_course6 = PrivateCourse(student_id=dev_tg_id, tutor_course_id=tutor_course3.id, price=10)
+        private_course4 = PrivateCourse(student_id=admin_tg_id, tutor_course_id=tutor_course1.id, price=10)
+        private_course5 = PrivateCourse(student_id=admin_tg_id, tutor_course_id=tutor_course2.id, price=10)
+        private_course6 = PrivateCourse(student_id=admin_tg_id, tutor_course_id=tutor_course3.id, price=10)
 
         session.add_all([private_course1, private_course2, private_course3, private_course4, private_course5, private_course6])
         session.commit()

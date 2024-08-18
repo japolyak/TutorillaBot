@@ -15,7 +15,7 @@ class StringUtils:
 
     @classmethod
     def create_error_message(cls, exc: Exception) -> str:
-        exception_detail = str(exc)
+        exception_details = str(exc)
         exception_type = type(exc).__name__
         summary = list(filter(cls.__test, traceback.extract_tb(exc.__traceback__)))[-1]
 
@@ -24,9 +24,9 @@ class StringUtils:
             f">file: {cls.__replace_characters_in_telegram_rule(summary.filename)}",
             f">function: *{cls.__replace_characters_in_telegram_rule(summary.name)}*",
             f">line: {cls.__replace_characters_in_telegram_rule(summary.line)}",
-            f">number: {summary.lineno}",
+            f">line number: {summary.lineno}",
             "Details:",
-            f">{cls.__replace_characters_in_telegram_rule(exception_detail)}"
+            f">{cls.__replace_characters_in_telegram_rule(exception_details)}"
         )
 
         message = "\n".join(message_parts)

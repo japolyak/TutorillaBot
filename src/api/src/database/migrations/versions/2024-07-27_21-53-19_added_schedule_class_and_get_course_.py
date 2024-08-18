@@ -47,7 +47,7 @@ def upgrade() -> None:
         VALUES (pc_id, sc_schedule_datetime, sc_assignment);
 
         -- Fetch recipient and sender details based on the role
-        IF sender_role = 'student' THEN
+        IF sender_role = 'Student' THEN
             SELECT 
                 tu.id, 
                 tu.time_zone, 

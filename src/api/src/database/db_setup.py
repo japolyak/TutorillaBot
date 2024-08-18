@@ -11,7 +11,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database
 
 from src.common.config import is_development, sqlalchemy_database_url
-from src.api.src.database.mockdata import insert_mock_data
+from src.api.src.database.mockdata import insert_mock_data, create_admin
 
 
 log = logging.getLogger(__name__)
@@ -58,6 +58,9 @@ def initialize_database():
         log.info(msg="Database created")
 
         migrate(engine)
+
+        create_admin(engine, is_development)
+        log.info(msg="Admin created")
 
         if is_development:
             insert_mock_data(engine)

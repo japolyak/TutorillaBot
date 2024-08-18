@@ -52,13 +52,13 @@ def upgrade() -> None:
         END IF;
 
         -- Determine user time zone based on role
-        IF role = 'tutor' THEN
+        IF role = 'Tutor' THEN
             SELECT u.time_zone INTO user_timezone
             FROM tutor_courses AS tc
             JOIN users AS u ON tc.tutor_id = u.id
             JOIN private_courses AS pc ON tc.id = pc.tutor_course_id
             WHERE tc.tutor_id = user_id AND pc.id = pc_id;
-        ELSIF role = 'student' THEN
+        ELSIF role = 'Student' THEN
             SELECT u.time_zone INTO user_timezone
             FROM private_courses AS pc
             JOIN users AS u ON pc.student_id = u.id
@@ -90,9 +90,9 @@ def upgrade() -> None:
                 pc.schedule_datetime, 
                 user_timezone,
                 CASE
-                    WHEN pc.is_paid THEN 'paid'
-                    WHEN pc.has_occurred THEN 'occurred'
-                    ELSE 'scheduled'
+                    WHEN pc.is_paid THEN 'Paid'
+                    WHEN pc.has_occurred THEN 'Occurred'
+                    ELSE 'Scheduled'
                 END AS status
             FROM private_classes AS pc
             WHERE pc.private_course_id = pc_id
