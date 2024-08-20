@@ -3,7 +3,7 @@ from requests import Response
 from telebot.types import ReplyKeyboardRemove, CallbackQuery
 from typing import List, Any
 
-from src.common.bot_token import bot
+from src.common.bot import bot
 from src.common.models import Role
 
 from src.bot.src.services.redis_service.redis_client import r

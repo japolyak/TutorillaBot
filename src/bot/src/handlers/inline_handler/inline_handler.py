@@ -1,7 +1,7 @@
 from telebot.types import InputTextMessageContent, InlineQuery, InlineQueryResultArticle
 from typing import Literal, List
 
-from src.common.bot_token import bot
+from src.common.bot import bot
 from src.common.models import Role, PrivateCourseInlineDto, TutorCourseInlineDto, ItemsDto
 
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator

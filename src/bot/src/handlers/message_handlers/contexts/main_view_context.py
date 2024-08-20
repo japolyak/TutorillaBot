@@ -1,6 +1,6 @@
 from telebot.types import Message
 
-from src.common.bot_token import bot
+from src.common.bot import bot
 
 from src.bot.src.handlers.message_handlers.contexts.i_context_base import IContextBase
 from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator

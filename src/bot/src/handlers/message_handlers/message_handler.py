@@ -1,6 +1,6 @@
 from telebot.types import Message
 
-from src.common.bot_token import bot
+from src.common.bot import bot
 
 from src.bot.src.handlers.message_handlers.commands import command_handlers, translations
 

@@ -1,7 +1,7 @@
 import logging
 import time
 
-from src.common.bot_token import bot
+from src.common.bot import bot
 from src.common.config import webhook_url
 
 

@@ -4,7 +4,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-from src.common.bot_token import bot
+from src.common.bot import bot
 from src.common.config import use_webhook
 from src.common.logger import configure_logger
 

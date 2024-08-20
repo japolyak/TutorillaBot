@@ -1,7 +1,7 @@
 from telebot.types import CallbackQuery, Message
 from typing import Any, List
 
-from src.common.bot_token import bot
+from src.common.bot import bot
 from src.common.models import NewTutorCourseDto
 
 from src.bot.src.handlers.shared import get_subjects, next_stepper

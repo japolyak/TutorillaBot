@@ -1,6 +1,6 @@
 from typing import Literal, Callable
 
-from src.common.bot_token import bot
+from src.common.bot import bot
 from src.common.models import SubjectDto, UserRequestDto, Role, ItemsDto
 
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator

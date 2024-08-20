@@ -1,7 +1,7 @@
 from typing import Any, List
 from telebot.types import CallbackQuery
 
-from src.common.bot_token import bot
+from src.common.bot import bot
 from src.common.models import UserRequestDto, UserDto
 
 from src.bot.src.handlers.shared import role_requests

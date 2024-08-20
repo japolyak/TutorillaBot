@@ -1,6 +1,6 @@
 from telebot.types import Message
 
-from src.common.bot_token import bot
+from src.common.bot import bot
 from src.common.models import UserDto
 
 from src.bot.src.handlers.shared import next_stepper, register_next_step

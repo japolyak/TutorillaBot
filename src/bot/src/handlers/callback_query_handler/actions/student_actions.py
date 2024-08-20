@@ -1,7 +1,7 @@
 from telebot.types import CallbackQuery
 from typing import Any, List
 
-from src.common.bot_token import bot
+from src.common.bot import bot
 
 from src.bot.src.handlers.shared import send_available_subjects
 from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator

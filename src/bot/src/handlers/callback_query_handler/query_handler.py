@@ -1,6 +1,6 @@
 from telebot.types import CallbackQuery
 
-from src.common.bot_token import bot
+from src.common.bot import bot
 
 from src.bot.src.handlers.callback_query_handler.actions.admin_actions import AdminActions
 from src.bot.src.handlers.callback_query_handler.actions.registration_actions import RegistrationActions
