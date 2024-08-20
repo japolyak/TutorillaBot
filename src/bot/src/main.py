@@ -15,7 +15,7 @@ from src.bot.src.handlers.callback_query_handler import query_handler
 from src.bot.src.handlers.inline_handler import inline_handler
 from src.bot.src.handlers.message_handlers import message_handler, registration
 
-from bot.src.middlewares.message_middleware import MessageMiddleware
+from src.bot.src.middlewares.message_middleware import MessageMiddleware
 
 log = logging.getLogger(__name__)
 
