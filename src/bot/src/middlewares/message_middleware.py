@@ -1,13 +1,12 @@
 from telebot.handler_backends import BaseMiddleware
 from telebot.types import Message
-from telebot.util import update_types
 
-from src.bot.src.handlers.message_handlers.commands import command_handlers, translations
+from src.bot.src.handlers.message_handlers.commands import translations
 
 
 class MessageMiddleware(BaseMiddleware):
     def __init__(self):
-        self.update_types = update_types
+        self.update_types = ["message"]
 
     def pre_process(self, message: Message, data):
         if message.text.startswith("/"):
