@@ -7,7 +7,7 @@ class StringUtils:
     def create_error_message(cls, exc: Exception) -> str:
         exception_details = str(exc)
         exception_type = type(exc).__name__
-        summary = list(filter(cls.__test, traceback.extract_tb(exc.__traceback__)))[-1]
+        summary = list(filter(cls.__remove_venv_files, traceback.extract_tb(exc.__traceback__)))[-1]
 
         message_parts = (
             f"*{exception_type}* occurred in:",
@@ -33,5 +33,5 @@ class StringUtils:
         return text
 
     @staticmethod
-    def __test(summary: FrameSummary):
+    def __remove_venv_files(summary: FrameSummary):
         return '.venv' not in summary.filename

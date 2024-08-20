@@ -11,6 +11,6 @@ class SubjectClient:
     @classmethod
     def get_users_subjects(cls, user_id: int, role: Literal[Role.Student, Role.Tutor], is_available: bool):
         url = f"{cls.__link}/users/{user_id}/available/{is_available}/?role={role}"
-        r = requests.get(url)
+        r = requests.get(url, timeout=15)
 
         return r
