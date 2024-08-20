@@ -25,5 +25,6 @@ bot = TeleBot(
     token=bot_token,
     threaded=False,
     disable_notification=is_development,
-    exception_handler=BotExceptionHandler()
+    exception_handler=BotExceptionHandler(),
+    use_class_middlewares=True
 )
