@@ -38,6 +38,7 @@ en = {
     "UsersRequestDeclined": Template("User\'s request declined"),
     "CongratulationsYourRequestForRoleHasBeenAccepted": Template("Congratulations $name, Your request for $role role has been accepted"),
     "YouDontHaveClasses": Template("You dont have classes"),
+    "RetrievingDataError": Template("An error occurred while retrieving your data. Please try again later. If the issue persists, contact support."),
 
     "TeachIKBtn": Template("Teach"),
     "StudyIKBtn": Template("Study"),

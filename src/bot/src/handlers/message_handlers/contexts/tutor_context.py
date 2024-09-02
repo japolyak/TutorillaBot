@@ -41,13 +41,11 @@ class TutorContext(IContextBase):
     def add_course(chat_id: int):
         response = SubjectClient.get_users_subjects(chat_id, Role.Tutor, True)
 
-        if not response.is_successful:
-            bot.send_message(chat_id=chat_id,
-                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
-                             disable_notification=True)
-            return
-
         locale = r.hget(chat_id, "locale")
+
+        if not response.is_successful:
+            bot.send_message(chat_id=chat_id, text=t(chat_id, "RetrievingDataError", locale))
+            return
 
         subjects = response.data.items
 

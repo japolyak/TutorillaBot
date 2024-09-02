@@ -14,9 +14,7 @@ def get_subjects(user_id: int, role: Literal[Role.Tutor, Role.Student], locale: 
     response = SubjectClient.get_users_subjects(user_id, role, False)
 
     if not response.is_successful:
-        bot.send_message(chat_id=user_id,
-                         text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
-                         disable_notification=True)
+        bot.send_message(chat_id=user_id, text=t(user_id, "RetrievingDataError", locale))
         return
 
     if not response.data.items:
@@ -33,9 +31,7 @@ def role_requests(user_id: int, role: Literal[Role.Student, Role.Tutor], locale:
     response = AdminClient.role_requests(role=role)
 
     if not response.is_successful:
-        bot.send_message(chat_id=user_id,
-                         text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
-                         disable_notification=True)
+        bot.send_message(chat_id=user_id, text=t(user_id, "RetrievingDataError", locale))
         return
 
     if not response.data.items:
@@ -51,9 +47,7 @@ def send_available_subjects(user_id: int, locale: str):
     response = SubjectClient.get_users_subjects(user_id, Role.Student, True)
 
     if not response.is_successful:
-        bot.send_message(chat_id=user_id,
-                         text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
-                         disable_notification=True)
+        bot.send_message(chat_id=user_id, text=t(user_id, "RetrievingDataError", locale))
         return
 
     if not response.data.items:

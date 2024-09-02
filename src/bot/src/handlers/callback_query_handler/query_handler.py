@@ -39,7 +39,7 @@ actions = {
 
 
 @bot.callback_query_handler(func=lambda call: True)
-def callback_handler(call: CallbackQuery):
+def callback_handler(call: CallbackQuery, redis, **kwargs):
     callback_data = call.data.split()
 
     action = CallBackPrefix(callback_data[0])
@@ -49,4 +49,4 @@ def callback_handler(call: CallbackQuery):
 
     fn_to_call = actions.get(action)
 
-    fn_to_call(call, callback_data[1:])
+    fn_to_call(call, callback_data[1:], redis=redis)

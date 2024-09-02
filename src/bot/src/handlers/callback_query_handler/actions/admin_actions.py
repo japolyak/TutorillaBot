@@ -1,20 +1,20 @@
 from typing import Any, List
+from redis import Redis
 from telebot.types import CallbackQuery
 
 from src.common.bot import bot
-from src.common.models import UserRequestDto, UserDto
+from src.common.models import UserDto
 
 from src.bot.src.handlers.shared import role_requests
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from src.bot.src.services.api.clients.admin_client import AdminClient
 from src.bot.src.services.i18n.i18n import t
-from src.bot.src.services.redis_service.redis_client import r
 
 
 class AdminActions:
     @classmethod
-    def open_user_request(cls, call: CallbackQuery, callback_data: List[Any]):
+    def open_user_request(cls, call: CallbackQuery, callback_data: List[Any], **kwargs):
         chat_id = call.from_user.id
 
         role_request_id, locale = callback_data
@@ -22,7 +22,7 @@ class AdminActions:
         response = AdminClient.role_request(role_request_id)
 
         if not response.is_successful():
-            bot.send_message(chat_id=chat_id, text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.")
+            bot.send_message(chat_id=chat_id, text=t(chat_id, "RetrievingDataError", locale))
             return
 
         bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id)
@@ -38,7 +38,7 @@ class AdminActions:
 
 
     @classmethod
-    def accept_user_request(cls, call: CallbackQuery, callback_data: List[Any]):
+    def accept_user_request(cls, call: CallbackQuery, callback_data: List[Any], redis: Redis):
         chat_id = call.from_user.id
 
         user_id, role, locale = callback_data
@@ -46,14 +46,13 @@ class AdminActions:
         response = AdminClient.accept_user_request(user_id=user_id, role=role)
 
         if not response.is_successful():
-            bot.send_message(chat_id=chat_id,
-                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.")
+            bot.send_message(chat_id=chat_id, text=t(chat_id, "RetrievingDataError", locale))
             return
 
         user = response.data
 
-        r.hset(user.id, "is_active", int(user.is_active))
-        r.hset(user.id, "is_tutor" if user.is_tutor else "is_student", 1)
+        redis.hset(user.id, "is_active", int(user.is_active))
+        redis.hset(user.id, "is_tutor" if user.is_tutor else "is_student", 1)
 
         cls.__send_confirmation_message(user, role, locale)
 
@@ -62,7 +61,7 @@ class AdminActions:
 
 
     @classmethod
-    def decline_user_request(cls, call: CallbackQuery, callback_data: List[Any]):
+    def decline_user_request(cls, call: CallbackQuery, callback_data: List[Any], **kwargs):
         chat_id = call.from_user.id
 
         user_id, locale = callback_data
@@ -70,8 +69,7 @@ class AdminActions:
         response = AdminClient.decline_user_request(user_id)
 
         if not response.ok:
-            bot.send_message(chat_id=chat_id,
-                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.")
+            bot.send_message(chat_id=chat_id, text=t(chat_id, "RetrievingDataError", locale))
             return
 
         bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id)
@@ -79,7 +77,7 @@ class AdminActions:
 
 
     @classmethod
-    def back_to_requests(cls, call: CallbackQuery, callback_data: List[Any]):
+    def back_to_requests(cls, call: CallbackQuery, callback_data: List[Any], **kwargs):
         chat_id = call.from_user.id
 
         role, locale = callback_data

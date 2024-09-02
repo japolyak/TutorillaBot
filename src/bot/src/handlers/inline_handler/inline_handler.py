@@ -63,8 +63,7 @@ def subscribe_course(chat_id: int, subject: str, inline_query_id: str, locale: s
     response = TutorCourseClient.course_tutors(user_id=chat_id, subject_name=subject)
 
     if not response.is_successful():
-        bot.send_message(chat_id=chat_id,
-                         text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.")
+        bot.send_message(chat_id=chat_id, text=t(chat_id, "RetrievingDataError", locale))
         return
 
     tutor_courses = response.data.items
@@ -95,9 +94,7 @@ def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal[Rol
     response = PrivateCourseClient.get_private_courses_by_course_name(chat_id, subject_name, role)
 
     if not response.is_successful():
-        bot.send_message(chat_id=chat_id,
-                         text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
-                         disable_notification=True)
+        bot.send_message(chat_id=chat_id, text=t(chat_id, "RetrievingDataError", locale))
         return
 
     if not response.data.items:

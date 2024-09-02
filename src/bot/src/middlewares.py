@@ -1,7 +1,21 @@
+from redis import Redis
 from telebot.handler_backends import BaseMiddleware
 from telebot.types import Message
+from telebot.util import update_types
 
 from src.bot.src.handlers.message_handlers.commands import translations
+
+
+class RedisMiddleware(BaseMiddleware):
+    def __init__(self, redis_client: Redis):
+        self.r = redis_client
+        self.update_types = update_types
+
+    def pre_process(self, message: Message, data):
+        data["redis"] = self.r
+
+    def post_process(self, message, data, exception=None):
+        pass
 
 
 class MessageMiddleware(BaseMiddleware):

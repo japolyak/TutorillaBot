@@ -13,7 +13,7 @@ from src.bot.src.validators import Validator
 
 class TutorActions:
     @classmethod
-    def back_to_choose_subject_callback(cls, call: CallbackQuery, callback_data: List[Any]):
+    def back_to_choose_subject_callback(cls, call: CallbackQuery, callback_data: List[Any], **kwargs):
         chat_id = call.from_user.id
 
         role, locale = callback_data
@@ -22,7 +22,7 @@ class TutorActions:
         get_subjects(chat_id, role, locale)
 
     @classmethod
-    def back_to_private_course(cls, call: CallbackQuery, callback_data: List[Any]):
+    def back_to_private_course(cls, call: CallbackQuery, callback_data: List[Any], **kwargs):
         chat_id = call.from_user.id
 
         private_course_id, inline_message_id, role, locale = callback_data
@@ -31,7 +31,7 @@ class TutorActions:
         bot.edit_message_reply_markup(inline_message_id=inline_message_id, reply_markup=markup)
 
     @classmethod
-    def add_course_callback(cls, call: CallbackQuery, callback_data: List[Any]):
+    def add_course_callback(cls, call: CallbackQuery, callback_data: List[Any], **kwargs):
         chat_id = call.from_user.id
 
         subject_id, subject_name, locale = callback_data
@@ -59,8 +59,7 @@ class TutorActions:
         response = TutorCourseClient.add_course(user_id=chat_id, payload=payload)
 
         if not response.ok:
-            bot.send_message(chat_id=chat_id,
-                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.")
+            bot.send_message(chat_id=chat_id, text=t(chat_id, "RetrievingDataError", locale))
             return
 
         bot.send_message(chat_id=chat_id, text=t(chat_id, "CourseAddedSuccessfully", locale))
