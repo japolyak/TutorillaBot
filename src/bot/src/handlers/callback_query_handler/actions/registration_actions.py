@@ -41,9 +41,9 @@ class RegistrationActions:
 
         payload = json.dumps(r.hgetall(str(chat_id)), indent=4)
 
-        request = RegistrationClient.signup_user(payload)
+        response = RegistrationClient.signup_user(payload)
 
-        if not request.ok:
+        if not response.ok:
             fields_to_pop = ["last_name", "first_name", "email", "time_zone", "locale"]
 
             [r.hdel(chat_id, x) for x in fields_to_pop]
@@ -64,16 +64,16 @@ class RegistrationActions:
     def select_role(call: CallbackQuery, callback_data: List[Any], *args, **kwargs):
         chat_id = call.from_user.id
 
-        request: Response | None = None
+        response: Response | None = None
 
         prefix, locale = call.data.split()
 
         if prefix == CallBackPrefix.BecomeTutor:
-            request = RegistrationClient.apply_for_role(chat_id, Role.Tutor)
+            response = RegistrationClient.apply_for_role(chat_id, Role.Tutor)
         elif prefix == CallBackPrefix.BecomeStudent:
-            request = RegistrationClient.apply_for_role(chat_id, Role.Student)
+            response = RegistrationClient.apply_for_role(chat_id, Role.Student)
 
-        if not request.ok:
+        if not response.ok:
             bot.send_message(chat_id=chat_id,
                              text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
                              disable_notification=True)

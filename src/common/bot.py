@@ -24,7 +24,7 @@ if is_development:
 bot = TeleBot(
     token=bot_token,
     threaded=False,
-    disable_notification=is_development,
+    disable_notification=True,
     exception_handler=BotExceptionHandler(),
     use_class_middlewares=True
 )

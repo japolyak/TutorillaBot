@@ -2,7 +2,6 @@ from telebot.types import CallbackQuery
 from typing import Any, List
 
 from src.common.bot import bot
-from src.common.models import PaginatedList, PrivateClassDto
 
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.services.api.clients.private_course_client import PrivateCourseClient
@@ -18,22 +17,19 @@ class SharedActions:
 
         inline_message_id = call.inline_message_id
 
-        request = PrivateCourseClient.get_classes(private_course_id=private_course_id, role=role, user_id=chat_id)
+        response = PrivateCourseClient.get_classes(private_course_id=private_course_id, role=role, user_id=chat_id)
 
-        if not request.ok:
+        if not response.is_successful():
             bot.send_message(chat_id=chat_id,
-                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
-                             disable_notification=True)
+                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.")
 
             return
 
-        request_data = PaginatedList[PrivateClassDto](**request.json())
-
-        if not len(request_data.items):
-            bot.send_message(chat_id=chat_id, text=t(chat_id, "YouDontHaveClasses", locale), disable_notification=True)
+        if not response.data.items:
+            bot.send_message(chat_id=chat_id, text=t(chat_id, "YouDontHaveClasses", locale))
             return
 
-        markup = InlineKeyboardMarkupCreator.course_classes_markup(request_data, private_course_id,
+        markup = InlineKeyboardMarkupCreator.course_classes_markup(response.data, private_course_id,
                                                                    role, inline_message_id, locale, chat_id)
 
         bot.edit_message_reply_markup(inline_message_id=inline_message_id, reply_markup=markup)
@@ -44,17 +40,14 @@ class SharedActions:
 
         page, private_course_id, role, inline_message_id, locale = callback_data
 
-        request = PrivateCourseClient.get_classes(private_course_id, role, chat_id,  page)
+        response = PrivateCourseClient.get_classes(private_course_id, role, chat_id,  page)
 
-        if not request.ok:
+        if not response.is_successful():
             bot.send_message(chat_id=chat_id,
-                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
-                             disable_notification=True)
+                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.")
             return
 
-        rsp_data = PaginatedList[PrivateClassDto](**request.json())
-
-        markup = InlineKeyboardMarkupCreator.course_classes_markup(rsp_data, private_course_id,
+        markup = InlineKeyboardMarkupCreator.course_classes_markup(response.data, private_course_id,
                                                                    role, inline_message_id, locale, chat_id)
 
         bot.edit_message_reply_markup(inline_message_id=inline_message_id, reply_markup=markup)

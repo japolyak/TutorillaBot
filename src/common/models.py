@@ -42,6 +42,13 @@ class ItemsDto(BaseDto, Generic[T]):
     items: List[T]
 
 
+class ErrorDto(BaseModel):
+    detail: str
+
+    class Config:
+        from_attributes = True
+
+
 class UserBaseDto(BaseDto):
     id: int
     first_name: str
@@ -171,3 +178,8 @@ class NewTutorCourseDto(BaseModel):
 class ClassDto(BaseDto):
     date: datetime
     status: ClassStatus
+
+
+class NewTextbooksDto(BaseDto):
+    tutor_course_id: int
+    titles: List[str]

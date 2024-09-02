@@ -1,8 +1,8 @@
 class APIEndpoints:
     class TutorCourse:
         Prefix = "/tutor-courses"
-        AddCourse: str = "/users/{user_id}/"
-        AvailableCourses: str = "/users/{user_id}/subject-name/{subject_name}/"
+        AddCourse = "/users/{user_id}/"
+        AvailableCourses = "/users/{user_id}/subject-name/{subject_name}/"
 
     class Users:
         Prefix = "/users"
@@ -34,6 +34,12 @@ class APIEndpoints:
         Prefix = "/auth"
         Me = "/me/"
 
+    class Textbook:
+        Prefix = "/textbooks"
+        Get = "/tutor-course/{tutor_course_id}/"
+        Post = "/"
+        Delete = "/textbook_id/"
+
     class Home:
         Prefix = "/home"
-        Get: str = "/"
+        Get = "/"

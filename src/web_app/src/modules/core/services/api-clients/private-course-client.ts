@@ -23,14 +23,14 @@ export class PrivateCourseClient {
 		const url = `${this.urlBase}/${privateCourseId}/new-class/${role}/`;
 
 		const request = httpClient.post(url, { json: payload });
-		return  await ApiUtils.createApiResponse(request);
+		return await ApiUtils.createApiResponse(request);
     }
 
 	public static async getClassesByDate(privateCourseId: number, month: number, year: number): Promise<ApiResponse<ItemsDto<ClassDto>>> {
 		const url = `${this.urlBase}/${privateCourseId}/classes/month/${month}/year/${year}/`;
 
 		const request = httpClient.get(url).json<ItemsDto<ClassDto>>();
-		return  await ApiUtils.createApiResponse(request);
+		return await ApiUtils.createApiResponse(request);
     }
 
 	public static async test(): Promise<ApiResponse<any>> {

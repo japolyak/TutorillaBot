@@ -1,6 +1,9 @@
 import requests
 
-from src.common.config import api_link
+from src.common.config import api_link, api_timeout
+from src.common.models import ItemsDto, TutorCourseInlineDto
+
+from src.bot.src.services.api.api_utils import ApiUtils, ApiResponse
 
 
 class TutorCourseClient:
@@ -9,13 +12,13 @@ class TutorCourseClient:
     @classmethod
     def add_course(cls, user_id: int, payload):
         url = f"{cls.__link}/users/{user_id}/"
-        r = requests.post(url, data=payload, timeout=15)
+        response = requests.post(url, data=payload, timeout=api_timeout)
 
-        return r
+        return response
 
     @classmethod
-    def course_tutors(cls, user_id: int, subject_name: str):
+    def course_tutors(cls, user_id: int, subject_name: str) -> ApiResponse[ItemsDto[TutorCourseInlineDto]]:
         url = f"{cls.__link}/users/{user_id}/subject-name/{subject_name}/"
-        r = requests.get(url, timeout=15)
+        response = requests.get(url, timeout=api_timeout)
 
-        return r
+        return ApiUtils.create_api_response(response, ItemsDto[TutorCourseInlineDto])

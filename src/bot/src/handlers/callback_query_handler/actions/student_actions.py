@@ -16,9 +16,9 @@ class StudentActions:
 
         course_id, locale = callback_data
 
-        request = PrivateCourseClient.enroll_in_course(user_id=chat_id, private_course_id=course_id)
+        response = PrivateCourseClient.enroll_in_course(user_id=chat_id, private_course_id=course_id)
 
-        if not request.ok:
+        if not response.ok:
             bot.send_message(chat_id=chat_id,
                              text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
                              disable_notification=True)

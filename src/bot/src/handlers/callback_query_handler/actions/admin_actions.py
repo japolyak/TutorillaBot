@@ -19,25 +19,21 @@ class AdminActions:
 
         role_request_id, locale = callback_data
 
-        request = AdminClient.role_request(role_request_id)
+        response = AdminClient.role_request(role_request_id)
 
-        if not request.ok:
-            bot.send_message(chat_id=chat_id, text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
-                             disable_notification=True)
+        if not response.is_successful():
+            bot.send_message(chat_id=chat_id, text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.")
             return
-
-        role_request: UserRequestDto = UserRequestDto(**request.json())
 
         bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id)
 
-        role = role_request.user_role
+        role_request = response.data
 
-        markup = InlineKeyboardMarkupCreator.request_decision_markup(role_request.user_id, role, locale)
+        markup = InlineKeyboardMarkupCreator.request_decision_markup(role_request.user_id, role_request.user_role, locale)
         bot.send_message(chat_id=chat_id,
-                         text=f"Role - {role}"
+                         text=f"Role - {role_request.user_role}"
                               f"\n{role_request.user_first_name} {role_request.user_last_name}"
                               f"\n{role_request.user_email}",
-                         disable_notification=True,
                          reply_markup=markup)
 
 
@@ -47,15 +43,14 @@ class AdminActions:
 
         user_id, role, locale = callback_data
 
-        request = AdminClient.accept_user_request(user_id=user_id, role=role)
+        response = AdminClient.accept_user_request(user_id=user_id, role=role)
 
-        if not request.ok:
+        if not response.is_successful():
             bot.send_message(chat_id=chat_id,
-                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
-                             disable_notification=True)
+                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.")
             return
 
-        user: UserDto = UserDto(**request.json())
+        user = response.data
 
         r.hset(user.id, "is_active", int(user.is_active))
         r.hset(user.id, "is_tutor" if user.is_tutor else "is_student", 1)
@@ -63,8 +58,7 @@ class AdminActions:
         cls.__send_confirmation_message(user, role, locale)
 
         bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id)
-        bot.send_message(chat_id=chat_id, text=t(chat_id, "UsersRequestAccepted", locale),
-                         disable_notification=True)
+        bot.send_message(chat_id=chat_id, text=t(chat_id, "UsersRequestAccepted", locale))
 
 
     @classmethod
@@ -73,17 +67,15 @@ class AdminActions:
 
         user_id, locale = callback_data
 
-        request = AdminClient.decline_user_request(user_id)
+        response = AdminClient.decline_user_request(user_id)
 
-        if not request.ok:
+        if not response.ok:
             bot.send_message(chat_id=chat_id,
-                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
-                             disable_notification=True)
+                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.")
             return
 
         bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id)
-        bot.send_message(chat_id=chat_id, text=t(chat_id, "UsersRequestDeclined", locale),
-                         disable_notification=True)
+        bot.send_message(chat_id=chat_id, text=t(chat_id, "UsersRequestDeclined", locale))
 
 
     @classmethod
@@ -102,4 +94,4 @@ class AdminActions:
         markup = ReplyKeyboardMarkupCreator.main_menu_markup(user.id, locale)
         bot.send_message(chat_id=user.id,
                          text=t(user.id, "CongratulationsYourRequestForRoleHasBeenAccepted", locale, name=user.first_name, role=role),
-                         reply_markup=markup, disable_notification=True)
+                         reply_markup=markup)

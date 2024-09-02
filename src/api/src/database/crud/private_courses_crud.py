@@ -59,11 +59,11 @@ def get_private_course_by_course_id(db: Session, private_course_id: int) -> Priv
 
 
 def enroll_student_to_course(db: Session, user_id: int, course_id: int) -> PrivateCourse:
-    db_course = db.query(TutorCourse).filter(course_id == TutorCourse.id).first()
+    tutor_course = db.query(TutorCourse).filter(course_id == TutorCourse.id).first()
 
-    db_course = PrivateCourse(student_id=user_id, tutor_course_id=course_id, price=db_course.price)
-    db.add(db_course)
+    private_course = PrivateCourse(student_id=user_id, tutor_course_id=course_id, price=tutor_course.price)
+    db.add(private_course)
     db.commit()
-    db.refresh(db_course)
+    db.refresh(private_course)
 
-    return db_course
+    return private_course

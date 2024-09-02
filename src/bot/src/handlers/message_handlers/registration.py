@@ -1,7 +1,6 @@
 from telebot.types import Message
 
 from src.common.bot import bot
-from src.common.models import UserDto
 
 from src.bot.src.handlers.shared import next_stepper, register_next_step
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
@@ -17,10 +16,10 @@ from src.bot.src.validators import Validator
 def welcome(message: Message):
     chat_id = message.from_user.id
 
-    request = RegistrationClient.get_user(chat_id)
+    response = RegistrationClient.get_user(chat_id)
 
-    if request.ok:
-        user: UserDto = UserDto(**request.json())
+    if response.is_successful():
+        user = response.data
 
         add_user(chat_id, user)
 

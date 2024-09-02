@@ -56,13 +56,11 @@ class TutorActions:
         payload = NewTutorCourseDto(subject_id=kwargs.get("subject_id"),
                                     price=int(message.text)).model_dump_json()
 
-        request = TutorCourseClient.add_course(user_id=chat_id, payload=payload)
+        response = TutorCourseClient.add_course(user_id=chat_id, payload=payload)
 
-        if not request.ok:
+        if not response.ok:
             bot.send_message(chat_id=chat_id,
-                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
-                             disable_notification=True)
+                             text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.")
             return
 
-        bot.send_message(chat_id=chat_id, text=t(chat_id, "CourseAddedSuccessfully", locale),
-                         disable_notification=True)
+        bot.send_message(chat_id=chat_id, text=t(chat_id, "CourseAddedSuccessfully", locale))

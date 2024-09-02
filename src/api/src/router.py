@@ -8,6 +8,7 @@ from src.api.src.routers.subject import router as subject_router
 from src.api.src.routers.tutor_course import router as tutor_course_router
 from src.api.src.routers.user import router as user_router
 from src.api.src.routers.web_app import router as web_app_router
+from src.api.src.routers.textbook import router as textbook_router
 
 
 api_router = APIRouter()
@@ -19,3 +20,4 @@ api_router.include_router(subject_router, prefix=APIEndpoints.Subjects.Prefix, t
 api_router.include_router(tutor_course_router, prefix=APIEndpoints.TutorCourse.Prefix, tags=["tutor-courses"])
 api_router.include_router(user_router, prefix=APIEndpoints.Users.Prefix, tags=["users"])
 api_router.include_router(web_app_router, prefix=APIEndpoints.WebApp.Prefix, tags=["web-app"])
+api_router.include_router(textbook_router, prefix=APIEndpoints.Textbook.Prefix, tags=["textbooks"])

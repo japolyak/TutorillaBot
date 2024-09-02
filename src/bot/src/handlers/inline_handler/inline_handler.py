@@ -2,7 +2,7 @@ from telebot.types import InputTextMessageContent, InlineQuery, InlineQueryResul
 from typing import Literal, List
 
 from src.common.bot import bot
-from src.common.models import Role, PrivateCourseInlineDto, TutorCourseInlineDto, ItemsDto
+from src.common.models import Role, PrivateCourseInlineDto
 
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.services.api.clients.private_course_client import PrivateCourseClient
@@ -60,17 +60,16 @@ def query_text(query: InlineQuery):
 
 
 def subscribe_course(chat_id: int, subject: str, inline_query_id: str, locale: str):
-    request = TutorCourseClient.course_tutors(user_id=chat_id, subject_name=subject)
+    response = TutorCourseClient.course_tutors(user_id=chat_id, subject_name=subject)
 
-    if not request.ok:
+    if not response.is_successful():
         bot.send_message(chat_id=chat_id,
-                         text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
-                         disable_notification=True)
+                         text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.")
         return
 
-    response_data = ItemsDto[TutorCourseInlineDto](**request.json())
+    tutor_courses = response.data.items
 
-    if not response_data.items:
+    if not tutor_courses:
         bot.send_message(chat_id=chat_id, text=t(chat_id, "NoCoursesFound", locale), disable_notification=True)
         return
 
@@ -84,7 +83,7 @@ def subscribe_course(chat_id: int, subject: str, inline_query_id: str, locale: s
                                tutor=i.tutor_name, price=f"{i.price}$")
             ),
             reply_markup=InlineKeyboardMarkupCreator.subscribe_course_markup(i.id, chat_id, locale)
-        ) for i in response_data.items
+        ) for i in tutor_courses
     ]
 
     bot.answer_inline_query(inline_query_id=inline_query_id, results=courses, cache_time=0)
@@ -93,21 +92,19 @@ def subscribe_course(chat_id: int, subject: str, inline_query_id: str, locale: s
 def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal[Role.Tutor, Role.Student], locale: str):
     chat_id = query.from_user.id
 
-    request = PrivateCourseClient.get_private_courses_by_course_name(chat_id, subject_name, role)
+    response = PrivateCourseClient.get_private_courses_by_course_name(chat_id, subject_name, role)
 
-    if not request.ok:
+    if not response.is_successful():
         bot.send_message(chat_id=chat_id,
                          text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
                          disable_notification=True)
         return
 
-    response_data = ItemsDto[PrivateCourseInlineDto](**request.json())
-
-    if not response_data.items:
+    if not response.data.items:
         bot.send_message(chat_id=chat_id, text=t(chat_id, "NoCoursesFound", locale), disable_notification=True)
         return
 
-    courses = create_inline_query_courses(chat_id, role, response_data.items, locale)
+    courses = create_inline_query_courses(chat_id, role, response.data.items, locale)
 
     bot.answer_inline_query(inline_query_id=query.id, results=courses, cache_time=0)
 

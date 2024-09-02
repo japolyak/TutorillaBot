@@ -11,62 +11,56 @@ from src.bot.src.services.i18n.i18n import t
 
 
 def get_subjects(user_id: int, role: Literal[Role.Tutor, Role.Student], locale: str):
-    request = SubjectClient.get_users_subjects(user_id, role, False)
+    response = SubjectClient.get_users_subjects(user_id, role, False)
 
-    if not request.ok:
+    if not response.is_successful:
         bot.send_message(chat_id=user_id,
                          text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
                          disable_notification=True)
         return
 
-    response_data: ItemsDto[SubjectDto] = ItemsDto[SubjectDto](**request.json())
-
-    if not response_data.items:
+    if not response.data.items:
         bot.send_message(chat_id=user_id, text=t(user_id, "YouHaveNoCourses", locale), disable_notification=True)
         return
 
-    markup = InlineKeyboardMarkupCreator.subjects_markup(courses=response_data.items, role=role)
+    markup = InlineKeyboardMarkupCreator.subjects_markup(courses=response.data.items, role=role)
 
     bot.send_message(chat_id=user_id, text=t(user_id, "ChooseSubject", locale),
                      disable_notification=True, reply_markup=markup)
 
 
 def role_requests(user_id: int, role: Literal[Role.Student, Role.Tutor], locale: str):
-    request = AdminClient.role_requests(role=role)
+    response = AdminClient.role_requests(role=role)
 
-    if not request.ok:
+    if not response.is_successful:
         bot.send_message(chat_id=user_id,
                          text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
                          disable_notification=True)
         return
 
-    response_data: ItemsDto[UserRequestDto] = ItemsDto[UserRequestDto](**request.json())
-
-    if not response_data.items:
+    if not response.data.items:
         bot.send_message(chat_id=user_id, text=t(user_id, "NoRequests", locale), disable_notification=True)
         return
 
-    markup = InlineKeyboardMarkupCreator.requests_markup(response_data.items, locale)
+    markup = InlineKeyboardMarkupCreator.requests_markup(response.data.items, locale)
 
     bot.send_message(chat_id=user_id, text=t(user_id, "AllRequests", locale), disable_notification=True, reply_markup=markup)
 
 
 def send_available_subjects(user_id: int, locale: str):
-    request = SubjectClient.get_users_subjects(user_id, Role.Student, True)
+    response = SubjectClient.get_users_subjects(user_id, Role.Student, True)
 
-    if not request.ok:
+    if not response.is_successful:
         bot.send_message(chat_id=user_id,
                          text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
                          disable_notification=True)
         return
 
-    response_data: ItemsDto[SubjectDto] = ItemsDto[SubjectDto](**request.json())
-
-    if not response_data.items:
+    if not response.data.items:
         bot.send_message(chat_id=user_id, text=t(user_id, "NoAvailableSubjects", locale), disable_notification=True)
         return
 
-    markup = InlineKeyboardMarkupCreator.sub_course_markup(courses=response_data.items)
+    markup = InlineKeyboardMarkupCreator.sub_course_markup(courses=response.data.items)
 
     bot.send_message(chat_id=user_id, text=t(user_id, "ChooseSubjectToLearn", locale),
                      disable_notification=True, reply_markup=markup)

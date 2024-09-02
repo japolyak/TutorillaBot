@@ -2,11 +2,10 @@ from sqlalchemy.orm import Session
 
 from src.common.models import NewTutorCourseDto
 
-from src.api.src.database.models import TutorCourse, Subject, User, Textbook
+from src.api.src.database.models import TutorCourse, Subject, User
 
 
 def add_course(db: Session, user_id: int, course: NewTutorCourseDto) -> TutorCourse:
-
     db_course = TutorCourse(tutor_id=user_id, subject_id=course.subject_id, price=course.price)
     db.add(db_course)
     db.commit()

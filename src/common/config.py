@@ -8,6 +8,8 @@ load_dotenv()
 log_level = os.getenv("LOG_LEVEL", "DEBUG")
 is_development = os.getenv("IS_DEVELOPMENT", "False") == "True"
 api_link = os.getenv("API_LINK", "http://127.0.0.1:8000")
+_timeout = os.getenv("TIMEOUT")
+api_timeout = int(_timeout) if _timeout is not None else None
 
 # App
 allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split('&')

@@ -7,17 +7,26 @@ class StringUtils:
     def create_error_message(cls, exc: Exception) -> str:
         exception_details = str(exc)
         exception_type = type(exc).__name__
-        summary = list(filter(cls.__remove_venv_files, traceback.extract_tb(exc.__traceback__)))[-1]
+        files = list(filter(cls.__remove_venv_files, traceback.extract_tb(exc.__traceback__)))
 
-        message_parts = (
-            f"*{exception_type}* occurred in:",
-            f">file: {cls.__replace_characters_in_telegram_rule(summary.filename)}",
-            f">function: *{cls.__replace_characters_in_telegram_rule(summary.name)}*",
-            f">line: {cls.__replace_characters_in_telegram_rule(summary.line)}",
-            f">line number: {summary.lineno}",
-            "Details:",
-            f">{cls.__replace_characters_in_telegram_rule(exception_details)}"
-        )
+        if files:
+            summary = files[-1]
+
+            message_parts = (
+                f"*{exception_type}* occurred in:",
+                f">file: {cls.__replace_characters_in_telegram_rule(summary.filename)}",
+                f">function: *{cls.__replace_characters_in_telegram_rule(summary.name)}*",
+                f">line: {cls.__replace_characters_in_telegram_rule(summary.line)}",
+                f">line number: {summary.lineno}",
+                "Details:",
+                f">{cls.__replace_characters_in_telegram_rule(exception_details)}"
+            )
+        else:
+            message_parts = (
+                f"*{exception_type}* occurred\.",
+                "Details:",
+                f"{cls.__replace_characters_in_telegram_rule(exception_details)}"
+            )
 
         message = "\n".join(message_parts)
 

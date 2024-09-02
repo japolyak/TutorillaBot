@@ -39,9 +39,9 @@ class TutorContext(IContextBase):
     @staticmethod
     @__guard
     def add_course(chat_id: int):
-        request = SubjectClient.get_users_subjects(chat_id, Role.Tutor, True)
+        response = SubjectClient.get_users_subjects(chat_id, Role.Tutor, True)
 
-        if not request.ok:
+        if not response.is_successful:
             bot.send_message(chat_id=chat_id,
                              text="An error occurred while retrieving your data. Please try again later. If the issue persists, contact support.",
                              disable_notification=True)
@@ -49,15 +49,15 @@ class TutorContext(IContextBase):
 
         locale = r.hget(chat_id, "locale")
 
-        response_data: ItemsDto[SubjectDto] = ItemsDto[SubjectDto](**request.json())
+        subjects = response.data.items
 
-        if not response_data.items:
+        if not subjects:
             bot.send_message(chat_id=chat_id, text=t(chat_id, "NoAvailableSubjects", locale),
                              disable_notification=True)
             return
 
         msg_text = t(chat_id, "ChooseSubjectToTeach", locale)
 
-        markup = InlineKeyboardMarkupCreator.add_course_markup(response_data.items, locale)
+        markup = InlineKeyboardMarkupCreator.add_course_markup(subjects, locale)
 
         bot.send_message(chat_id=chat_id, text=msg_text, disable_notification=True, reply_markup=markup)

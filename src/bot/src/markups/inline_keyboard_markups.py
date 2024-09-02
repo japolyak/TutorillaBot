@@ -49,7 +49,7 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def subjects_markup(courses: List[SubjectDto], role: Literal["Tutor", "Student"]) -> InlineKeyboardMarkup:
+    def subjects_markup(courses: List[SubjectDto], role: Literal[Role.Tutor, Role.Student]) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 
         [markup.add(

@@ -1,28 +1,31 @@
 import requests
 
-from src.common.config import api_link
+from src.common.config import api_link, api_timeout
+from src.common.models import PaginatedList, PrivateClassDto, ItemsDto, PrivateCourseInlineDto
+
+from src.bot.src.services.api.api_utils import ApiUtils, ApiResponse
 
 
 class PrivateCourseClient:
     __link = f"{api_link}/private-courses"
 
     @classmethod
-    def get_classes(cls, private_course_id: int, role: str, user_id: int, page: int = 1):
+    def get_classes(cls, private_course_id: int, role: str, user_id: int, page: int = 1) -> ApiResponse[PaginatedList[PrivateClassDto]]:
         url = f"{cls.__link}/{private_course_id}/classes/?role={role}&page={page}&user_id={user_id}"
-        r = requests.get(url, timeout=15)
+        response = requests.get(url, timeout=api_timeout)
 
-        return r
+        return ApiUtils.create_api_response(response, PaginatedList[PrivateClassDto])
 
     @classmethod
-    def get_private_courses_by_course_name(cls, user_id: int, subject_name: str, role: str):
+    def get_private_courses_by_course_name(cls, user_id: int, subject_name: str, role: str) -> ApiResponse[ItemsDto[PrivateCourseInlineDto]]:
         url = f"{cls.__link}/users/{user_id}/subjects/{subject_name}/?role={role}"
-        r = requests.get(url, timeout=15)
+        response = requests.get(url, timeout=api_timeout)
 
-        return r
+        return ApiUtils.create_api_response(response, ItemsDto[PrivateCourseInlineDto])
 
     @classmethod
     def enroll_in_course(cls, user_id: int, private_course_id: int):
         url = f"{cls.__link}/{private_course_id}/users/{user_id}/"
-        r = requests.post(url, timeout=15)
+        response = requests.post(url, timeout=api_timeout)
 
-        return r
+        return response
