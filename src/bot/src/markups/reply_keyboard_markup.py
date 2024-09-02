@@ -9,6 +9,7 @@ from src.bot.src.services.redis_service.redis_client import r
 class ReplyKeyboardMarkupCreator:
     @classmethod
     def main_menu_markup(cls, user_id, locale: str) -> ReplyKeyboardMarkup:
+        # TODO - remove it from here!
         is_tutor = int(r.hget(user_id, "is_tutor") or 0)
         is_student = int(r.hget(user_id, "is_student") or 0)
         is_admin = int(r.hget(user_id, "is_admin") or 0)

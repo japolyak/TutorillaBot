@@ -1,3 +1,4 @@
+from redis import Redis
 from telebot.types import InputTextMessageContent, InlineQuery, InlineQueryResultArticle
 from typing import Literal, List
 
@@ -11,7 +12,7 @@ from src.bot.src.services.i18n.i18n import t
 from src.bot.src.services.redis_service.redis_client import r
 
 
-def inline_handler_guard(query: InlineQuery):
+def inline_handler_guard(query: InlineQuery, *args, **kwargs):
     query_data = query.query.split(" ")
     chat_id = query.from_user.id
 
@@ -20,33 +21,34 @@ def inline_handler_guard(query: InlineQuery):
 
     context, subject = query_data
 
-    allowed_identities = {"Tutor", "Student", "Subscribe"}
+    allowed_identities = {Role.Tutor, Role.Student, "Subscribe"}
 
     if context not in allowed_identities:
         return False
 
+    #TODO - rewrite!
     allowed_subjects = {"Polish", "English", "Test"}
 
     if subject not in allowed_subjects:
         return False
 
     match context:
-        case "Tutor":
+        case Role.Tutor:
             return r.hget(chat_id, "is_tutor") == "1"
-        case "Student":
+        case Role.Student:
             return r.hget(chat_id, "is_student") == "1"
         case "Subscribe":
             return r.hget(chat_id, "is_student") == "1"
         case _:
             return False
 
-
+#TODO - find solution to pass redis to inline_handler_guard
 @bot.inline_handler(func=inline_handler_guard)
-def query_text(query: InlineQuery):
+def query_text(query: InlineQuery, redis: Redis):
     chat_id = query.from_user.id
 
     context, subject = query.query.split()
-    locale = r.hget(chat_id, "locale")
+    locale = redis.hget(chat_id, "locale")
 
     match context:
         case "Tutor":

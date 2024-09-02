@@ -1,3 +1,4 @@
+from redis import Redis
 from telebot.types import Message
 
 from src.common.bot import bot
@@ -13,7 +14,7 @@ from src.bot.src.validators import Validator
 
 
 @bot.message_handler(commands=["start"])
-def welcome(message: Message):
+def welcome(message: Message, redis: Redis):
     chat_id = message.from_user.id
 
     response = RegistrationClient.get_user(chat_id)
@@ -21,7 +22,7 @@ def welcome(message: Message):
     if response.is_successful():
         user = response.data
 
-        add_user(chat_id, user)
+        add_user(redis, chat_id, user)
 
         markup = ReplyKeyboardMarkupCreator.main_menu_markup(chat_id, user.locale)
         bot.send_message(chat_id=chat_id,
@@ -30,7 +31,7 @@ def welcome(message: Message):
                          reply_markup=markup)
         return
 
-    r.hset(str(chat_id), "id", int(chat_id))
+    redis.hset(str(chat_id), "id", int(chat_id))
 
     welcome_message = """
     Hi, it's TutorillaBot!\nMy mission is to help you to find a tutor for your needs.\n\nPlease, select a language by clicking the button below to start the registration process.
