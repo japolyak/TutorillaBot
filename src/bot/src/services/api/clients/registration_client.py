@@ -1,7 +1,7 @@
 import requests
 from requests import Response
 
-from src.common.config import api_link, api_timeout
+from common import api_link, api_timeout
 from src.common.models import UserDto
 
 from src.bot.src.services.api.api_utils import ApiUtils, ApiResponse

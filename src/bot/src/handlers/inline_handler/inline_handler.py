@@ -2,7 +2,7 @@ from redis import Redis
 from telebot.types import InputTextMessageContent, InlineQuery, InlineQueryResultArticle
 from typing import Literal, List
 
-from src.common.bot import bot
+from common import bot
 from src.common.models import Role, PrivateCourseInlineDto
 
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
@@ -10,10 +10,11 @@ from src.bot.src.services.api.clients.private_course_client import PrivateCourse
 from src.bot.src.services.api.clients.tutor_course_client import TutorCourseClient
 from src.bot.src.services.i18n.i18n import t
 from src.bot.src.services.redis_service.redis_client import r
+from src.bot.src.services.redis_service.redis_user_management import RedisUser
 
 
 def inline_handler_guard(query: InlineQuery, *args, **kwargs):
-    query_data = query.query.split(" ")
+    query_data = query.query.split("_")
     chat_id = query.from_user.id
 
     if len(query_data) < 2:
@@ -21,24 +22,22 @@ def inline_handler_guard(query: InlineQuery, *args, **kwargs):
 
     context, subject = query_data
 
-    allowed_identities = {Role.Tutor, Role.Student, "Subscribe"}
+    context = context.split(" ")
 
-    if context not in allowed_identities:
-        return False
+    #TODO - remove!
+    # allowed_subjects = {"Polish", "English", "Test"}
+    #
+    # if subject not in allowed_subjects:
+    #     return False
 
-    #TODO - rewrite!
-    allowed_subjects = {"Polish", "English", "Test"}
-
-    if subject not in allowed_subjects:
-        return False
-
-    match context:
-        case Role.Tutor:
-            return r.hget(chat_id, "is_tutor") == "1"
-        case Role.Student:
-            return r.hget(chat_id, "is_student") == "1"
+    print(context)
+    match context[-1]:
+        case "Courses":
+            return RedisUser.has_role(r, chat_id, Role.Tutor) if context[0] == Role.Tutor else RedisUser.has_role(r, chat_id, Role.Student)
+        case "Students":
+            return RedisUser.has_role(r, chat_id, Role.Student)
         case "Subscribe":
-            return r.hget(chat_id, "is_student") == "1"
+            return RedisUser.has_role(r, chat_id, Role.Student)
         case _:
             return False
 
@@ -47,7 +46,7 @@ def inline_handler_guard(query: InlineQuery, *args, **kwargs):
 def query_text(query: InlineQuery, redis: Redis):
     chat_id = query.from_user.id
 
-    context, subject = query.query.split()
+    context, subject = query.query.split("_")
     locale = redis.hget(chat_id, "locale")
 
     match context:
@@ -71,7 +70,7 @@ def subscribe_course(chat_id: int, subject: str, inline_query_id: str, locale: s
     tutor_courses = response.data.items
 
     if not tutor_courses:
-        bot.send_message(chat_id=chat_id, text=t(chat_id, "NoCoursesFound", locale), disable_notification=True)
+        bot.send_message(chat_id=chat_id, text=t(chat_id, "NoCoursesFound", locale))
         return
 
     courses = [
@@ -100,7 +99,7 @@ def get_courses_by_role(query: InlineQuery, subject_name: str, role: Literal[Rol
         return
 
     if not response.data.items:
-        bot.send_message(chat_id=chat_id, text=t(chat_id, "NoCoursesFound", locale), disable_notification=True)
+        bot.send_message(chat_id=chat_id, text=t(chat_id, "NoCoursesFound", locale))
         return
 
     courses = create_inline_query_courses(chat_id, role, response.data.items, locale)

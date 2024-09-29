@@ -6,7 +6,7 @@ from sqlalchemy import engine_from_config, pool
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../..')))
 
-from src.common.config import sqlalchemy_database_url
+from common import sqlalchemy_database_url
 from src.api.src.database.models import Base
 
 # this is the Alembic Config object, which provides

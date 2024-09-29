@@ -1,6 +1,6 @@
 import logging
 
-from src.common.config import log_level as ll
+from common import ll
 from enum import StrEnum
 
 

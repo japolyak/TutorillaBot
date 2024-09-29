@@ -10,7 +10,7 @@ from sqlalchemy import create_engine, Engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database
 
-from src.common.config import is_development, sqlalchemy_database_url
+from common import is_development, sqlalchemy_database_url
 from src.api.src.database.mockdata import insert_mock_data, create_admin
 
 

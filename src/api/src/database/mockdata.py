@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import Engine
 
 from src.common.models import AssignmentDto
-from src.common.config import admin_tg_id
+from common import admin_tg_id
 
 from src.api.src.database.models import User, Subject, TutorCourse, PrivateCourse, PrivateClass, Textbook
 

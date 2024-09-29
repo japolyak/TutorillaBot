@@ -1,6 +1,6 @@
 from redis import Redis
 
-from src.common.config import redis_host, redis_db, redis_password, redis_username
+from common import redis_host, redis_db, redis_password, redis_username
 
 r = Redis(
     host=redis_host,
