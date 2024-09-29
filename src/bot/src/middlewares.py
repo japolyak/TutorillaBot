@@ -23,7 +23,7 @@ class MessageMiddleware(BaseMiddleware):
         self.update_types = ["message"]
 
     def pre_process(self, message: Message, data):
-        if message.text.startswith("/"):
+        if message.content_type != "text" or message.text.startswith("/"):
             return
 
         data["command"] = None
