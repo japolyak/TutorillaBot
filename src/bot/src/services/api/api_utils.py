@@ -7,12 +7,12 @@ from src.common.models import T, ErrorDto
 
 class ApiResponse(Generic[T]):
     def __init__(self, data: Optional[T] = None, error: Optional[ErrorDto] = None):
-        self.success = data is not None
+        self.__success = data is not None
         self.data = data
         self.error = error
 
     def is_successful(self) -> bool:
-        return self.success
+        return self.__success
 
 
 class ApiUtils:

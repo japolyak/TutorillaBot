@@ -19,6 +19,7 @@ It requires the following environment variables for service configuration:
 Environment variables:
 * `APP_PORT` - port for the local development server with webhook. **Required** for `production`.
 * `API_LINK` - link to the API. **Required** for `production`.
+* `TIMEOUT` - request timeout to the API. **Required** for `production`.
 * `IS_DEVELOPMENT` - determines development or production environment - `True` or `False`. **Required** for `development`.
 
 Telegram related variables:

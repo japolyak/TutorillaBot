@@ -1,7 +1,7 @@
 import requests
 
 from src.common.config import api_link, api_timeout
-from src.common.models import ItemsDto, TutorCourseInlineDto
+from src.common.models import ItemsDto, TutorCourseInlineDto, BlaTutorCourseDto
 
 from src.bot.src.services.api.api_utils import ApiUtils, ApiResponse
 
@@ -22,3 +22,10 @@ class TutorCourseClient:
         response = requests.get(url, timeout=api_timeout)
 
         return ApiUtils.create_api_response(response, ItemsDto[TutorCourseInlineDto])
+
+    @classmethod
+    def get_courses(cls, user_id) -> ApiResponse[ItemsDto[BlaTutorCourseDto]]:
+        url = f"{cls.__link}/users/{user_id}/"
+        response = requests.get(url, timeout=api_timeout)
+
+        return ApiUtils.create_api_response(response, ItemsDto[BlaTutorCourseDto])

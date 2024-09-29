@@ -13,7 +13,7 @@ class BotExceptionHandler(ExceptionHandler):
 
         message = StringUtils.create_error_message(exception)
 
-        bot.send_message(chat_id=admin_tg_id, text=message, parse_mode="MarkdownV2")
+        bot.send_message(chat_id=admin_tg_id, text=message, parse_mode="MarkdownV2", disable_notification=False)
 
         return True
 

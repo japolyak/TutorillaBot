@@ -3,7 +3,7 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from typing import Literal, List
 
 from src.common.config import web_app_link
-from src.common.models import PaginatedList, SubjectDto, UserRequestDto, Role, PrivateClassDto, ClassStatus
+from src.common.models import PaginatedList, SubjectDto, UserRequestDto, Role, PrivateClassDto, ClassStatus, BlaTutorCourseDto, TextbookDto
 
 from src.bot.src.enums import Emoji
 from src.bot.src.handlers.callback_query_handler.callback_prefix import CallBackPrefix
@@ -49,13 +49,29 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def subjects_markup(courses: List[SubjectDto], role: Literal[Role.Tutor, Role.Student]) -> InlineKeyboardMarkup:
+    def subjects_panel_markup(courses: List[BlaTutorCourseDto], user_id: int, locale: str) -> InlineKeyboardMarkup:
+        # TODO - rewrite with paging
         markup = InlineKeyboardMarkup()
 
         [markup.add(
-            InlineKeyboardButton(text=course.name, switch_inline_query_current_chat=f"{role} {course.name}"))
-            for course
+            InlineKeyboardButton(text=f"{c.subject_name} - {c.price}$",
+                                 callback_data=f"{CallBackPrefix.GetTutorCoursesForPanel} {c.id} {locale}"))
+            for c
             in courses]
+
+        markup.add(InlineKeyboardButton(text=t(user_id, "ReturnToOfficeIKBtn", locale),
+                                        callback_data=f"{CallBackPrefix.BackToOffice} {locale}"))
+
+        return markup
+
+    @staticmethod
+    def  subjects_markup(subjects: List[SubjectDto], role: Literal[Role.Tutor, Role.Student], query_info: str) -> InlineKeyboardMarkup:
+        markup = InlineKeyboardMarkup()
+
+        [markup.add(
+            InlineKeyboardButton(text=subject.name, switch_inline_query_current_chat=f"{role} {query_info}_{subject.name}"))
+            for subject
+            in subjects]
 
         return markup
 
@@ -76,7 +92,7 @@ class InlineKeyboardMarkupCreator:
         markup = InlineKeyboardMarkup()
 
         [markup.add(
-            InlineKeyboardButton(text=course.name, switch_inline_query_current_chat=f"Subscribe {course.name}"))
+            InlineKeyboardButton(text=course.name, switch_inline_query_current_chat=f"Subscribe_{course.name}"))
             for course
             in courses]
 
@@ -192,6 +208,38 @@ class InlineKeyboardMarkupCreator:
             callback_data=f"{CallBackPrefix.BackToUsersRequests} {role} {locale}")
 
         markup.add(accept_btn).add(decline_btn).add(back_to_requests)
+
+        return markup
+
+    @staticmethod
+    def course_markup(user_id: int, locale: str, course_id: int) -> InlineKeyboardMarkup:
+        markup = InlineKeyboardMarkup()
+
+        textbooks = InlineKeyboardButton(text=t(user_id, "TextbooksIKBtn", locale),
+                                         callback_data=f"{CallBackPrefix.CourseTextbooks} {locale} {course_id}")
+        add_textbooks = InlineKeyboardButton(text=t(user_id, "AddTextbooksIKBtn", locale),
+                                             callback_data=f"{CallBackPrefix.AddTextbooks} {locale}")
+        back = InlineKeyboardButton(text=t(user_id, "BackToCoursesIKBtn", locale),
+                                    callback_data=f"{CallBackPrefix.BackToCourses} {locale}")
+
+        markup.add(textbooks, add_textbooks).add(back)
+
+        return markup
+
+    @staticmethod
+    def textbooks_markup(user_id: int, locale: str, course_id: int, textbooks: List[TextbookDto]) -> InlineKeyboardMarkup:
+        markup = InlineKeyboardMarkup()
+
+        if len(textbooks) > 0:
+            for textbook in textbooks:
+                btn = InlineKeyboardButton(text=textbook.title,
+                                           callback_data=f"{CallBackPrefix.ShowTextbook} {textbook.id}")
+                markup.add(btn)
+
+        back = InlineKeyboardButton(text=t(user_id, "BackToCourseIKBtn", locale),
+                                    callback_data=f"{CallBackPrefix.BackToCourse} {course_id} {locale}")
+
+        markup.add(back)
 
         return markup
 

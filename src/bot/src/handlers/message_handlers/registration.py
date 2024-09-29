@@ -1,15 +1,15 @@
 from redis import Redis
 from telebot.types import Message
 
-from src.common.bot import bot
+from common import bot
 
-from src.bot.src.handlers.shared import next_stepper, register_next_step
+from src.bot.src.handlers.shared import Shared
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from src.bot.src.services.api.clients.registration_client import RegistrationClient
 from src.bot.src.services.i18n.i18n import t
 from src.bot.src.services.redis_service.redis_client import r
-from src.bot.src.services.redis_service.redis_user_management import add_user
+from src.bot.src.services.redis_service.redis_user_management import RedisUser
 from src.bot.src.validators import Validator
 
 
@@ -22,12 +22,11 @@ def welcome(message: Message, redis: Redis):
     if response.is_successful():
         user = response.data
 
-        add_user(redis, chat_id, user)
+        RedisUser.add_user(redis, chat_id, user)
 
         markup = ReplyKeyboardMarkupCreator.main_menu_markup(chat_id, user.locale)
         bot.send_message(chat_id=chat_id,
                          text=t(chat_id, "Welcome", user.locale, name=user.first_name),
-                         disable_notification=True,
                          reply_markup=markup)
         return
 
@@ -47,12 +46,12 @@ def registration_first_name(message: Message, **kwargs):
     locale = kwargs.get("locale")
 
     if message.content_type != "text" or not Validator.validate_name(message.text):
-        next_stepper(chat_id, t(chat_id, "UseOnlyLatinLetters", locale), registration_first_name,
+        Shared.next_stepper(chat_id, t(chat_id, "UseOnlyLatinLetters", locale), registration_first_name,
                      locale=locale, field=field)
 
         return
 
-    register_next_step(chat_id, registration_last_name, field, message.text, t(message.from_user.id, "ProvideYourLastname", locale),
+    Shared.register_next_step(chat_id, registration_last_name, field, message.text, t(message.from_user.id, "ProvideYourLastname", locale),
                        locale=locale, field="last_name")
 
 
@@ -62,11 +61,11 @@ def registration_last_name(message: Message, **kwargs):
     locale = kwargs.get("locale")
 
     if message.content_type != "text" or not Validator.validate_name(message.text):
-        next_stepper(chat_id, t(chat_id, "UseOnlyLatinLetters", locale), registration_last_name, locale=locale, field=field)
+        Shared.next_stepper(chat_id, t(chat_id, "UseOnlyLatinLetters", locale), registration_last_name, locale=locale, field=field)
 
         return
 
-    register_next_step(chat_id, registration_email, field, message.text, t(chat_id, "ProvideYourEmail", locale), locale=locale, field="email")
+    Shared.register_next_step(chat_id, registration_email, field, message.text, t(chat_id, "ProvideYourEmail", locale), locale=locale, field="email")
 
 
 def registration_email(message: Message, **kwargs):
@@ -75,7 +74,7 @@ def registration_email(message: Message, **kwargs):
     locale = kwargs.get("locale")
 
     if message.content_type != "text" or not Validator.email_validator(message.text):
-        next_stepper(chat_id, t(chat_id, "OneMoreTime", locale), registration_email, locale=locale, field=field)
+        Shared.next_stepper(chat_id, t(chat_id, "OneMoreTime", locale), registration_email, locale=locale, field=field)
 
         return
 

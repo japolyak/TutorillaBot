@@ -1,12 +1,12 @@
 from redis import Redis
 from telebot.types import Message
 
-from src.common.bot import bot
+from common import bot
 from src.common.models import Role
 
 from src.bot.src.handlers.message_handlers.contexts.i_context_base import IContextBase
 from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
-from src.bot.src.handlers.shared import role_requests
+from src.bot.src.handlers.shared import Shared
 from src.bot.src.services.i18n.i18n import t
 
 
@@ -29,17 +29,16 @@ class AdminContext(IContextBase):
         markup = ReplyKeyboardMarkupCreator.admin_panel_markup(user_id, locale)
         bot.send_message(chat_id=user_id,
                          text=t(user_id, "AdminPanelIsHere", locale),
-                         disable_notification=True,
                          reply_markup=markup)
 
     @staticmethod
     @__guard
     def get_tutor_role_requests(user_id: int, redis: Redis):
         locale = redis.hget(user_id, "locale")
-        role_requests(user_id, Role.Tutor, locale)
+        Shared.role_requests(user_id, Role.Tutor, locale)
 
     @staticmethod
     @__guard
     def get_student_role_requests(user_id: int, redis: Redis):
         locale = redis.hget(user_id, "locale")
-        role_requests(user_id, Role.Student, locale)
+        Shared.role_requests(user_id, Role.Student, locale)

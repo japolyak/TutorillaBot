@@ -2,6 +2,7 @@ class APIEndpoints:
     class TutorCourse:
         Prefix = "/tutor-courses"
         AddCourse = "/users/{user_id}/"
+        GetCourses = "/users/{user_id}/"
         AvailableCourses = "/users/{user_id}/subject-name/{subject_name}/"
 
     class Users:

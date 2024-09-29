@@ -4,14 +4,14 @@ from requests import Response
 from telebot.types import ReplyKeyboardRemove, CallbackQuery
 from typing import List, Any
 
-from src.common.bot import bot
+from common import bot
 from src.common.models import Role
 
 from src.bot.src.services.i18n.i18n import t
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.services.api.clients.registration_client import RegistrationClient
 from src.bot.src.handlers.callback_query_handler.callback_prefix import CallBackPrefix
-from src.bot.src.handlers.shared import next_stepper
+from src.bot.src.handlers.shared import Shared
 from src.bot.src.handlers.message_handlers.registration import registration_first_name
 
 
@@ -26,7 +26,7 @@ class RegistrationActions:
 
         bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id, reply_markup=None)
 
-        next_stepper(chat_id, t(chat_id, 'ProvideYourFirstname', locale), registration_first_name,
+        Shared.next_stepper(chat_id, t(chat_id, 'ProvideYourFirstname', locale), registration_first_name,
                      ReplyKeyboardRemove(), locale=locale, field="first_name")
 
     @staticmethod
@@ -49,15 +49,13 @@ class RegistrationActions:
             [redis.hdel(chat_id, x) for x in fields_to_pop]
 
             bot.send_message(chat_id=chat_id,
-                             text=t(chat_id, "SomethingWentWrong", locale),
-                             disable_notification=True)
+                             text=t(chat_id, "SomethingWentWrong", locale))
 
             return
 
         markup = InlineKeyboardMarkupCreator.choose_occupation(chat_id, locale)
         bot.send_message(chat_id=chat_id,
                          text=t(chat_id, "WelcomeOnBoard", locale),
-                         disable_notification=True,
                          reply_markup=markup)
 
     @staticmethod
@@ -84,5 +82,4 @@ class RegistrationActions:
         bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id, reply_markup=None)
 
         bot.send_message(chat_id=chat_id,
-                         text=t(call.from_user.id, "GreatWaitForConfirmationByAdmin", locale),
-                         disable_notification=True)
+                         text=t(call.from_user.id, "GreatWaitForConfirmationByAdmin", locale))

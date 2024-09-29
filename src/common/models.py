@@ -103,6 +103,13 @@ class CourseMemberDto(BaseDto):
     first_name: str
 
 
+class BlaTutorCourseDto(BaseDto):
+    id: int
+    subject_name: str
+    is_active: bool
+    price: int
+
+
 class TutorCourseDto(BaseDto, Generic[T]):
     id: int
     tutor: T

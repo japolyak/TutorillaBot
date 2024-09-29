@@ -2,10 +2,10 @@ from typing import Any, List
 from redis import Redis
 from telebot.types import CallbackQuery
 
-from src.common.bot import bot
+from common import bot
 from src.common.models import UserDto
 
-from src.bot.src.handlers.shared import role_requests
+from src.bot.src.handlers.shared import Shared
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from src.bot.src.services.api.clients.admin_client import AdminClient
@@ -83,7 +83,7 @@ class AdminActions:
         role, locale = callback_data
 
         bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id)
-        role_requests(chat_id, role, locale)
+        Shared.role_requests(chat_id, role, locale)
 
 
     @classmethod

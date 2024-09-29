@@ -1,7 +1,7 @@
 from redis import Redis
 from telebot.types import Message
 
-from src.common.bot import bot
+from common import bot
 
 from src.bot.src.handlers.message_handlers.contexts.i_context_base import IContextBase
 from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
@@ -25,5 +25,4 @@ class MainViewContext(IContextBase):
     def main_menu(user_id: int, redis: Redis):
         locale = redis.hget(user_id, "locale")
         markup = ReplyKeyboardMarkupCreator.main_menu_markup(user_id, locale)
-        bot.send_message(chat_id=user_id, text=t(user_id, "MainMenu", locale),
-                         disable_notification=True, reply_markup=markup)
+        bot.send_message(chat_id=user_id, text=t(user_id, "MainMenu", locale), reply_markup=markup)

@@ -1,11 +1,11 @@
 from redis import Redis
 from telebot.types import Message
 
-from src.common.bot import bot
+from common import bot
 from src.common.models import Role
 
 from src.bot.src.handlers.message_handlers.contexts.i_context_base import IContextBase
-from src.bot.src.handlers.shared import get_subjects
+from src.bot.src.handlers.shared import Shared
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from src.bot.src.services.api.clients.subject_client import SubjectClient
@@ -29,14 +29,19 @@ class TutorContext(IContextBase):
     def my_office(user_id: int, redis: Redis):
         locale = redis.hget(user_id, "locale")
         markup = ReplyKeyboardMarkupCreator.tutor_office_markup(user_id, locale)
-        bot.send_message(chat_id=user_id, text=t(user_id, "OfficeIsHere", locale),
-                         disable_notification=True, reply_markup=markup)
+        bot.send_message(chat_id=user_id, text=t(user_id, "OfficeIsHere", locale), reply_markup=markup)
+
+    @staticmethod
+    @__guard
+    def tutor_students(user_id: int, redis: Redis):
+        locale = redis.hget(user_id, "locale")
+        Shared.get_subjects(user_id, locale, Role.Tutor, "Students")
 
     @staticmethod
     @__guard
     def tutor_courses(user_id: int, redis: Redis):
         locale = redis.hget(user_id, "locale")
-        get_subjects(user_id, Role.Tutor, locale)
+        Shared.get_courses_for_panel(user_id, locale)
 
     @staticmethod
     @__guard
@@ -52,12 +57,11 @@ class TutorContext(IContextBase):
         subjects = response.data.items
 
         if not subjects:
-            bot.send_message(chat_id=user_id, text=t(user_id, "NoAvailableSubjects", locale),
-                             disable_notification=True)
+            bot.send_message(chat_id=user_id, text=t(user_id, "NoAvailableSubjects", locale))
             return
 
         msg_text = t(user_id, "ChooseSubjectToTeach", locale)
 
         markup = InlineKeyboardMarkupCreator.add_course_markup(subjects, locale)
 
-        bot.send_message(chat_id=user_id, text=msg_text, disable_notification=True, reply_markup=markup)
+        bot.send_message(chat_id=user_id, text=msg_text, reply_markup=markup)

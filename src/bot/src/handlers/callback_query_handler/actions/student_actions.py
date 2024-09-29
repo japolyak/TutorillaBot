@@ -1,9 +1,9 @@
 from telebot.types import CallbackQuery
 from typing import Any, List
 
-from src.common.bot import bot
+from common import bot
 
-from src.bot.src.handlers.shared import send_available_subjects
+from src.bot.src.handlers.shared import Shared
 from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from src.bot.src.services.api.clients.private_course_client import PrivateCourseClient
 from src.bot.src.services.i18n.i18n import t
@@ -34,4 +34,4 @@ class StudentActions:
         locale = callback_data[0]
 
         bot.edit_message_reply_markup(inline_message_id=call.inline_message_id, reply_markup=None)
-        send_available_subjects(chat_id, locale)
+        Shared.send_available_subjects(chat_id, locale)

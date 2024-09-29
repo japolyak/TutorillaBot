@@ -1,4 +1,4 @@
-from src.common.bot import bot
+from common import bot
 
 
 def send_error_message(tg_user_id, message):

@@ -1,13 +1,12 @@
 from redis import Redis
 from telebot.types import Message
 
-from src.common.bot import bot
+from common import bot
 from src.common.models import Role
 
 from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from src.bot.src.handlers.message_handlers.contexts.i_context_base import IContextBase
-from src.bot.src.handlers.shared import get_subjects
-from src.bot.src.handlers.shared import send_available_subjects
+from src.bot.src.handlers.shared import Shared
 from src.bot.src.services.i18n.i18n import t
 
 
@@ -31,17 +30,16 @@ class StudentContext(IContextBase):
 
         bot.send_message(chat_id=user_id,
                          text=t(user_id, "YourClassroomIsHere", locale),
-                         disable_notification=True,
                          reply_markup=markup)
 
     @staticmethod
     @__guard
     def student_courses(user_id: int, redis: Redis):
         locale = redis.hget(user_id, "locale")
-        get_subjects(user_id, Role.Student, locale)
+        Shared.get_subjects(user_id, locale, Role.Student, "Courses")
 
     @staticmethod
     @__guard
     def subscribe_course(user_id: int, redis: Redis):
         locale = redis.hget(user_id, "locale")
-        send_available_subjects(user_id, locale)
+        Shared.send_available_subjects(user_id, locale)

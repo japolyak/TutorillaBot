@@ -8,7 +8,8 @@ translations = {
     "en-US": {
         "Main menu": "main_menu",
         "Office": "my_office",
-        "My courses": "tutor_courses",
+        "Courses": "tutor_courses",
+        "Students": "tutor_students",
         "Add course": "add_course",
         "Classroom": "open_classroom",
         "My classes": "student_courses",
@@ -23,6 +24,7 @@ command_handlers = {
     "main_menu": MainViewContext.main_menu,
     "my_office": TutorContext.my_office,
     "tutor_courses": TutorContext.tutor_courses,
+    "tutor_students": TutorContext.tutor_students,
     "add_course": TutorContext.add_course,
     "open_classroom": StudentContext.open_classroom,
     "student_courses": StudentContext.student_courses,

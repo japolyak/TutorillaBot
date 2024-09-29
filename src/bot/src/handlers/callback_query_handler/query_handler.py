@@ -1,6 +1,6 @@
 from telebot.types import CallbackQuery
 
-from src.common.bot import bot
+from common import bot
 
 from src.bot.src.handlers.callback_query_handler.actions.admin_actions import AdminActions
 from src.bot.src.handlers.callback_query_handler.actions.registration_actions import RegistrationActions
@@ -25,6 +25,12 @@ actions = {
     CallBackPrefix.AddCourse: TutorActions.add_course_callback,
     CallBackPrefix.BackToPrivateCourse: TutorActions.back_to_private_course,
     CallBackPrefix.BackToChoosePrivateCourse: TutorActions.back_to_choose_subject_callback,
+    CallBackPrefix.GetTutorCoursesForPanel: TutorActions.tutor_course_panel,
+    CallBackPrefix.BackToOffice: TutorActions.back_to_office,
+    CallBackPrefix.BackToCourses: TutorActions.back_to_courses,
+    CallBackPrefix.BackToCourse: TutorActions.tutor_course_panel,
+    CallBackPrefix.CourseTextbooks: TutorActions.load_course_textbooks,
+    CallBackPrefix.AddTextbooks: TutorActions.add_textbooks,
 
     # Student actions
     CallBackPrefix.SubscribeCourse: StudentActions.subscribe_course_callback,
@@ -38,15 +44,15 @@ actions = {
 }
 
 
+
+
 @bot.callback_query_handler(func=lambda call: True)
 def callback_handler(call: CallbackQuery, redis, **kwargs):
-    callback_data = call.data.split()
+    action_prefix, *arguments = call.data.split()
 
-    action = CallBackPrefix(callback_data[0])
+    fn_to_call = actions.get(action_prefix)
 
-    if action not in actions.keys():
+    if not fn_to_call:
         return
 
-    fn_to_call = actions.get(action)
-
-    fn_to_call(call, callback_data[1:], redis=redis)
+    fn_to_call(call, arguments, redis=redis)

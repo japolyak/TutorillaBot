@@ -58,11 +58,12 @@ class ReplyKeyboardMarkupCreator:
     def tutor_office_markup(cls, user_id: int, locale: str) -> ReplyKeyboardMarkup:
         markup = ReplyKeyboardMarkup(resize_keyboard=True)
 
-        my_courses_btn = KeyboardButton(text=t(user_id, "MyCoursesKBtn", locale))
+        students_btn = KeyboardButton(text=t(user_id, "StudentsKBtn", locale))
+        courses_btn = KeyboardButton(text=t(user_id, "CoursesKBtn", locale))
         add_course_btn = KeyboardButton(text=t(user_id, "AddCourseKBtn", locale))
         main_menu_btn = KeyboardButton(text=t(user_id, "MainMenuKBtn", locale))
 
-        markup.add(my_courses_btn, add_course_btn).add(main_menu_btn)
+        markup.add(students_btn).add(courses_btn, add_course_btn).add(main_menu_btn)
 
         return markup
 
