@@ -13,7 +13,7 @@ from src.bot.src.handlers.callback_query_handler import query_handler
 from src.bot.src.handlers.inline_handler import inline_handler
 from src.bot.src.handlers.message_handlers import message_handler, registration
 
-from src.bot.src.middlewares import MessageMiddleware, RedisMiddleware
+from src.bot.src.middlewares import MessageMiddleware, RedisMiddleware, InlineQueryMiddleware
 from src.bot.src.services.redis_service.redis_client import r
 
 
@@ -24,6 +24,7 @@ configure_logger()
 log.info(msg="Starting bot...")
 
 bot.setup_middleware(MessageMiddleware())
+bot.setup_middleware(InlineQueryMiddleware())
 bot.setup_middleware(RedisMiddleware(r))
 
 if use_webhook:

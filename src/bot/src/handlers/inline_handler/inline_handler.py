@@ -1,6 +1,6 @@
 from redis import Redis
 from telebot.types import InputTextMessageContent, InlineQuery, InlineQueryResultArticle
-from typing import Literal, List
+from typing import Literal, List, Optional
 
 from common import bot
 from src.common.models import Role, PrivateCourseInlineDto
@@ -13,64 +13,52 @@ from src.bot.src.services.redis_service.redis_client import r
 from src.bot.src.services.redis_service.redis_user_management import RedisUser
 
 
-def inline_handler_guard(query: InlineQuery, *args, **kwargs):
-    query_data = query.query.split("_")
-    chat_id = query.from_user.id
-
-    if len(query_data) < 2:
+def inline_handler_guard(query: InlineQuery, command: Optional[str], role: Optional[str]):
+    if not command:
         return False
+    user_id = query.from_user.id
 
-    context, subject = query_data
-
-    context = context.split(" ")
-
-    #TODO - remove!
-    # allowed_subjects = {"Polish", "English", "Test"}
-    #
-    # if subject not in allowed_subjects:
-    #     return False
-
-    print(context)
-    match context[-1]:
+    match command:
         case "Courses":
-            return RedisUser.has_role(r, chat_id, Role.Tutor) if context[0] == Role.Tutor else RedisUser.has_role(r, chat_id, Role.Student)
+            return RedisUser.has_role(r, user_id, Role.Tutor) if role == Role.Tutor else RedisUser.has_role(r, user_id, Role.Student)
         case "Students":
-            return RedisUser.has_role(r, chat_id, Role.Student)
+            return RedisUser.has_role(r, user_id, Role.Student)
         case "Subscribe":
-            return RedisUser.has_role(r, chat_id, Role.Student)
+            return RedisUser.has_role(r, user_id, Role.Student)
         case _:
             return False
 
 #TODO - find solution to pass redis to inline_handler_guard
-@bot.inline_handler(func=inline_handler_guard)
-def query_text(query: InlineQuery, redis: Redis):
-    chat_id = query.from_user.id
+@bot.inline_handler(func=lambda query: True)
+def query_text(query: InlineQuery, redis: Redis, not_allowed: bool, command: Optional[str] = None, role: Optional[str] = None, subject: Optional[str] = None, *args, **kwargs):
+    if not_allowed or not subject or not inline_handler_guard(query, command, role):
+        return
 
-    context, subject = query.query.split("_")
-    locale = redis.hget(chat_id, "locale")
+    user_id = query.from_user.id
+    locale = redis.hget(user_id, "locale")
 
-    match context:
-        case "Tutor":
-            get_courses_by_role(query, subject, Role.Tutor, locale)
-        case "Student":
+    match command:
+        case "Courses":
             get_courses_by_role(query, subject, Role.Student, locale)
         case "Subscribe":
-            subscribe_course(chat_id, subject, query.id, locale)
+            subscribe_course(user_id, subject, query.id, locale)
+        case "Students":
+            get_courses_by_role(query, subject, Role.Student, locale)
         case _:
             return
 
 
-def subscribe_course(chat_id: int, subject: str, inline_query_id: str, locale: str):
-    response = TutorCourseClient.course_tutors(user_id=chat_id, subject_name=subject)
+def subscribe_course(user_id: int, subject: str, inline_query_id: str, locale: str):
+    response = TutorCourseClient.course_tutors(user_id=user_id, subject_name=subject)
 
     if not response.is_successful():
-        bot.send_message(chat_id=chat_id, text=t(chat_id, "RetrievingDataError", locale))
+        bot.send_message(chat_id=user_id, text=t(user_id, "RetrievingDataError", locale))
         return
 
     tutor_courses = response.data.items
 
     if not tutor_courses:
-        bot.send_message(chat_id=chat_id, text=t(chat_id, "NoCoursesFound", locale))
+        bot.send_message(chat_id=user_id, text=t(user_id, "NoCoursesFound", locale))
         return
 
     courses = [
@@ -79,10 +67,10 @@ def subscribe_course(chat_id: int, subject: str, inline_query_id: str, locale: s
             title=f"{i.subject_name} {i.price}$",
             description=f"{i.tutor_name}",
             input_message_content=InputTextMessageContent(
-                message_text=t(chat_id, "SubscribeCourse", locale, subject=i.subject_name,
+                message_text=t(user_id, "SubscribeCourse", locale, subject=i.subject_name,
                                tutor=i.tutor_name, price=f"{i.price}$")
             ),
-            reply_markup=InlineKeyboardMarkupCreator.subscribe_course_markup(i.id, chat_id, locale)
+            reply_markup=InlineKeyboardMarkupCreator.subscribe_course_markup(i.id, user_id, locale)
         ) for i in tutor_courses
     ]
 

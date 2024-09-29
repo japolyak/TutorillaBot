@@ -52,6 +52,7 @@ class TutorActions:
         course_id, locale = callback_data
         message_id = call.message.message_id
 
+        # TODO - Add request to get info about the course
         markup = InlineKeyboardMarkupCreator.course_markup(user_id, locale, course_id)
         bot.edit_message_text(chat_id=user_id, message_id=message_id, text="Your course - rewrite", reply_markup=markup)
 
