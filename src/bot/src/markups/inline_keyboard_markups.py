@@ -2,7 +2,7 @@ from telebot import service_utils
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from typing import Literal, List
 
-from src.common.config import web_app_link
+from common import web_app_link
 from src.common.models import PaginatedList, SubjectDto, UserRequestDto, Role, PrivateClassDto, ClassStatus, BlaTutorCourseDto, TextbookDto
 
 from src.bot.src.enums import Emoji
