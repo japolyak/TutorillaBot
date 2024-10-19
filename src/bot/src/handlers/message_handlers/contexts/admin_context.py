@@ -13,7 +13,7 @@ from src.bot.src.services.i18n.i18n import t
 class AdminContext(IContextBase):
     @staticmethod
     def __guard(func) -> callable:
-        def wrapper(message: Message, redis: Redis):
+        def wrapper(message: Message, redis: Redis, *args, **kwargs):
             user_id = message.from_user.id
             is_admin = redis.hget(user_id, "is_admin")
 
@@ -24,7 +24,7 @@ class AdminContext(IContextBase):
 
     @staticmethod
     @__guard
-    def show_admin_panel(user_id: int, redis: Redis):
+    def show_admin_panel(user_id: int, redis: Redis, *args, **kwargs):
         locale = redis.hget(user_id, "locale")
         markup = ReplyKeyboardMarkupCreator.admin_panel_markup(user_id, locale)
         bot.send_message(chat_id=user_id,
@@ -33,12 +33,12 @@ class AdminContext(IContextBase):
 
     @staticmethod
     @__guard
-    def get_tutor_role_requests(user_id: int, redis: Redis):
+    def get_tutor_role_requests(user_id: int, redis: Redis, *args, **kwargs):
         locale = redis.hget(user_id, "locale")
         Shared.role_requests(user_id, Role.Tutor, locale)
 
     @staticmethod
     @__guard
-    def get_student_role_requests(user_id: int, redis: Redis):
+    def get_student_role_requests(user_id: int, redis: Redis, *args, **kwargs):
         locale = redis.hget(user_id, "locale")
         Shared.role_requests(user_id, Role.Student, locale)

@@ -1,6 +1,5 @@
 from requests import Response
-from typing import Generic, Type, Optional
-
+from typing import Generic, Type, Optional, Any
 
 from src.common.models import T, ErrorDto
 
@@ -21,6 +20,10 @@ class ApiUtils:
         if not response.ok:
             error = ErrorDto(**response.json())
             return ApiResponse[T](error=error)
+
+        # TODO - rethink
+        if model_class is None and response.ok:
+            return ApiResponse[T](data=Any)
 
         json_data = response.json()
         data = model_class(**json_data)

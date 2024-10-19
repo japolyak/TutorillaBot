@@ -212,13 +212,13 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def course_markup(user_id: int, locale: str, course_id: int) -> InlineKeyboardMarkup:
+    def course_markup(user_id: int, locale: str, tutor_course_id: int) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 
         textbooks = InlineKeyboardButton(text=t(user_id, "TextbooksIKBtn", locale),
-                                         callback_data=f"{CallBackPrefix.CourseTextbooks} {locale} {course_id}")
+                                         callback_data=f"{CallBackPrefix.CourseTextbooks} {locale} {tutor_course_id}")
         add_textbooks = InlineKeyboardButton(text=t(user_id, "AddTextbooksIKBtn", locale),
-                                             callback_data=f"{CallBackPrefix.AddTextbooks} {locale}")
+                                             callback_data=f"{CallBackPrefix.AddTextbooks} {locale} {tutor_course_id}")
         back = InlineKeyboardButton(text=t(user_id, "BackToCoursesIKBtn", locale),
                                     callback_data=f"{CallBackPrefix.BackToCourses} {locale}")
 
@@ -240,6 +240,22 @@ class InlineKeyboardMarkupCreator:
                                     callback_data=f"{CallBackPrefix.BackToCourse} {course_id} {locale}")
 
         markup.add(back)
+
+        return markup
+
+    @staticmethod
+    def new_textbooks_markup(user_id: int, locale: str):
+        markup = InlineKeyboardMarkup()
+
+        # if len(textbooks) > 0:
+        #     for textbook in textbooks:
+        #         btn = InlineKeyboardButton(text=textbook.title,
+        #                                    callback_data=f"{CallBackPrefix.ShowTextbook} {textbook.id}")
+        #         markup.add(btn)
+
+        save = InlineKeyboardButton(text="Save textbook", callback_data=f"{CallBackPrefix.SaveTextbooks} {locale}")
+
+        markup.add(save)
 
         return markup
 

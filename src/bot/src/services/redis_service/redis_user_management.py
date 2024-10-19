@@ -1,7 +1,6 @@
 from redis import Redis
-from typing import Literal
 
-from src.common.models import UserDto, Role
+from src.common.models import UserDto
 
 
 class RedisUser:
@@ -18,15 +17,3 @@ class RedisUser:
         redis.hset(user_id, "is_student", int(user.is_student))
         redis.hset(user_id, "is_tutor", int(user.is_tutor))
         redis.hset(user_id, "is_admin", int(user.is_admin))
-
-    @staticmethod
-    def has_role(r: Redis, user_id: str, role: Literal[Role.Tutor, Role.Student, Role.Admin]):
-        match role:
-            case Role.Tutor:
-                return r.hget(user_id, "is_tutor") == "1"
-            case Role.Student:
-                return r.hget(user_id, "is_student") == "1"
-            case Role.Admin:
-                return r.hget(user_id, "is_admin") == "1"
-            case _:
-                return False

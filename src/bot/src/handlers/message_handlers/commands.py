@@ -2,7 +2,9 @@ from src.bot.src.handlers.message_handlers.contexts.admin_context import AdminCo
 from src.bot.src.handlers.message_handlers.contexts.main_view_context import MainViewContext
 from src.bot.src.handlers.message_handlers.contexts.student_context import StudentContext
 from src.bot.src.handlers.message_handlers.contexts.tutor_context import TutorContext
-
+from src.bot.src.handlers.message_handlers.contexts.textbook_context import TextbookContext
+from src.bot.src.handlers.message_handlers.registration import RegistrationContext
+from src.bot.src.states import TextbookState
 
 translations = {
     "en-US": {
@@ -21,6 +23,11 @@ translations = {
 }
 
 command_handlers = {
+    # Slash commands
+    "start": RegistrationContext.start_function,
+
+    TextbookState.first_textbook.name: TextbookContext.first_textbook,
+
     "main_menu": MainViewContext.main_menu,
     "my_office": TutorContext.my_office,
     "tutor_courses": TutorContext.tutor_courses,

@@ -4,3 +4,4 @@ from .config import (allowed_origins, use_webhook, webhook_url, api_link, api_ti
 from .bot import bot
 from .logger import configure_logger
 from .string_utils import StringUtils
+from .redis_configuration import redis_instance as r

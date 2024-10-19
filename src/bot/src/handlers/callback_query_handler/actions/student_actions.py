@@ -11,7 +11,7 @@ from src.bot.src.services.i18n.i18n import t
 
 class StudentActions:
     @classmethod
-    def subscribe_course_callback(cls, call: CallbackQuery, callback_data: List[Any], *kwargs):
+    def subscribe_course_callback(cls, call: CallbackQuery, callback_data: List[Any], *args, **kwargs):
         chat_id = call.from_user.id
 
         course_id, locale = callback_data
@@ -28,7 +28,7 @@ class StudentActions:
                          reply_markup=markup)
 
     @staticmethod
-    def return_to_select_callback(call: CallbackQuery, callback_data: List[Any], *kwargs):
+    def return_to_select_callback(call: CallbackQuery, callback_data: List[Any], *args, **kwargs):
         chat_id = call.from_user.id
 
         locale = callback_data[0]

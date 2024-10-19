@@ -14,7 +14,7 @@ from src.bot.src.services.i18n.i18n import t
 
 class AdminActions:
     @classmethod
-    def open_user_request(cls, call: CallbackQuery, callback_data: List[Any], **kwargs):
+    def open_user_request(cls, call: CallbackQuery, callback_data: List[Any], *args, **kwargs):
         chat_id = call.from_user.id
 
         role_request_id, locale = callback_data
@@ -38,7 +38,7 @@ class AdminActions:
 
 
     @classmethod
-    def accept_user_request(cls, call: CallbackQuery, callback_data: List[Any], redis: Redis):
+    def accept_user_request(cls, call: CallbackQuery, callback_data: List[Any], redis: Redis, *args, **kwargs):
         chat_id = call.from_user.id
 
         user_id, role, locale = callback_data
@@ -61,7 +61,7 @@ class AdminActions:
 
 
     @classmethod
-    def decline_user_request(cls, call: CallbackQuery, callback_data: List[Any], **kwargs):
+    def decline_user_request(cls, call: CallbackQuery, callback_data: List[Any], *args, **kwargs):
         chat_id = call.from_user.id
 
         user_id, locale = callback_data
@@ -77,7 +77,7 @@ class AdminActions:
 
 
     @classmethod
-    def back_to_requests(cls, call: CallbackQuery, callback_data: List[Any], **kwargs):
+    def back_to_requests(cls, call: CallbackQuery, callback_data: List[Any], *args, **kwargs):
         chat_id = call.from_user.id
 
         role, locale = callback_data

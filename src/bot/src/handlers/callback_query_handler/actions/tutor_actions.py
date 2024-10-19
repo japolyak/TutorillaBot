@@ -1,8 +1,9 @@
-from telebot.types import CallbackQuery, Message
-from typing import Any, List
+from telebot.types import CallbackQuery, Message, ReplyKeyboardRemove
+from typing import Any, List, Optional
+from telebot.states.sync.context import StateContext
 
 from common import bot
-from src.common.models import NewTutorCourseDto
+from src.common.models import NewTutorCourseDto, ItemsDto
 
 from src.bot.src.handlers.shared import Shared
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
@@ -10,12 +11,13 @@ from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from src.bot.src.services.api.clients.tutor_course_client import TutorCourseClient
 from src.bot.src.services.api.clients.textbook_client import TextbookClient
 from src.bot.src.services.i18n.i18n import t
+from src.bot.src.states import TextbookState
 from src.bot.src.validators import Validator
 
 
 class TutorActions:
     @classmethod
-    def back_to_choose_subject_callback(cls, call: CallbackQuery, callback_data: List[Any], **kwargs):
+    def back_to_choose_subject_callback(cls, call: CallbackQuery, callback_data: List[Any], *args, **kwargs):
         chat_id = call.from_user.id
 
         role, locale = callback_data
@@ -24,7 +26,7 @@ class TutorActions:
         Shared.get_subjects(chat_id, locale, role, "Courses")
 
     @classmethod
-    def back_to_private_course(cls, call: CallbackQuery, callback_data: List[Any], **kwargs):
+    def back_to_private_course(cls, call: CallbackQuery, callback_data: List[Any], *args, **kwargs):
         chat_id = call.from_user.id
 
         private_course_id, inline_message_id, role, locale = callback_data
@@ -33,7 +35,7 @@ class TutorActions:
         bot.edit_message_reply_markup(inline_message_id=inline_message_id, reply_markup=markup)
 
     @classmethod
-    def add_course_callback(cls, call: CallbackQuery, callback_data: List[Any], **kwargs):
+    def add_course_callback(cls, call: CallbackQuery, callback_data: List[Any], *args, **kwargs):
         chat_id = call.from_user.id
 
         subject_id, subject_name, locale = callback_data
@@ -47,7 +49,7 @@ class TutorActions:
                      cls.__add_course_price, locale=locale, parse_mode="HTML", subject_id=subject_id)
 
     @classmethod
-    def tutor_course_panel(cls, call: CallbackQuery, callback_data: List[Any], **kwargs):
+    def tutor_course_panel(cls, call: CallbackQuery, callback_data: List[Any], *args, **kwargs):
         user_id = call.from_user.id
         course_id, locale = callback_data
         message_id = call.message.message_id
@@ -57,7 +59,7 @@ class TutorActions:
         bot.edit_message_text(chat_id=user_id, message_id=message_id, text="Your course - rewrite", reply_markup=markup)
 
     @classmethod
-    def back_to_office(cls, call: CallbackQuery, callback_data: List[Any], **kwargs):
+    def back_to_office(cls, call: CallbackQuery, callback_data: List[Any], *args, **kwargs):
         user_id = call.from_user.id
         message_id = call.message.message_id
         locale = callback_data[0]
@@ -69,7 +71,7 @@ class TutorActions:
                          reply_markup=markup)
 
     @classmethod
-    def back_to_courses(cls, call: CallbackQuery, callback_data: List[Any], **kwargs):
+    def back_to_courses(cls, call: CallbackQuery, callback_data: List[Any], *args, **kwargs):
         user_id = call.from_user.id
         locale = callback_data[0]
         message_id = call.message.message_id
@@ -77,7 +79,7 @@ class TutorActions:
         Shared.get_courses_for_panel(user_id, locale, False, message_id)
 
     @classmethod
-    def load_course_textbooks(cls, call: CallbackQuery, callback_data: List[Any], **kwargs):
+    def load_course_textbooks(cls, call: CallbackQuery, callback_data: List[Any], *args, **kwargs):
         user_id = call.from_user.id
         locale, course_id = callback_data
         message_id = call.message.message_id
@@ -93,13 +95,50 @@ class TutorActions:
         bot.edit_message_text(chat_id=user_id, message_id=message_id, text="Here your textbooks", reply_markup=markup)
 
     @classmethod
-    def add_textbooks(cls, call: CallbackQuery, callback_data: List[Any], **kwargs):
+    def add_textbooks(cls, call: CallbackQuery, callback_data: List[Any], state: StateContext,  *args, **kwargs):
         user_id = call.from_user.id
-        locale = callback_data[0]
-        bot.send_message(chat_id=user_id, text="Add textbooks")
+        locale, tutor_course_id = callback_data
+
+        state.add_data(tutor_course_id=tutor_course_id)
+        state.set(TextbookState.first_textbook)
+
+        markup = ReplyKeyboardRemove()
+
+        bot.send_message(chat_id=user_id, text="Add textbooks", reply_markup=markup)
 
     @classmethod
-    def __add_course_price(cls, message: Message, **kwargs):
+    def save_textbooks(cls, call: CallbackQuery, callback_data: List[Any], state: StateContext,  *args, **kwargs):
+        user_id = call.from_user.id
+        locale = callback_data[0]
+
+        with state.data() as data:
+            tutor_course_id: Optional[int] = data.get("tutor_course_id")
+            textbooks: Optional[List[str]] = data.get("textbooks")
+
+        if tutor_course_id is None or textbooks is None:
+            # TODO - finish later
+            print('Return')
+
+        payload = ItemsDto[str](items=textbooks)
+
+        response = TextbookClient.save_textbooks(tutor_course_id, payload)
+
+        if not response.is_successful():
+            # TODO - add markup
+            bot.send_message(chat_id=user_id, text=t(user_id, "RetrievingDataError", locale))
+            return
+
+        state.set('')
+
+        message_id = call.message.message_id
+
+        bot.delete_message(chat_id=user_id, message_id=message_id)
+
+        markup = InlineKeyboardMarkupCreator.course_markup(user_id, locale, tutor_course_id)
+        bot.send_message(chat_id=user_id, text="Your course - rewrite", reply_markup=markup)
+
+    @classmethod
+    def __add_course_price(cls, message: Message, *args, **kwargs):
         user_id = message.from_user.id
         locale = kwargs.get("locale")
 

@@ -185,8 +185,3 @@ class NewTutorCourseDto(BaseModel):
 class ClassDto(BaseDto):
     date: datetime
     status: ClassStatus
-
-
-class NewTextbooksDto(BaseDto):
-    tutor_course_id: int
-    titles: List[str]

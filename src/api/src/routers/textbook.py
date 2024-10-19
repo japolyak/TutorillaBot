@@ -1,7 +1,7 @@
 from fastapi import status, APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from src.common.models import NewTextbooksDto, ItemsDto, TextbookDto
+from src.common.models import ItemsDto, TextbookDto
 
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.database.crud.textbook_crud import TextbookCRUD
@@ -29,10 +29,11 @@ async def get_textbooks(tutor_course_id: int, db: Session = Depends(session)):
 
 @router.post(path=APIEndpoints.Textbook.Post, status_code=status.HTTP_201_CREATED,
              summary="Creates textbooks")
-async def create_textbooks(new_textbooks: NewTextbooksDto, db: Session = Depends(session)):
-    TextbookCRUD.create_textbooks(db, new_textbooks.tutor_course_id, new_textbooks.titles)
+async def create_textbooks(tutor_course_id: int, new_textbooks: ItemsDto[str], db: Session = Depends(session)):
+    TextbookCRUD.create_textbooks(db, tutor_course_id, new_textbooks.items)
 
     return ResponseBuilder.success_response(status_code=status.HTTP_201_CREATED)
+
 
 
 @router.delete(path=APIEndpoints.Textbook.Delete, status_code=status.HTTP_204_NO_CONTENT,

@@ -2,6 +2,8 @@ from redis import Redis
 from telebot.handler_backends import BaseMiddleware
 from telebot.types import Message, InlineQuery
 from telebot.util import update_types
+# Used for code consistency
+from telebot.states.sync.middleware import StateMiddleware
 
 from src.bot.src.handlers.message_handlers.commands import translations
 
@@ -23,10 +25,14 @@ class MessageMiddleware(BaseMiddleware):
         self.update_types = ["message"]
 
     def pre_process(self, message: Message, data):
-        if message.content_type != "text" or message.text.startswith("/"):
+        if message.content_type != "text":
             return
 
         data["command"] = None
+
+        if message.text.startswith("/"):
+            data["command"] = message.text[1::]
+            return
 
         for _, commands in translations.items():
             command_name = commands.get(message.text)

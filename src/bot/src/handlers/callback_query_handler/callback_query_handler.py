@@ -1,4 +1,5 @@
-from telebot.types import CallbackQuery
+from telebot.types import CallbackQuery, Message
+from telebot.states.sync.context import StateContext
 
 from common import bot
 
@@ -31,6 +32,7 @@ actions = {
     CallBackPrefix.BackToCourse: TutorActions.tutor_course_panel,
     CallBackPrefix.CourseTextbooks: TutorActions.load_course_textbooks,
     CallBackPrefix.AddTextbooks: TutorActions.add_textbooks,
+    CallBackPrefix.SaveTextbooks: TutorActions.save_textbooks,
 
     # Student actions
     CallBackPrefix.SubscribeCourse: StudentActions.subscribe_course_callback,
@@ -44,10 +46,8 @@ actions = {
 }
 
 
-
-
 @bot.callback_query_handler(func=lambda call: True)
-def callback_handler(call: CallbackQuery, redis, **kwargs):
+def callback_handler(call: CallbackQuery, redis, state: StateContext, *args, **kwargs):
     action_prefix, *arguments = call.data.split()
 
     fn_to_call = actions.get(action_prefix)
@@ -55,4 +55,4 @@ def callback_handler(call: CallbackQuery, redis, **kwargs):
     if not fn_to_call:
         return
 
-    fn_to_call(call, arguments, redis=redis)
+    fn_to_call(call, arguments, redis=redis, state=state)

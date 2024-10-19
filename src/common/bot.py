@@ -3,6 +3,7 @@ from telebot import ExceptionHandler, TeleBot, apihelper
 
 from src.common.config import admin_tg_id, is_development, bot_token
 from src.common.string_utils import StringUtils
+from src.common.redis_configuration import state_storage
 
 log = logging.getLogger(__name__)
 
@@ -24,6 +25,7 @@ if is_development:
 bot = TeleBot(
     token=bot_token,
     threaded=False,
+    state_storage=state_storage,
     disable_notification=True,
     exception_handler=BotExceptionHandler(),
     use_class_middlewares=True

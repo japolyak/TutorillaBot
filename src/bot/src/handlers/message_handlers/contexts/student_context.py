@@ -13,7 +13,7 @@ from src.bot.src.services.i18n.i18n import t
 class StudentContext(IContextBase):
     @staticmethod
     def __guard(func) -> callable:
-        def wrapper(message: Message, redis: Redis):
+        def wrapper(message: Message, redis: Redis, *args, **kwargs):
             user_id = message.from_user.id
             is_student = redis.hget(user_id, "is_student")
 
@@ -24,7 +24,7 @@ class StudentContext(IContextBase):
 
     @staticmethod
     @__guard
-    def open_classroom(user_id: int, redis: Redis):
+    def open_classroom(user_id: int, redis: Redis, *args, **kwargs):
         locale = redis.hget(user_id, "locale")
         markup = ReplyKeyboardMarkupCreator.student_classroom_markup(user_id, locale)
 
@@ -34,12 +34,12 @@ class StudentContext(IContextBase):
 
     @staticmethod
     @__guard
-    def student_courses(user_id: int, redis: Redis):
+    def student_courses(user_id: int, redis: Redis, *args, **kwargs):
         locale = redis.hget(user_id, "locale")
         Shared.get_subjects(user_id, locale, Role.Student, "Courses")
 
     @staticmethod
     @__guard
-    def subscribe_course(user_id: int, redis: Redis):
+    def subscribe_course(user_id: int, redis: Redis, *args, **kwargs):
         locale = redis.hget(user_id, "locale")
         Shared.send_available_subjects(user_id, locale)

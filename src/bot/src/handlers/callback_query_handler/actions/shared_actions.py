@@ -10,7 +10,7 @@ from src.bot.src.services.i18n.i18n import t
 
 class SharedActions:
     @staticmethod
-    def get_course_classes(call: CallbackQuery, callback_data: List[Any], **kwargs):
+    def get_course_classes(call: CallbackQuery, callback_data: List[Any], *args, **kwargs):
         chat_id = call.from_user.id
 
         private_course_id, role, locale = callback_data
@@ -34,7 +34,7 @@ class SharedActions:
         bot.edit_message_reply_markup(inline_message_id=inline_message_id, reply_markup=markup)
 
     @staticmethod
-    def load_page(call: CallbackQuery, callback_data: List[Any], **kwargs):
+    def load_page(call: CallbackQuery, callback_data: List[Any], *args, **kwargs):
         chat_id = call.from_user.id
 
         page, private_course_id, role, inline_message_id, locale = callback_data

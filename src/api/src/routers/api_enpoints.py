@@ -38,7 +38,7 @@ class APIEndpoints:
     class Textbook:
         Prefix = "/textbooks"
         Get = "/tutor-course/{tutor_course_id}/"
-        Post = "/"
+        Post = "/tutor-course/{tutor_course_id}/"
         Delete = "/textbook_id/"
 
     class Home:

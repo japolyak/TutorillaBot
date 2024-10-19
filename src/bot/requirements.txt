@@ -48,7 +48,7 @@ pydantic_core==2.16.3
 pyOpenSSL==23.3.0
 pyparsing==3.1.2
 pyproject_hooks==1.1.0
-pyTelegramBotAPI==4.16.1
+pyTelegramBotAPI==4.23.0
 python-dotenv==1.0.1
 redis==5.1.0b3
 requests==2.31.0
