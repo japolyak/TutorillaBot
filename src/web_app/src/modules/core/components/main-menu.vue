@@ -1,34 +1,32 @@
 <template>
     <v-navigation-drawer v-model="mainMenuVisible" location="right">
         <template #prepend>
-            <v-list-item title="Tutorilla"/>
-        </template>
+			<v-list-item
+				v-if="selectedParent"
+				:title="selectedParent.title"
+				prepend-icon="mdi-chevron-left"
+				@click="selectedParent = null"
+			/>
+			<v-list-item v-else title="Tutorilla"/>
+		</template>
 
 		<v-list nav density="compact" open-strategy="multiple" select-strategy="independent">
 			<template v-for="item in mainMenu" :key="`${item.title}-group`">
-				<v-list-item v-if="item.children.length === 0" :to="{ name: item.view }">
+				<v-list-item v-if="!item.parent" :append-icon="item.appendIcon" @click="openItemView(item.view)">
 					{{ t(item.title) }}
 				</v-list-item>
 
 				<v-list-group v-else :active="item.isActive">
-					<template #activator="{ props: { onClick, ...restProps }, isOpen }">
+					<template #activator="{ props: { onClick, appendIcon, ...restProps } }">
 						<v-list-item
 							v-bind="restProps"
 							:active="item.isActive"
-							@click="
-								$event => openGroupItemView(item.view, item.isActive, isOpen, () => (onClick as any)($event))
-							"
+							:append-icon="item.appendIcon"
+							@click="selectGroupItemView(item)"
 						>
 							{{ t(item.title) }}
 						</v-list-item>
 					</template>
-					<v-list density="compact">
-						<template v-for="childView in item.children" :key="`${childView.title}-groupItem`">
-							<v-list-item :to="{ name: childView.view }">
-								{{ t(childView.title) }}
-							</v-list-item>
-						</template>
-					</v-list>
 				</v-list-group>
 			</template>
 		</v-list>
@@ -36,24 +34,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import type { View } from '@/plugins/router/view-definitions';
 import { mainMenuItems } from '@/modules/core/core.constants';
 import { viewMetaDefinitions } from '@/plugins/router/view-metas';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
-interface MainMenuChildViewModel {
-	view: View;
-	title: string;
-}
-
 interface MainMenuGroupViewModel {
 	view: View;
 	icon: string;
 	title: string;
 	isActive: boolean;
-	children: MainMenuChildViewModel[];
+	appendIcon: 'mdi-chevron-right' | undefined;
+	parent: boolean;
 }
 
 const mainMenuVisible = defineModel<boolean>({ required: true, type: Boolean });
@@ -63,12 +57,14 @@ const { t } = useI18n();
 const router = useRouter();
 const routes = router.getRoutes();
 
-async function openGroupItemView(view: View, isActive: boolean, isOpen: boolean, toggleMenu: () => void) {
+const selectedParent = ref<MainMenuGroupViewModel | null>(null);
+
+async function openItemView(view: View) {
 	await router.push({ name: view });
+}
 
-	if (!isActive && isOpen) return;
-
-	toggleMenu();
+async function selectGroupItemView(view: MainMenuGroupViewModel) {
+	selectedParent.value = view;
 }
 
 function hasAccessToView(view: View) {
@@ -79,23 +75,38 @@ function hasAccessToView(view: View) {
 }
 
 const mainMenu = computed<MainMenuGroupViewModel[]>(() => {
-	return mainMenuItems
-		.filter(({ mainView }) => hasAccessToView(mainView))
+	const filteredItems = mainMenuItems.filter(({ mainView }) => hasAccessToView(mainView))
+	if (selectedParent.value) {
+		return filteredItems
+			.find(({ mainView }) => selectedParent.value.view === mainView)
+			?.children
+			.map(childView => ({
+				view: childView,
+				icon: viewMetaDefinitions[childView].icon,
+				title: viewMetaDefinitions[childView].title,
+				isActive: router.currentRoute.value.name === childView,
+				appendIcon: undefined,
+				parent: false,
+			}));
+	}
+
+	return filteredItems
 		.map(({ mainView, children }) => ({
-			view:mainView,
+			view: mainView,
 			icon: viewMetaDefinitions[mainView].icon,
 			title: viewMetaDefinitions[mainView].title,
 			isActive: router.currentRoute.value.name === mainView,
-			children: children
-				.map(childView => ({
-					view: childView,
-					title: viewMetaDefinitions[childView].title,
-				})),
+			appendIcon: !children.length ? undefined : 'mdi-chevron-right',
+			parent: !!children.length,
 		}));
 });
 
 onMounted(() => {
     mainMenuVisible.value = false;
+});
+
+watch(mainMenuVisible, value => {
+	if (value) selectedParent.value = null;
 });
 </script>
 
