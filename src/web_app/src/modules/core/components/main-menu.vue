@@ -61,6 +61,7 @@ const mainMenuVisible = defineModel<boolean>({ required: true, type: Boolean });
 const { t } = useI18n();
 
 const router = useRouter();
+const routes = router.getRoutes();
 
 async function openGroupItemView(view: View, isActive: boolean, isOpen: boolean, toggleMenu: () => void) {
 	await router.push({ name: view });
@@ -70,8 +71,16 @@ async function openGroupItemView(view: View, isActive: boolean, isOpen: boolean,
 	toggleMenu();
 }
 
+function hasAccessToView(view: View) {
+	const currentView = routes.find(x => x.name === view);
+	if (!currentView) return false;
+
+	return currentView.meta.authGuard.isAuthenticated();
+}
+
 const mainMenu = computed<MainMenuGroupViewModel[]>(() => {
 	return mainMenuItems
+		.filter(({ mainView }) => hasAccessToView(mainView))
 		.map(({ mainView, children }) => ({
 			view:mainView,
 			icon: viewMetaDefinitions[mainView].icon,

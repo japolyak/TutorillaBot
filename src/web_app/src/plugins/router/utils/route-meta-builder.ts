@@ -10,6 +10,7 @@ export class RouteMetaBuilder {
 	private allowAnonymousFlag = false;
 	private module: Module | null = null;
 	private readonly requiredRoles: Role[] = [];
+	private useDashboardLayoutFlag = true;
 
 	public build(): RouteMeta {
 		return {
@@ -19,7 +20,8 @@ export class RouteMetaBuilder {
 			authGuard: new RouteAuthMeta(
 				this.allowAnonymousFlag,
 				this.requiredRoles,
-			)
+			),
+			useDashboardLayout: this.useDashboardLayoutFlag,
 		}
 	}
 
@@ -45,6 +47,11 @@ export class RouteMetaBuilder {
 
 	public allowAnonymous(): this {
 		this.allowAnonymousFlag = true;
+		return this;
+	}
+
+	public hideDashboardLayout(): this {
+		this.useDashboardLayoutFlag = false;
 		return this;
 	}
 }

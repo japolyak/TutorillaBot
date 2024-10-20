@@ -9,16 +9,13 @@ const guard: NavigationGuardWithThis<undefined> = async (to, from, next) => {
 		next();
 		return;
 	}
-	console.log('bad')
 
 	if (!authCheck?.hasAccess && authCheck?.noAccessReason === 'onlyAnonymous') {
-		console.log('onlyAnonymous');
 		next({ name: View.fallbackView, replace: true })
 		return;
 	}
 
 	if (!authCheck?.hasAccess && authCheck?.noAccessReason === 'missingRoles') {
-		console.log('missingRoles');
 		if (from === START_LOCATION) {
 			next({ name: View.fallbackView, replace: true })
 			return;

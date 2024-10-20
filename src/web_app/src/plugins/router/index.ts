@@ -35,5 +35,7 @@ declare module 'vue-router' {
 		icon: string | null;
 		module: Module | null;
 		authGuard: RouteAuthMeta;
+		/** Removes or adds dashboard layout. */
+		useDashboardLayout: boolean;
 	}
 }

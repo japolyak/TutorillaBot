@@ -4,8 +4,8 @@ import { RouteMetaBuilder } from '@/plugins/router/utils/route-meta-builder';
 import { Role } from '@/modules/core/services/api/api.models';
 
 export const viewMetaDefinitions: Record<View, RouteMeta> = {
+	[View.fallbackView]: new RouteMetaBuilder().allowAnonymous().hideDashboardLayout().build(),
 	[View.devView]: new RouteMetaBuilder().allowAnonymous().withTitle('DevPage').build(),
-	[View.fallbackView]: new RouteMetaBuilder().allowAnonymous().build(),
 	[View.scheduleView]: new RouteMetaBuilder()
 		.withTitle('Schedule')
 		.partOfModule(Module.scheduleModule)
@@ -14,22 +14,22 @@ export const viewMetaDefinitions: Record<View, RouteMeta> = {
 	[View.adminView]: new RouteMetaBuilder()
 		.withTitle('AdminPage')
 		.partOfModule(Module.adminModule)
-		.withRoles(Role.Admin, Role.SuperAdmin)
+		.withRoles(Role.Admin)
 		.build(),
 	[View.adminUserView]: new RouteMetaBuilder()
 		.withTitle('Users')
 		.partOfModule(Module.adminModule)
-		.withRoles(Role.Admin, Role.SuperAdmin)
+		.withRoles(Role.Admin)
 		.build(),
 	[View.adminRequestsView]: new RouteMetaBuilder()
 		.withTitle('RegistrationRequests')
 		.partOfModule(Module.adminModule)
-		.withRoles(Role.Admin, Role.SuperAdmin)
+		.withRoles(Role.Admin)
 		.build(),
 	[View.adminRequestsRoleView]: new RouteMetaBuilder()
 		.withTitle('RegistrationRequests')
 		.partOfModule(Module.adminModule)
-		.withRoles(Role.Admin, Role.SuperAdmin)
+		.withRoles(Role.Admin)
 		.build(),
 	[View.tutorView]: new RouteMetaBuilder()
 		.withTitle('TutorPage')
@@ -39,6 +39,6 @@ export const viewMetaDefinitions: Record<View, RouteMeta> = {
 	[View.studentView]: new RouteMetaBuilder()
 		.withTitle('StudentPage')
 		.partOfModule(Module.studentModule)
-		.withRoles(Role.Tutor)
+		.withRoles(Role.Student)
 		.build(),
 }

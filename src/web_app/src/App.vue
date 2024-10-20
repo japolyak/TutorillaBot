@@ -5,17 +5,20 @@ import MainMenu from '@/modules/core/components/main-menu.vue';
 import TopBar from '@/modules/core/components/top-bar.vue';
 import { ref } from 'vue';
 import { useI18nConfig } from '@/composables/i18n-config';
+import { provideDashboardLayout } from './modules/core/composables/dashboard-layout'
 
 const { setLanguage } = useI18nConfig()
 const mainMenuVisible = ref(false);
 
 setLanguage('en-US')
+
+const { enableDashboardLayout } = provideDashboardLayout();
 </script>
 
 <template>
 	<v-app>
-		<main-menu v-model="mainMenuVisible" />
-		<top-bar @toggle-main-menu="mainMenuVisible = !mainMenuVisible"/>
+		<main-menu v-if="enableDashboardLayout" v-model="mainMenuVisible" />
+		<top-bar v-if="enableDashboardLayout" @toggle-main-menu="mainMenuVisible = !mainMenuVisible"/>
 		<v-main>
 			<router-view />
 			<snackbar />

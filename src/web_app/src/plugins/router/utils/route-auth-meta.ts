@@ -16,7 +16,6 @@ export class RouteAuthMeta {
 
 	public checkAccess(): AuthCheckResult {
 		const isAuthenticated = this.isAuthenticated();
-		console.log('isAuthenticated', isAuthenticated);
 
 		if (!this.allowAnonymous && !isAuthenticated) {
 			return this.createResult('missingRoles');
@@ -29,12 +28,12 @@ export class RouteAuthMeta {
 		return this.createResult(true);
 	}
 
-	private isAuthenticated(): boolean {
+	public isAuthenticated(): boolean {
 		const { userInfo, hasRoles } = useUserStore();
 
 		if (!userInfo) return false;
 
-		return !this.requiredRoles.length ? true : hasRoles(this.requiredRoles);
+		return !this.requiredRoles.length ? true : hasRoles(...this.requiredRoles);
 	}
 
 	private createResult(value: boolean | NoAccessReason): AuthCheckResult {

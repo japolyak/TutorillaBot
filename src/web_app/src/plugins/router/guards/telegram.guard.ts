@@ -1,8 +1,7 @@
 import { useTelegramWebApp } from '@/composables/telegram.web-app';
 import { useSessionStore } from '@/modules/core/store/session-store';
-import { storeToRefs } from 'pinia';
 import { useRouterStore } from '@/modules/core/store/router-store';
-import {useUserStore} from "@/modules/core/store/user-store";
+import { useUserStore } from '@/modules/core/store/user-store';
 
 export async function setupTelegramUser(): Promise<void> {
 	let initData: string | undefined;
@@ -19,9 +18,7 @@ export async function setupTelegramUser(): Promise<void> {
 	const authStore = useSessionStore();
 	const userStore = useUserStore();
 
-	const { telegramInitData } = storeToRefs(authStore);
-
-	if (initData === telegramInitData.value && userStore.userInfo) return;
+	if (initData === authStore.telegramInitData && userStore.userInfo) return;
 
 	const allowed = await authStore.initializeAuthentication(initData);
 
