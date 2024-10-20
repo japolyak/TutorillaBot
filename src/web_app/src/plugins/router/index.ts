@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import {setupTelegramUser} from './guards/telegram.guard'
+import { setupTelegramUser } from './guards/telegram-user-setup'
 import authGuard from './guards/auth.guard'
 import type { Module } from '@/plugins/router/view-definitions';
 import type { RouteAuthMeta } from '@/plugins/router/utils/route-auth-meta';

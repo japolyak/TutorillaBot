@@ -1,12 +1,18 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig.json",
-  "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["src/**/*", "src/**/*.vue"],
-  "compilerOptions": {
-    "composite": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
+	"$schema": "https://json.schemastore.org/tsconfig.json",
+	"extends": "@vue/tsconfig/tsconfig.dom.json",
+	"include": ["src/**/*", "src/**/*.vue"],
+	"compilerOptions": {
+		"composite": true,
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["./src/*"]
+		},
+		"types": [
+			"vuetify",
+			"intlify/unplugin-vue-i18n/messages",
+			"intlify/unplugin-vue-i18n",
+			"vue-i18n"
+		]
+	}
 }

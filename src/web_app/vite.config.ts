@@ -12,6 +12,9 @@ export default defineConfig({
 			include: resolveFileURL(import.meta.url, 'src/plugins/i18n/locales/*.json'),
 		}),
 	],
+	define: {
+		'__VUE_PROD_HYDRATION_MISMATCH_DETAILS__': true,
+	},
     resolve: {
     // https://vitejs.dev/config/shared-options.html#resolve-alias
 		alias: {
