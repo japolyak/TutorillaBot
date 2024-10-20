@@ -12,7 +12,7 @@ import { onMounted } from 'vue';
 const mainMenuVisible = defineModel<boolean>({ required: true, type: Boolean });
 
 onMounted(() => {
-    mainMenuVisible.value = true;
+    mainMenuVisible.value = false;
 });
 </script>
 

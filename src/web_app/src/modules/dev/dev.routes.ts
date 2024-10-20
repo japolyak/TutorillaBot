@@ -1,6 +1,7 @@
 import type { RouteRecordRaw } from 'vue-router';
 import Dashboard from '@/modules/core/components/dashboard.vue';
 import DevView from '@/modules/dev/views/dev-view.vue';
+import { View } from '@/plugins/router/view-definitions';
 
 
 export const devRoutes: RouteRecordRaw[] = [
@@ -10,7 +11,7 @@ export const devRoutes: RouteRecordRaw[] = [
 		children: [
 			{
 				path: '',
-				name: 'DevView',
+				name: View.devView,
 				component: DevView,
 			},
 		],
