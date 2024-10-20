@@ -12,7 +12,7 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { computed } from 'vue';
 import type { View } from '@/plugins/router/view-definitions';
-import {viewBreadcrumbDefinitions} from "@/plugins/router/view-breadcrumbs";
+import {viewBreadcrumbDefinitions} from '@/plugins/router/view-breadcrumbs';
 
 defineEmits(['toggleMainMenu']);
 

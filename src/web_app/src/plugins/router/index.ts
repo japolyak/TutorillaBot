@@ -1,7 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import telegramGuard from './guards/telegram.guard'
+import {setupTelegramUser} from './guards/telegram.guard'
+import authGuard from './guards/auth.guard'
 import type { Module } from '@/plugins/router/view-definitions';
+import type { RouteAuthMeta } from '@/plugins/router/utils/route-auth-meta';
 import { classPlannerRoutes } from '@/modules/class-planer/class-planner.routes';
+import { coreRoutes } from '@/modules/core/core.routes';
 import { devRoutes } from '@/modules/dev/dev.routes';
 import { adminRoutes } from '@/modules/admin/admin.routes';
 import { tutorRoutes } from '@/modules/tutor/tutor.routes';
@@ -12,15 +15,17 @@ const router = createRouter({
     history: createWebHistory(),
     routes: [
 		...classPlannerRoutes,
-		...scheduleRoutes,
 		...devRoutes,
+		...scheduleRoutes,
 		...adminRoutes,
 		...tutorRoutes,
 		...studentRoutes,
-    ],
+		...coreRoutes,
+	],
 });
 
-router.beforeEach(async (to, from, next) => await telegramGuard(next));
+router.beforeEach(setupTelegramUser);
+router.beforeEach(authGuard);
 
 export default router;
 
@@ -29,5 +34,6 @@ declare module 'vue-router' {
 		title: string;
 		icon: string | null;
 		module: Module | null;
+		authGuard: RouteAuthMeta;
 	}
 }

@@ -6,6 +6,7 @@ export enum Module {
 }
 
 export enum View {
+	fallbackView = 'FallbackView',
 	adminView = 'AdminView',
 	adminUserView = 'AdminUsersView',
 	adminRequestsView = 'AdminRequestsView',

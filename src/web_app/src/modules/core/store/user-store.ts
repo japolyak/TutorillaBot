@@ -1,11 +1,24 @@
-import { acceptHMRUpdate, defineStore } from 'pinia';
-import { ref, computed } from 'vue';
-import type { UserDto, PrivateCourseDto, CourseMemberDto } from '@/modules/core/services/api/api.models';
-import { Role } from '@/modules/core/services/api/api.models';
+import {acceptHMRUpdate, defineStore} from 'pinia';
+import {computed, ref} from 'vue';
+import type {CourseMemberDto, PrivateCourseDto, UserDto} from '@/modules/core/services/api/api.models';
+import {Role} from '@/modules/core/services/api/api.models';
 
 
 export const useUserStore = defineStore('user-store', () => {
 	const user = ref<UserDto | null>(null);
+
+	const userRoles = computed(() => {
+		const roles: Role[] = []
+
+		if (!user.value) return roles;
+
+		if (user.value.isTutor) roles.push(Role.Tutor);
+		if (user.value.isStudent) roles.push(Role.Student);
+		if (user.value.isAdmin) roles.push(Role.Admin);
+
+		return roles;
+	});
+
 	const privateCourse = ref<PrivateCourseDto<CourseMemberDto> | null>(null);
 
 	const privateCourseId = computed(() => privateCourse.value?.id ?? null);
@@ -25,17 +38,18 @@ export const useUserStore = defineStore('user-store', () => {
 	const userTimeZone = computed(() => user.value?.timeZone ?? null);
 	const locale = computed(() => user.value?.locale ?? 'en-US');
 
-	function setUser(payload: UserDto | null) {
-		if (payload == null) {
-			user.value = null;
-			return;
-		}
-
+	function setUser(payload: UserDto) {
 		user.value = payload;
 	}
 
 	function setPrivateCourse(payload: PrivateCourseDto<CourseMemberDto>) {
 		privateCourse.value = payload;
+	}
+
+	function hasRoles(...roles: Role[]): boolean {
+		if (!roles.length) return true;
+
+		return !userRoles.value.length ? false : roles.every(role => userRoles.value.includes(role));
 	}
 
     return {
@@ -48,6 +62,7 @@ export const useUserStore = defineStore('user-store', () => {
 		userTimeZone,
 		setUser,
 		setPrivateCourse,
+		hasRoles,
     };
 });
 

@@ -1,9 +1,10 @@
-import { AuthenticationClient } from '@/modules/core/services/api-clients/authentication-client';
-import { useUserStore } from '@/modules/core/store/user-store';
-import type { NavigationGuardNext } from 'vue-router';
 import { useTelegramWebApp } from '@/composables/telegram.web-app';
+import { useSessionStore } from '@/modules/core/store/session-store';
+import { storeToRefs } from 'pinia';
+import { useRouterStore } from '@/modules/core/store/router-store';
+import {useUserStore} from "@/modules/core/store/user-store";
 
-async function guard(next: NavigationGuardNext): Promise<void> {
+export async function setupTelegramUser(): Promise<void> {
 	let initData: string | undefined;
 
 	if (import.meta.env.VITE_APP_IS_DEV === 'true') {
@@ -13,17 +14,18 @@ async function guard(next: NavigationGuardNext): Promise<void> {
 		initData = getInitData();
 	}
 
-	if (!initData) {
-        next(false);
-        return;
-    }
+	if (!initData) return;
 
-    const response = await AuthenticationClient.validateInitData(initData);
-    if (response.isSuccess) {
-		const { setUser } = useUserStore();
-		setUser(response.data);
-		next();
-	}
+	const authStore = useSessionStore();
+	const userStore = useUserStore();
+
+	const { telegramInitData } = storeToRefs(authStore);
+
+	if (initData === telegramInitData.value && userStore.userInfo) return;
+
+	const allowed = await authStore.initializeAuthentication(initData);
+
+	if (allowed === 'forbidden') return;
+
+	useRouterStore().notifyAppInitialized();
 }
-
-export default guard;
