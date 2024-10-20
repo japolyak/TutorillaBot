@@ -1,5 +1,5 @@
 <template>
-	<v-card class="card-shadow tile">
+	<v-card height="156" class="card-shadow tile" @click="openView">
 		<div class="content mt-5">
 			<v-badge :content="componentItemsCount" bordered>
 				<v-icon :icon="icon" />
@@ -12,17 +12,13 @@
 		<v-card-text v-if="subTitlePassed" class="content">
 			<div class="content-subtitle">{{ subTitle }}</div>
 		</v-card-text>
-		<v-card-actions class="content">
-			<v-btn :to="{ name: view, params: params, query: query }">
-				{{ buttonText }}
-			</v-btn>
-		</v-card-actions>
 	</v-card>
 </template>
 
 <script setup lang="ts">
 import {computed, type PropType} from 'vue';
 import { StringUtils } from '@/utils/string.utils';
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
 	buttonText: {
@@ -59,7 +55,11 @@ const props = defineProps({
 	},
 })
 
+const router = useRouter();
+
 const subTitlePassed = computed(() => StringUtils.isNotEmpty(props.subTitle));
+
+const openView = async () => await router.push({ name: props.view, params: props.params, query: props.query });
 </script>
 
 <style lang="scss">
