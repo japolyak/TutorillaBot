@@ -1,3 +1,13 @@
 {
-	"Classroom": "Classroom"
+	"DevPage": "Dev page",
+	"AdminPage": "Admin page",
+	"TutorPage": "Tutor page",
+	"StudentPage": "Student page",
+	"Classroom": "Classroom",
+	"Students": "Students",
+	"Tutors": "Tutors",
+	"Manage": "Manage",
+	"Users": "Users",
+	"Schedule": "Schedule",
+	"RegistrationRequests": "Registration requests"
 }

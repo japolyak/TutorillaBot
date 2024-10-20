@@ -7,8 +7,12 @@ export interface MainMenuGroup {
 
 export const mainMenuItems: MainMenuGroup[] = [
 	{
-		mainView: View.adminView,
+		mainView: View.scheduleView,
 		children: [],
+	},
+	{
+		mainView: View.adminView,
+		children: [View.adminUserView, View.adminRequestsView],
 	},
 	{
 		mainView: View.studentView,
@@ -20,6 +24,6 @@ export const mainMenuItems: MainMenuGroup[] = [
 	},
 	{
 		mainView: View.devView,
-		children: [],
+		children: [View.adminView, View.tutorView, View.studentView],
 	},
 ];

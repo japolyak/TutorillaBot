@@ -1,11 +1,13 @@
 <template>
 	<v-container fluid>
-		Main admin view
+		requests by role
 	</v-container>
 </template>
 
 <script setup lang="ts">
+import CardTile from '@/modules/core/components/card-tile.vue';
 import { useI18n } from 'vue-i18n';
+import { View } from '@/plugins/router/view-definitions';
 
 const { t } = useI18n();
 </script>
