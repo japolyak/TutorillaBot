@@ -28,20 +28,22 @@ import { useTelegramWebAppStore } from '@/modules/core/store/telegram-web-app-st
 import { onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
+import { useTelegramWebApp } from '@/composables/telegram.web-app';
 
 const route = useRoute();
 
 const { showSnackbar } = useActionSnackbarStore();
+const { setMainButton, hideMainButton, colorScheme } = useTelegramWebApp();
 
 const { setPrivateCourse } = useUserStore();
 const { isTutorInPrivateCourse, privateCourseId, userRoleInPrivateCourse } = storeToRefs(useUserStore());
 
-const { setMainButton, setWebAppTheme } = useTelegramWebAppStore();
+const { setWebAppTheme } = useTelegramWebAppStore();
 
 const { restoreClassPlanner, setFlatTextbookAssignmentsList, newClass } = useClassPlannerStore();
 
 const isDev = computed(() => import.meta.env.VITE_APP_IS_DEV === 'true');
-const testBtnColor = computed(() => window.Telegram.WebApp.colorScheme === 'light' ? 'blue' : 'green');
+const testBtnColor = computed(() => colorScheme.value === 'light' ? 'blue' : 'green');
 
 async function loadPrivateCourse(privateCourseId: number) {
 	const response = await PrivateCourseClient.loadPrivateCourse(privateCourseId);
@@ -76,7 +78,7 @@ async function planClass(classDate: Date) {
 
 	restoreClassPlanner(isTutorInPrivateCourse.value);
 
-	window.Telegram.WebApp.MainButton.hide();
+	hideMainButton();
 }
 
 onMounted(async () => {

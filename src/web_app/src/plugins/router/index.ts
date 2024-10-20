@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { telegramUserAuthentication } from '@/plugins/router/telegram-validation'
 import { classPlannerRoutes } from '@/modules/class-planer/class-planner.routes';
 import { devRoutes } from '@/modules/dev/dev.routes';
+import telegramGuard from './guards/telegram.guard'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -11,6 +11,6 @@ const router = createRouter({
     ],
 });
 
-router.beforeEach(async (to, from, next) => await telegramUserAuthentication(window.Telegram.WebApp.initData, next));
+router.beforeEach(async (to, from, next) => await telegramGuard(next));
 
 export default router;

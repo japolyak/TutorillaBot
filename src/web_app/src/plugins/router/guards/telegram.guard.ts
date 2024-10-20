@@ -1,10 +1,16 @@
 import { AuthenticationClient } from '@/modules/core/services/api-clients/authentication-client';
 import { useUserStore } from '@/modules/core/store/user-store';
 import type { NavigationGuardNext } from 'vue-router';
+import { useTelegramWebApp } from '@/composables/telegram.web-app';
 
-export async function telegramUserAuthentication(initData: string, next: NavigationGuardNext): Promise<void> {
+async function guard(next: NavigationGuardNext): Promise<void> {
+	let initData: string | undefined;
+
 	if (import.meta.env.VITE_APP_IS_DEV === 'true') {
 		initData = import.meta.env.VITE_APP_WEB_APP_INIT_DATA;
+	} else {
+		const { getInitData } = useTelegramWebApp();
+		initData = getInitData();
 	}
 
 	if (!initData) {
@@ -19,3 +25,5 @@ export async function telegramUserAuthentication(initData: string, next: Navigat
 		next();
 	}
 }
+
+export default guard;

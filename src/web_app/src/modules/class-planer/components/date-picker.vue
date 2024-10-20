@@ -57,9 +57,11 @@ import VueDatePicker, { type DatePickerMarker, type DatePickerInstance } from '@
 import { ref, watchEffect } from 'vue';
 import { format } from 'date-fns'
 import { storeToRefs } from 'pinia';
+import { useTelegramWebApp } from '@/composables/telegram.web-app';
 
 const emit = defineEmits(['planClass']);
 
+const { hideMainButton, showMainButton, toggleEvent, mainButtonVisible } = useTelegramWebApp()
 const { userTimeZone, locale, privateCourseId } = storeToRefs(useUserStore());
 const { date } = storeToRefs(useClassPlannerStore());
 
@@ -148,13 +150,13 @@ function confirmationAllowed(value: Date | null) {
 
 function setTelegramMainButtonState() {
     if (date.value) {
-        if (window.Telegram.WebApp.MainButton.isVisible) return;
+        if (mainButtonVisible.value) return;
 
-        window.Telegram.WebApp.MainButton.show();
+        showMainButton();
         return;
     }
 
-    window.Telegram.WebApp.MainButton.hide();
+    hideMainButton();
 }
 
 function formatDate(date: Date | null, datetimeFormat: string = 'dd.MM.yyyy, HH:mm') {
@@ -178,7 +180,7 @@ function planClass() {
 	emit('planClass', payload);
 }
 
-watchEffect(() => window.Telegram.WebApp.onEvent('mainButtonClicked', planClass));
+watchEffect(() => toggleEvent('mainButtonClicked', planClass));
 </script>
 
 <style lang="scss">
