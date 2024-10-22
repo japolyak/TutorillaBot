@@ -1,5 +1,5 @@
 from telebot.types import Message
-from telebot.states.sync.context import StateContext
+from redis import Redis
 
 from common import bot, r
 
@@ -9,25 +9,27 @@ from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from src.bot.src.services.api.clients.registration_client import RegistrationClient
 from src.bot.src.services.i18n.i18n import t
 from src.bot.src.validators import Validator
+from src.bot.src.services.redis_service.redis_user_management import RedisUser
 
 
 class RegistrationContext:
     @staticmethod
-    def start_function(message: Message, state: StateContext, *args, **kwargs):
-        state.set('')
+    def start_function(message: Message, redis: Redis, *args, **kwargs):
         chat_id = message.from_user.id
 
         response = RegistrationClient.get_user(chat_id)
 
         if response.is_successful():
             user = response.data
-            state.add_data(**user.model_dump())
+            RedisUser.add_user(redis, chat_id, user)
 
             markup = ReplyKeyboardMarkupCreator.main_menu_markup(chat_id, user.locale)
             bot.send_message(chat_id=chat_id,
                              text=t(chat_id, "Welcome", user.locale, name=user.first_name),
                              reply_markup=markup)
             return
+
+        redis.hset(str(chat_id), "id", int(chat_id))
 
         welcome_message = """
         Hi, it's TutorillaBot!\nMy mission is to help you to find a tutor for your needs.\n\nPlease, select a language by clicking the button below to start the registration process.
