@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-from common import configure_logger, allowed_origins
+from src.common import configure_logger, allowed_origins
 
 from src.api.src.database.db_setup import initialize_database
 from src.api.src.router import api_router

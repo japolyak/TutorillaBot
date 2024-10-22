@@ -2,9 +2,9 @@ import logging
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+from src.common import bot, configure_logger, use_webhook, r
 
-from common import bot, configure_logger, use_webhook, r
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 from src.bot.src.webhook.webhook_app import app
 from src.bot.src.webhook.webhook_initializer import initialize_webhook

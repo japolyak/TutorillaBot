@@ -1,9 +1,9 @@
 import logging
 from telebot import ExceptionHandler, TeleBot, apihelper
 
-from src.common.config import admin_tg_id, is_development, bot_token
-from src.common.string_utils import StringUtils
-from src.common.redis_configuration import state_storage
+from .config import admin_tg_id, is_development, bot_token
+from .string_utils import StringUtils
+from .redis_configuration import state_storage
 
 log = logging.getLogger(__name__)
 

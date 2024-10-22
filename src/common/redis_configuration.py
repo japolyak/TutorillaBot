@@ -1,7 +1,7 @@
 from redis import Redis
 from telebot.storage import StateRedisStorage
 
-from common import redis_host, redis_db, redis_password, redis_username
+from .config import redis_host, redis_db, redis_password, redis_username
 
 redis_instance = Redis(
     host=redis_host,
