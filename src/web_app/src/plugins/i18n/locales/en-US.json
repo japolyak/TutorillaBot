@@ -11,5 +11,6 @@
 	"Schedule": "Schedule",
 	"Error": "Error",
 	"RegistrationRequests": "Registration requests",
-	"ClassPlanner": "Class planner"
+	"ClassPlanner": "Class planner",
+	"NotTodayBuddy": "Not today, buddy!"
 }

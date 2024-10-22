@@ -1,28 +1,63 @@
 <template>
-<!--	<v-sheet>-->
-<!--		<v-calendar view-mode="week" :weekdays="[1]" class="telegram-calendar">-->
-<!--		</v-calendar>-->
-<!--	</v-sheet>-->
+    <div class="justify center">
+        <div style="display: flex; max-width: 800px; width: 100%; height: 500px;">
+            <q-calendar-day
+                v-model="selectedDate"
+                view="week"
+                cell-width="120px"
+                weekday-align="right"
+                date-align="left"
+                date-header="inline"
+                short-weekday-label
+                animated
+                bordered
+                @change="onChange"
+                @moved="onMoved"
+                @click-date="onClickDate"
+                @click-time="onClickTime"
+                @click-interval="onClickInterval"
+                @click-head-intervals="onClickHeadIntervals"
+                @click-head-day="onClickHeadDay"
+            />
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">
-import { VCalendar } from 'vuetify/labs/components';
+import { QCalendarDay, today } from '@quasar/quasar-ui-qcalendar/src/index.js'
+import '@quasar/quasar-ui-qcalendar/src/QCalendarVariables.sass'
+import '@quasar/quasar-ui-qcalendar/src/QCalendarTransitions.sass'
+import '@quasar/quasar-ui-qcalendar/src/QCalendarDay.sass'
+import { ref } from 'vue';
 
+const selectedDate = ref(today());
+const calendar = ref<QCalendarDay | null>(null)
+
+function onMoved(data: any) {
+    console.log('onMoved', data);
+}
+
+function onChange(data: any) {
+    console.log('onChange', data);
+}
+
+function onClickDate(data: any) {
+    console.log('onClickDate', data);
+}
+
+function onClickTime(data: any) {
+    console.log('onClickTime', data);
+}
+
+function onClickInterval(data: any) {
+    console.log('onClickInterval', data);
+}
+
+function onClickHeadIntervals(data: any) {
+    console.log('onClickHeadIntervals', data);
+}
+
+function onClickHeadDay(data: any) {
+    console.log('onClickHeadDay', data);
+}
 </script>
-
-<style lang="scss">
-//.v-calendar.telegram-calendar {
-//	.v-calendar-header {
-//		min-height: 50px;
-//	}
-//
-//	.v-calendar__container {
-//		.v-calendar-day__container {
-//			.v-calendar-weekly__head-weekday {
-//				color: red;
-//				//max-width: 120px;
-//			}
-//		}
-//	}
-//}
-</style>

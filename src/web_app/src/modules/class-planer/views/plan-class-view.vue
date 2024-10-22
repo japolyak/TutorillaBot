@@ -1,6 +1,6 @@
 <template>
 	<template v-if="!!privateCourseId">
-		<date-picker @plan-class="planClass" />
+		<date-picker />
 		<assignment v-if="isTutorInPrivateCourse" />
 		<v-btn
 			v-if="isDev"

@@ -28,4 +28,5 @@ const { enableDashboardLayout } = provideDashboardLayout();
 
 <style lang="scss">
 @use '@/styles/main.scss';
+@use '@quasar/quasar-ui-qcalendar/src/css/calendar-day.sass';
 </style>
