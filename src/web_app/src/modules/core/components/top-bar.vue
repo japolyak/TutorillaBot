@@ -1,5 +1,5 @@
 <template>
-    <v-app-bar name="app-bar" class="top-bar" height="60">
+    <v-app-bar name="app-bar" class="top-bar" height="60" color="blue">
         <v-app-bar-nav-icon location="right" @click="$emit('toggleMainMenu')" />
 		<v-app-bar-title>
 			<v-breadcrumbs v-if="breadcrumbs != null" :items="breadcrumbs" />
