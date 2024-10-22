@@ -1,6 +1,6 @@
 from string import Template
 
-from common import r
+from src.common.redis_configuration import redis_instance as r
 
 from src.bot.src.services.i18n.locales.en_US import en
 

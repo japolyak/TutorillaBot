@@ -5,7 +5,7 @@ from telebot.types import ReplyKeyboardRemove, CallbackQuery
 from telebot.states.sync.context import StateContext
 from typing import List, Any
 
-from common import bot
+from src.common.bot import bot
 from src.common.models import Role
 
 from src.bot.src.services.i18n.i18n import t

@@ -1,48 +1,48 @@
+from redis import Redis
 from telebot.types import InputTextMessageContent, InlineQuery, InlineQueryResultArticle
-from telebot.states.sync.context import StateContext
 from typing import Literal, List, Optional
 
-from common import bot
+from src.common.bot import bot
+from src.common.redis_configuration import redis_instance as r
 from src.common.models import Role, PrivateCourseInlineDto
 
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.services.api.clients.private_course_client import PrivateCourseClient
 from src.bot.src.services.api.clients.tutor_course_client import TutorCourseClient
 from src.bot.src.services.i18n.i18n import t
+from src.bot.src.services.redis_service.redis_user_management import RedisUser
 
 
-def inline_handler_guard(state: StateContext, command: Optional[str], role: Optional[str]):
+def inline_handler_guard(query: InlineQuery, command: Optional[str], role: Optional[str]):
     if not command:
         return False
+    user_id = query.from_user.id
 
-    with state.data() as data:
-        match command:
-            case "Courses":
-                return data.get("is_tutor", False) if role == Role.Tutor else data.get("is_student", False)
-            case "Students":
-                return data.get("is_student", False)
-            case "Subscribe":
-                return data.get("is_student", False)
-            case _:
-                return False
+    match command:
+        case "Courses":
+            return RedisUser.has_role(r, user_id, Role.Tutor) if role == Role.Tutor else RedisUser.has_role(r, user_id, Role.Student)
+        case "Students":
+            return RedisUser.has_role(r, user_id, Role.Student)
+        case "Subscribe":
+            return RedisUser.has_role(r, user_id, Role.Student)
+        case _:
+            return False
 
 @bot.inline_handler(func=lambda query: True)
 def query_text(
         query: InlineQuery,
-        state: StateContext,
+        redis: Redis,
         not_allowed: bool,
         command: Optional[str] = None,
         role: Optional[str] = None,
         subject: Optional[str] = None,
         *args, **kwargs
 ):
-    if not_allowed or not subject or not inline_handler_guard(state, command, role):
+    if not_allowed or not subject or not inline_handler_guard(query, command, role):
         return
 
     user_id = query.from_user.id
-
-    with state.data() as data:
-        locale = data.get("locale", "en-US")
+    locale = redis.hget(user_id, "locale")
 
     match command:
         case "Courses":

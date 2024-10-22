@@ -1,7 +1,8 @@
 import logging
 import time
 
-from common import bot, webhook_url
+from src.common.bot import bot
+from src.common.config import webhook_url
 
 
 log = logging.getLogger(__name__)

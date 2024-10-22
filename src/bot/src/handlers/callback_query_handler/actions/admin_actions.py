@@ -2,7 +2,7 @@ from typing import Any, List
 from redis import Redis
 from telebot.types import CallbackQuery
 
-from common import bot
+from src.common.bot import bot
 from src.common.models import UserDto
 
 from src.bot.src.handlers.shared import Shared

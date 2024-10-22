@@ -4,7 +4,10 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-from common import bot, configure_logger, use_webhook, r
+from src.common.bot import bot
+from src.common.config import use_webhook
+from src.common.redis_configuration import redis_instance as r
+from src.common.logger import configure_logger
 
 from src.bot.src.webhook.webhook_app import app
 from src.bot.src.webhook.webhook_initializer import initialize_webhook

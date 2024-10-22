@@ -2,7 +2,7 @@ from telebot import service_utils
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from typing import List
 
-from common import r
+from src.common.redis_configuration import redis_instance as r
 
 from src.bot.src.services.i18n.i18n import t
 

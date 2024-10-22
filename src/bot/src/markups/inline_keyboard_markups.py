@@ -2,7 +2,7 @@ from telebot import service_utils
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from typing import Literal, List
 
-from common import web_app_link
+from src.common.config import web_app_link
 from src.common.models import PaginatedList, SubjectDto, UserRequestDto, Role, PrivateClassDto, ClassStatus, BlaTutorCourseDto, TextbookDto
 
 from src.bot.src.enums import Emoji
@@ -215,14 +215,15 @@ class InlineKeyboardMarkupCreator:
     def course_markup(user_id: int, locale: str, tutor_course_id: int) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 
-        textbooks = InlineKeyboardButton(text=t(user_id, "TextbooksIKBtn", locale),
-                                         callback_data=f"{CallBackPrefix.CourseTextbooks} {locale} {tutor_course_id}")
-        add_textbooks = InlineKeyboardButton(text=t(user_id, "AddTextbooksIKBtn", locale),
-                                             callback_data=f"{CallBackPrefix.AddTextbooks} {locale} {tutor_course_id}")
+        # textbooks = InlineKeyboardButton(text=t(user_id, "TextbooksIKBtn", locale),
+        #                                  callback_data=f"{CallBackPrefix.CourseTextbooks} {locale} {tutor_course_id}")
+        # add_textbooks = InlineKeyboardButton(text=t(user_id, "AddTextbooksIKBtn", locale),
+        #                                      callback_data=f"{CallBackPrefix.AddTextbooks} {locale} {tutor_course_id}")
         back = InlineKeyboardButton(text=t(user_id, "BackToCoursesIKBtn", locale),
                                     callback_data=f"{CallBackPrefix.BackToCourses} {locale}")
 
-        markup.add(textbooks, add_textbooks).add(back)
+        # markup.add(textbooks, add_textbooks).add(back)
+        markup.add().add(back)
 
         return markup
 
