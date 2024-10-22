@@ -1,7 +1,7 @@
 from telebot.types import Message
 from telebot.states.sync import StateContext
 
-from common import bot
+from src.common.bot import bot
 
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.states import TextbookState

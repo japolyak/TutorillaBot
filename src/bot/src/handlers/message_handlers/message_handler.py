@@ -3,7 +3,7 @@ from telebot.states.sync import StateContext
 from telebot.types import Message
 from typing import Optional
 
-from common import bot
+from src.common.bot import bot
 
 from src.bot.src.handlers.message_handlers.commands import command_handlers
 
