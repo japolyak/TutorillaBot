@@ -1,4 +1,4 @@
-from sqlalchemy import case, literal_column
+from sqlalchemy import case, literal_column, func, select
 from sqlalchemy.orm import Session
 from typing import Literal
 
@@ -29,5 +29,17 @@ def get_user_request(db: Session, request_id: int):
     query = (db.query(UserRequest.id, User.id, User.first_name, User.last_name, User.email, requested_role)
              .join(UserRequest.user)
              .filter(request_id == UserRequest.id))
+
+    return query.first()
+
+
+def requests_statistics(db: Session):
+    query = db.execute(
+        select(
+            func.count().filter(UserRequest.student_role == True).label("students"),
+            func.count().filter(UserRequest.tutor_role == True).label("tutors"),
+        )
+        .select_from(UserRequest)
+    )
 
     return query.first()

@@ -66,7 +66,7 @@ class UserDto(UserBaseDto):
     is_admin: bool | None = None
 
 
-class UserRequestDto(BaseModel):
+class UserRequestDto(BaseDto):
     id: int
     user_id: int
     user_first_name: str
@@ -185,3 +185,11 @@ class NewTutorCourseDto(BaseModel):
 class ClassDto(BaseDto):
     date: datetime
     status: ClassStatus
+
+
+class StatisticsDto(BaseDto):
+    students_requests: int
+    tutors_requests: int
+
+    class Config:
+        from_attributes = True

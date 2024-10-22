@@ -76,3 +76,17 @@ export interface NewClassDto {
     date: Date;
     assignments: AssignmentDto[];
 }
+
+export interface StatisticsDto {
+	studentsRequests: number;
+	tutorsRequests: number;
+}
+
+export interface UserRequestDto {
+	id: number;
+    userId: number;
+    userFirstName: string;
+    userLastName: number;
+    userEmail: number;
+    userRole: Role;
+}

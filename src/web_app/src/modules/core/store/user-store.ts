@@ -49,7 +49,7 @@ export const useUserStore = defineStore('user-store', () => {
 	function hasRoles(...roles: Role[]): boolean {
 		if (!roles.length) return true;
 
-		return !userRoles.value.length ? false : roles.every(role => userRoles.value.includes(role));
+		return !userRoles.value.length ? false : !!userRoles.value.filter(r => roles.includes(r));
 	}
 
     return {

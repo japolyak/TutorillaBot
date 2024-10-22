@@ -2,7 +2,7 @@ from fastapi import status, Depends, APIRouter
 from sqlalchemy.orm import Session
 from typing import Literal
 
-from src.common.models import UserDto, UserRequestDto, Role, ItemsDto
+from src.common.models import UserDto, UserRequestDto, Role, ItemsDto, StatisticsDto
 
 from src.api.src.bot_client.message_sender import send_decline_message
 from src.api.src.builders.response_builder import ResponseBuilder
@@ -14,8 +14,18 @@ from src.api.src.routers.api_enpoints import APIEndpoints
 router = APIRouter()
 
 
-@router.get(path=APIEndpoints.Admin.GetRequests, status_code=status.HTTP_200_OK, response_model=ItemsDto[UserRequestDto],
-            summary="Get all requests by role")
+@router.get(path=APIEndpoints.Admin.RequestsStatistics, status_code=status.HTTP_200_OK,
+            response_model=StatisticsDto, summary="Get requests statistics")
+async def get_requests_statistics(db: Session = Depends(session)):
+    students, tutors = admin_crud.requests_statistics(db)
+
+    response_model = StatisticsDto(students_requests=students, tutors_requests=tutors)
+
+    return ResponseBuilder.success_response(content=response_model)
+
+
+@router.get(path=APIEndpoints.Admin.GetRequests, status_code=status.HTTP_200_OK,
+            response_model=ItemsDto[UserRequestDto], summary="Get all requests by role")
 async def get_requests(role: Literal[Role.Student, Role.Tutor], db: Session = Depends(session)):
     requests = admin_crud.get_users_requests(db=db, role=role)
 

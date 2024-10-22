@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, type PropType} from 'vue';
+import { computed, type PropType } from 'vue';
 import { StringUtils } from '@/utils/string.utils';
 import { useRouter } from 'vue-router';
 

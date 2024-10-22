@@ -7,7 +7,7 @@
 				prepend-icon="mdi-chevron-left"
 				@click="selectedParent = null"
 			/>
-			<v-list-item v-else title="Tutorilla"/>
+			<v-list-item v-else title="Tutorilla" />
 		</template>
 
 		<v-list nav density="compact" open-strategy="multiple" select-strategy="independent">
