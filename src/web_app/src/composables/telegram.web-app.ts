@@ -2,34 +2,32 @@ import { computed, ref } from 'vue';
 import type { EventNames, EventParams } from '@twa-dev/types';
 
 export function useTelegramWebApp() {
-	const webApp = ref(window.Telegram.WebApp);
+	const webApp = window.Telegram.WebApp;
 
-	const mainButtonVisible = computed(() => webApp.value.MainButton.isVisible);
-	const colorScheme = computed(() => webApp.value.colorScheme);
+	const mainButtonVisible = computed(() => webApp.MainButton.isVisible);
+	const colorScheme = computed(() => webApp.colorScheme);
 
 	function getInitData() {
-		return webApp.value.initData;
+		return webApp.initData;
 	}
 
 	function setMainButton(value: string) {
-		webApp.value.MainButton.text = value;
+		webApp.MainButton.text = value;
 	}
 
 	function showMainButton() {
-		webApp.value.MainButton.show()
+		webApp.MainButton.show()
 	}
 
 	function hideMainButton() {
-		webApp.value.MainButton.hide()
+		webApp.MainButton.hide()
 	}
 
 	function toggleEvent<T extends EventNames>(eventName: T, callback: (params: EventParams[T]) => unknown) {
-		webApp.value.onEvent(eventName, callback());
+		webApp.onEvent(eventName, callback());
 	}
 
 	return {
-		webApp,
-
 		mainButtonVisible,
 		colorScheme,
 
