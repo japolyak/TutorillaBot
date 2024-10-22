@@ -7,7 +7,7 @@
 				prepend-icon="mdi-chevron-left"
 				@click="selectedParent = null"
 			/>
-			<v-list-item v-else title="Tutorilla" />
+			<v-list-item v-else :title="userFullName" />
 		</template>
 
 		<v-list nav density="compact" open-strategy="multiple" select-strategy="independent">
@@ -40,6 +40,8 @@ import { mainMenuItems } from '@/modules/core/core.constants';
 import { viewMetaDefinitions } from '@/plugins/router/view-metas';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import {useUserStore} from "@/modules/core/store/user-store";
+import {storeToRefs} from "pinia";
 
 interface MainMenuGroupViewModel {
 	view: View;
@@ -53,6 +55,7 @@ interface MainMenuGroupViewModel {
 const mainMenuVisible = defineModel<boolean>({ required: true, type: Boolean });
 
 const { t } = useI18n();
+const { userFullName } = storeToRefs(useUserStore());
 
 const router = useRouter();
 const routes = router.getRoutes();
@@ -63,7 +66,7 @@ async function openItemView(view: View) {
 	await router.push({ name: view });
 }
 
-async function selectGroupItemView(view: MainMenuGroupViewModel) {
+function selectGroupItemView(view: MainMenuGroupViewModel) {
 	selectedParent.value = view;
 }
 
@@ -109,7 +112,3 @@ watch(mainMenuVisible, value => {
 	if (value) selectedParent.value = null;
 });
 </script>
-
-<style scoped lang="scss">
-
-</style>

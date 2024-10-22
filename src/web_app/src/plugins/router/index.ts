@@ -11,15 +11,25 @@ import { tutorRoutes } from '@/modules/tutor/tutor.routes';
 import { studentRoutes } from '@/modules/student/student.routes';
 import { scheduleRoutes } from '@/modules/schedule/schedule.routes';
 
-const router = createRouter({
-    history: createWebHistory(),
-    routes: [
+// TODO - remove when moduls will be ready
+function availableRoutes() {
+	if (import.meta.env.VITE_APP_IS_DEV === 'false') return [...classPlannerRoutes];
+
+	return [
 		...classPlannerRoutes,
-		...devRoutes,
 		...scheduleRoutes,
 		...adminRoutes,
 		...tutorRoutes,
 		...studentRoutes,
+		...devRoutes,
+	]
+}
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes: [
+		...availableRoutes(),
+		// Must be the last one!
 		...coreRoutes,
 	],
 });

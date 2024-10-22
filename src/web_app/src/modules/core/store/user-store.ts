@@ -7,6 +7,12 @@ import {Role} from '@/modules/core/services/api/api.models';
 export const useUserStore = defineStore('user-store', () => {
 	const user = ref<UserDto | null>(null);
 
+	const userFullName = computed(() => {
+		if (!user.value) return 'Tutorilla';
+
+		return user.value.firstName + ' ' + user.value.firstName;
+	});
+
 	const userRoles = computed(() => {
 		const roles: Role[] = []
 
@@ -59,6 +65,7 @@ export const useUserStore = defineStore('user-store', () => {
 		isTutorInPrivateCourse,
 		userInfo,
 		locale,
+		userFullName,
 		userTimeZone,
 		setUser,
 		setPrivateCourse,

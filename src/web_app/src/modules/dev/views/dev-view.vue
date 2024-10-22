@@ -15,7 +15,7 @@
 		</v-row>
 		<v-row>
 			<v-col cols="12">
-				<v-btn text="Test button" color="primary" class="mt-4" @click="sendRequest" />
+				<v-btn text="Test button" color="primary" class="mt-4" @click="openItemView" />
 			</v-col>
 		</v-row>
 	</v-container>
@@ -27,10 +27,17 @@ import { PrivateCourseClient } from '@/modules/core/services/api-clients/private
 import { useActionSnackbarStore } from '@/modules/core/store/snackbar-store';
 import ThemeToggle from "@/modules/core/components/theme-toggle.vue";
 import BasicToggle from "@/modules/core/components/basic-toggle.vue";
+import { useRouter } from 'vue-router';
+import { View } from '@/plugins/router/view-definitions';
 
 const theme = ref(false);
 
 const { showSnackbar } = useActionSnackbarStore();
+const router = useRouter();
+
+async function openItemView() {
+	await router.push({ name: View.classPlannerView, params: { privateCourseId: 1 } });
+}
 
 const sendRequest = async () => {
 	const response = await PrivateCourseClient.test();

@@ -26,4 +26,8 @@ export const mainMenuItems: MainMenuGroup[] = [
 		mainView: View.devView,
 		children: [],
 	},
+	{
+		mainView: View.classPlannerView,
+		children: [],
+	},
 ];

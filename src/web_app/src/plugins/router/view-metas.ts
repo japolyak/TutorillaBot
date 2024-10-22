@@ -6,6 +6,11 @@ import { Role } from '@/modules/core/services/api/api.models';
 export const viewMetaDefinitions: Record<View, RouteMeta> = {
 	[View.fallbackView]: new RouteMetaBuilder().allowAnonymous().hideDashboardLayout().build(),
 	[View.devView]: new RouteMetaBuilder().allowAnonymous().withTitle('DevPage').build(),
+	[View.classPlannerView]: new RouteMetaBuilder()
+		.withTitle('ClassPlanner')
+		.partOfModule(Module.classPlannerModule)
+		.withRoles(Role.Student, Role.Tutor)
+		.build(),
 	[View.scheduleView]: new RouteMetaBuilder()
 		.withTitle('Schedule')
 		.partOfModule(Module.scheduleModule)
