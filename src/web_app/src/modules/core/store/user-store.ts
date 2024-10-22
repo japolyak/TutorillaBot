@@ -1,7 +1,7 @@
-import {acceptHMRUpdate, defineStore} from 'pinia';
-import {computed, ref} from 'vue';
-import type {CourseMemberDto, PrivateCourseDto, UserDto} from '@/modules/core/services/api/api.models';
-import {Role} from '@/modules/core/services/api/api.models';
+import { acceptHMRUpdate, defineStore } from 'pinia';
+import { computed, ref } from 'vue';
+import type { CourseMemberDto, PrivateCourseDto, UserDto } from '@/modules/core/services/api/api.models';
+import { Role } from '@/modules/core/services/api/api.models';
 
 
 export const useUserStore = defineStore('user-store', () => {
@@ -10,7 +10,7 @@ export const useUserStore = defineStore('user-store', () => {
 	const userFullName = computed(() => {
 		if (!user.value) return 'Tutorilla';
 
-		return user.value.firstName + ' ' + user.value.firstName;
+		return user.value.firstName + ' ' + user.value.lastName;
 	});
 
 	const userRoles = computed(() => {
