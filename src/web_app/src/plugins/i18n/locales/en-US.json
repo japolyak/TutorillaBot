@@ -12,5 +12,8 @@
 	"Error": "Error",
 	"RegistrationRequests": "Registration requests",
 	"ClassPlanner": "Class planner",
-	"NotTodayBuddy": "Not today, buddy!"
+	"NotTodayBuddy": "Not today, buddy!",
+	"ScheduleClass": "Schedule class",
+	"Plan": "Plan",
+	"Close": "Close"
 }

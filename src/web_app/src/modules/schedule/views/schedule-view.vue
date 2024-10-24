@@ -21,6 +21,7 @@
             />
         </div>
     </div>
+    <planner-dialog v-model="planerDialog" />
 </template>
 
 <script setup lang="ts">
@@ -29,9 +30,11 @@ import '@quasar/quasar-ui-qcalendar/src/QCalendarVariables.sass'
 import '@quasar/quasar-ui-qcalendar/src/QCalendarTransitions.sass'
 import '@quasar/quasar-ui-qcalendar/src/QCalendarDay.sass'
 import { ref } from 'vue';
+import PlannerDialog from "@/modules/schedule/components/planner-dialog.vue";
 
 const selectedDate = ref(today());
 const calendar = ref<QCalendarDay | null>(null)
+const planerDialog = ref(false);
 
 function onMoved(data: any) {
     console.log('onMoved', data);
@@ -46,7 +49,7 @@ function onClickDate(data: any) {
 }
 
 function onClickTime(data: any) {
-    console.log('onClickTime', data);
+    planerDialog.value = true;
 }
 
 function onClickInterval(data: any) {
