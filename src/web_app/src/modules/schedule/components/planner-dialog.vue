@@ -1,5 +1,5 @@
 <template>
-	<v-dialog v-model="showDialog" :max-width="400" class="planner-dialog">
+	<v-dialog v-model="showDialog" :max-width="400" class="align-start planner-dialog">
 		<v-card class="planner-dialog">
 			<v-card-title class="d-flex justify-space-between">
 				{{ t('ScheduleClass') }}
@@ -17,7 +17,7 @@
 			<v-card-text>
 				<v-row dense>
 					<v-col cols="12">
-						Student
+                        {{ t('Subject') + ' | ' + role }}
 					</v-col>
 					<v-col cols="12">
 						<v-autocomplete ref="autocompleteRef" v-bind="autocompleteProps" v-model="selectedPerson">
@@ -58,7 +58,7 @@
 			</v-card-text>
 
 			<v-card-actions>
-				<v-btn variant="flat" flat color="blue" block @click="planClass">
+				<v-btn :loading="isSaving" variant="flat" flat color="blue" block @click="planClass">
 					{{ t('Plan') }}
 				</v-btn>
 			</v-card-actions>
@@ -68,19 +68,24 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
+import { useDate } from 'vuetify';
 import { computed, ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { VAutocomplete } from 'vuetify/components';
 import { Role } from '@/modules/core/services/api/api.models';
 import DatePicker from '@/modules/schedule/components/date-picker.vue';
 import { useScheduleStore } from '@/modules/schedule/services/schedule-store';
-import { storeToRefs } from 'pinia';
 import type { CourseModel } from '@/modules/schedule/models';
 import { useUserStore } from '@/modules/core/store/user-store';
-import { useDate } from 'vuetify';
-import { VAutocomplete } from 'vuetify/components';
+import { PrivateCourseClient } from '@/modules/core/services/api-clients/private-course-client';
+import { useActionSnackbarStore } from '@/modules/core/store/snackbar-store';
+import { useValidators } from '@/composables/validators';
 
 const adapter = useDate();
 const { t } = useI18n();
-const { userTimeZone } = storeToRefs(useUserStore());
+const { required } = useValidators();
+const { showSnackbar } = useActionSnackbarStore();
+const { userTimeZone, isTutor } = storeToRefs(useUserStore());
 const { closeDialog } = useScheduleStore();
 const {
     showDialog,
@@ -92,17 +97,28 @@ const {
 } = storeToRefs(useScheduleStore());
 
 const autocompleteRef = ref<VAutocomplete | null>(null);
+const isSaving = ref(false);
 
-const forPersonIts = computed(() => {
-    if (userTimeZone.value == null || !selectedPerson.value || !classStartsOn.value || !classDate.value) return undefined;
+const role = computed(() => isTutor.value ? t('Student') : t('Tutor'));
 
-    const person = selectedPerson.value;
-    let creatorDate = adapter.date(classDate.value);
+const classDateInUnix = computed(() => {
+    if (!classStartsOn.value || !classDate.value) return undefined;
+
+    const date = new Date(classDate.value);
 
     const hours = classStartsOn.value % 1 == 0 ? classStartsOn.value : Math.trunc(classStartsOn.value);
     const minutes = classStartsOn.value % 1 == 0 ? 0 : 30;
 
-    creatorDate.setHours(hours, minutes);
+    date.setHours(hours, minutes);
+
+    return date.getTime();
+});
+
+const forPersonIts = computed(() => {
+    if (userTimeZone.value == null || !classDateInUnix.value || !selectedPerson.value) return undefined;
+
+    let creatorDateInUnix = classDateInUnix.value;
+    const person = selectedPerson.value;
 
     if (userTimeZone.value !== person.timezone){
         let offset = 3600000;
@@ -113,8 +129,10 @@ const forPersonIts = computed(() => {
             offset *= person.timezone - userTimeZone.value;
         }
 
-        creatorDate = new Date(creatorDate.getTime() + offset);
+        creatorDateInUnix += offset;
     }
+
+    const creatorDate = new Date(creatorDateInUnix);
 
     const weekDay = adapter.format(creatorDate, 'weekday').toLowerCase();
     const time = adapter.format(creatorDate, 'fullTime24h').slice(0, 5);
@@ -213,8 +231,35 @@ const coursesFlatList = computed(() => {
 	})
 });
 
-function planClass() {
-    // add api request;
+async function planClass() {
+    if (!selectedPerson.value || selectedPerson.value.id == null || !classDateInUnix.value) {
+        await autocompleteRef.value?.validate();
+        return;
+    }
+
+    isSaving.value = true;
+
+    const payload = {
+        time: classDateInUnix.value,
+        duration: classDuration.value,
+    };
+
+    const response = await PrivateCourseClient.planNewClass(selectedPerson.value.id, payload);
+
+    isSaving.value = false;
+
+	if (!response.isSuccess) {
+		showSnackbar({
+			message: 'Error occured:(',
+			status: 'error',
+		});
+		return;
+	}
+
+	showSnackbar({
+		message: 'Class scheduled successfully!',
+		status: 'success',
+	});
 	closeDialog();
 }
 
@@ -235,9 +280,9 @@ function durationTitle(value: number) {
 }
 
 function timeTitle(value: number) {
-    const title = (a, b = '00') => a + ":" + b;
+    const formatTime = (hours: number, minutes: string = '00') => `${hours < 10 ? '0' : ''}${hours}:${minutes}`;
 
-    return value % 1 ? title(Math.trunc(value), 30) : title(value);
+    return value % 1 ? formatTime(Math.trunc(value), 30) : formatTime(value);
 }
 
 const workHours = ref<number[]>([
@@ -267,15 +312,14 @@ const selectTimeProps = computed(() => ({
 }));
 
 const autocompleteProps = computed(() => ({
-	hideDetails: true,
-	clearable: true,
 	returnObject: true,
 	itemColor: '',
 	density: 'compact' as 'compact',
 	variant: 'outlined' as 'outlined',
 	items: coursesFlatList.value,
 	itemTitle: 'name',
-	itemValue: uniqueItemValue
+	itemValue: uniqueItemValue,
+    rules: [required],
 }));
 </script>
 

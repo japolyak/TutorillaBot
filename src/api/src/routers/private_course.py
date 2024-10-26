@@ -2,6 +2,7 @@ from fastapi import status, APIRouter, Depends
 import json
 from sqlalchemy.orm import Session
 from typing import Literal
+import time
 
 from src.common.models import (PaginatedList, NewClassDto, ClassDto, Role, PrivateCourseInlineDto, ItemsDto,
                                PrivateClassDto, PrivateCourseDto, CourseMemberDto)
@@ -87,18 +88,24 @@ async def enroll_in_course(user_id: int, private_course_id: int, db: Session = D
 
 @router.post(path=APIEndpoints.PrivateCourses.AddNewClass, status_code=status.HTTP_201_CREATED,
              summary="Add new class for private course")
-async def add_new_class(private_course_id: int, role: Literal[Role.Tutor, Role.Student],
-                        new_class: NewClassDto, db: Session = Depends(session)):
-    schedule = new_class.date
-    assignment = {
-        "assignments": [a.model_dump_json() for a in new_class.assignments]
-    }
+async def add_new_class(private_course_id: int, new_class: NewClassDto, db: Session = Depends(session)):
+    schedule = new_class.time
+    current_timestamp = int(time.time())
+
+    print(schedule)
+    print(current_timestamp)
+
+    if current_timestamp > (schedule / 1000):
+        return ResponseBuilder.error_response(message="Not before today.")
+
+
+    return ResponseBuilder.success_response(status.HTTP_201_CREATED)
 
     params = {
         'pc_id': private_course_id,
         'sender_role': role,
         'sc_schedule_datetime': schedule,
-        'sc_assignment': json.dumps(assignment),
+        'sc_assignment': json.dumps({ "assignments": [] }),
         'recipient_id': None,
         'recipient_timezone': None,
         'sender_name': None,

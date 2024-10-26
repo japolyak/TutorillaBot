@@ -18,7 +18,7 @@ class APIEndpoints:
         GetClassesByDate = "/{private_course_id}/classes/month/{month}/year/{year}/"
         Get = "/users/{user_id}/subjects/{subject_name}/"
         Enroll = "/{private_course_id}/users/{user_id}/"
-        AddNewClass = "/{private_course_id}/new-class/{role}/"
+        AddNewClass = "/{private_course_id}/new-class/"
 
     class Admin:
         Prefix = "/admin"

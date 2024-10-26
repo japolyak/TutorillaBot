@@ -19,8 +19,8 @@ export class PrivateCourseClient {
 		return  await ApiUtils.createApiResponse(request);
 	}
 
-    public static async planNewClass(privateCourseId: number, payload: NewClassDto, role: Role): Promise<ApiResponse<any>> {
-		const url = `${this.urlBase}/${privateCourseId}/new-class/${role}/`;
+    public static async planNewClass(privateCourseId: number, payload: NewClassDto): Promise<ApiResponse<any>> {
+		const url = `${this.urlBase}/${privateCourseId}/new-class/`;
 
 		const request = httpClient.post(url, { json: payload });
 		return await ApiUtils.createApiResponse(request);

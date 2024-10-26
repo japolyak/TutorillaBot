@@ -73,8 +73,8 @@ export interface AssignmentDto {
 }
 
 export interface NewClassDto {
-    date: Date;
-    assignments: AssignmentDto[];
+    time: number;
+	duration: number;
 }
 
 export interface StatisticsDto {

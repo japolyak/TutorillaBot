@@ -149,8 +149,8 @@ class AssignmentDto(BaseDto):
 
 
 class NewClassDto(BaseDto):
-    date: datetime
-    assignments: List[AssignmentDto]
+    time: int
+    duration: float
 
 
 class PrivateClassDto(BaseModel):

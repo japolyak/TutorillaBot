@@ -12,19 +12,7 @@ export const useClassPlannerStore = defineStore('class-planner-store', () => {
 	const textbookAssignments = ref<TextbookAssignment[]>([]);
 
 	function newClass(date: Date) {
-		const data: NewClassDto = {
-			date,
-			assignments: textbookAssignments.value
-				.filter(a => a.include && a.description)
-				.map(a => {
-					const assignment: AssignmentDto = {
-						textbookId: a.id,
-						description: a.description!,
-					};
-
-					return assignment;
-				}),
-		};
+		const data: NewClassDto = { time: 1, duration: 1 };
 
 		return data;
 	}
