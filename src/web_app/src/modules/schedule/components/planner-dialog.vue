@@ -20,23 +20,18 @@
 						Student
 					</v-col>
 					<v-col cols="12">
-						<v-autocomplete v-bind="autocompleteProps" v-model="selectedPerson">
+						<v-autocomplete ref="autocompleteRef" v-bind="autocompleteProps" v-model="selectedPerson">
 							<template #selection="{ item }">
 								{{ selectedPersonTitle(item.raw) }}
 							</template>
 
-							<template #item="{ item, props: { onClick, ...restProps } }">
+							<template #item="{ item, props: { ...restProps } }">
 								<v-list-item
 									v-bind="restProps"
 									:disabled="itemDisabled(item.raw)"
 									class="model-list-item"
 									:class="['model-list-item', { 'person': item.raw.type === 'person' }]"
-									@click="
-										$event => {
-											setPerson(item.raw);
-											() => (onClick as any)($event);
-										}
-									"
+									@click="setPerson(item.raw, $event)"
 								/>
 							</template>
 						</v-autocomplete>
@@ -81,6 +76,7 @@ import { storeToRefs } from 'pinia';
 import type { CourseModel } from '@/modules/schedule/models';
 import { useUserStore } from '@/modules/core/store/user-store';
 import { useDate } from 'vuetify';
+import { VAutocomplete } from 'vuetify/components';
 
 const adapter = useDate();
 const { t } = useI18n();
@@ -94,6 +90,8 @@ const {
     classStartsOn,
     selectedPerson,
 } = storeToRefs(useScheduleStore());
+
+const autocompleteRef = ref<VAutocomplete | null>(null);
 
 const forPersonIts = computed(() => {
     if (userTimeZone.value == null || !selectedPerson.value || !classStartsOn.value || !classDate.value) return undefined;
@@ -220,8 +218,9 @@ function planClass() {
 	closeDialog();
 }
 
-function setPerson(person: CourseModel) {
+function setPerson(person: CourseModel, event: any) {
 	selectedPerson.value = person;
+    autocompleteRef.value?.blur();
 }
 
 function uniqueItemValue(model: CourseModel) {
