@@ -54,8 +54,8 @@
                             <v-icon icon="mdi-arrow-right" class="mx-1" />
                             <v-select v-bind="selectTimeProps" v-model="classStartsOn" max-width="110" />
                         </div>
-                        <div v-if="forPersonIts" class="mt-1 d-flex align-end">
-                            <v-icon icon="mdi-information-outline" size="20" />
+                        <div v-if="forPersonIts" class="mt-4 d-flex align-end">
+                            <v-icon icon="mdi-information-outline" size="20" class="mr-2" />
                             <div>{{ forPersonIts }}</div>
                         </div>
 					</v-col>
