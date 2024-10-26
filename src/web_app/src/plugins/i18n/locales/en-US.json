@@ -15,5 +15,9 @@
 	"NotTodayBuddy": "Not today, buddy!",
 	"ScheduleClass": "Schedule class",
 	"Plan": "Plan",
-	"Close": "Close"
+	"Close": "Close",
+	"DateAndTime": "Date and time",
+	"XMinutes": "{0} minutes",
+	"XHourYMinutes": "{0} hour, {1} minutes",
+	"ForXItsY": "For {0} it's {1}"
 }
