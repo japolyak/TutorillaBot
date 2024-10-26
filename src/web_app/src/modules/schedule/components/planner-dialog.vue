@@ -31,7 +31,7 @@
 									:disabled="itemDisabled(item.raw)"
 									class="model-list-item"
 									:class="['model-list-item', { 'person': item.raw.type === 'person' }]"
-									@click="setPerson(item.raw, $event)"
+									@click="setPerson(item.raw)"
 								/>
 							</template>
 						</v-autocomplete>
@@ -218,7 +218,7 @@ function planClass() {
 	closeDialog();
 }
 
-function setPerson(person: CourseModel, event: any) {
+function setPerson(person: CourseModel) {
 	selectedPerson.value = person;
     autocompleteRef.value?.blur();
 }
