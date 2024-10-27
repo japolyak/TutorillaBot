@@ -66,7 +66,7 @@
 			</v-card-text>
 
 			<v-card-actions>
-				<v-btn :loading="isSaving" variant="flat" flat color="blue" block @click="planClass">
+				<v-btn :loading="isSaving" variant="flat" block color="blue" @click="planClass">
 					{{ t('Plan') }}
 				</v-btn>
 			</v-card-actions>

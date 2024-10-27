@@ -193,3 +193,19 @@ class StatisticsDto(BaseDto):
 
     class Config:
         from_attributes = True
+
+
+class ScheduleEventType(StrEnum):
+    Class = 'Class'
+    DayOff = 'DayOff'
+
+
+class ScheduleEventDto(BaseDto):
+    id: int
+    title: str
+    duration: int
+    date: int
+    type: ScheduleEventType
+
+    class Config:
+        from_attributes = True

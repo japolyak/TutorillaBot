@@ -3,7 +3,7 @@ from fastapi import status, Depends, APIRouter
 from sqlalchemy.orm import Session
 from typing import Literal
 
-from src.common.models import UserDto, UserBaseDto, Role
+from src.common.models import UserDto, UserBaseDto, Role, ItemsDto, ScheduleEventDto, ScheduleEventType
 
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.database.crud import user_crud
@@ -77,3 +77,15 @@ async def apply_for_role(user_id: int, role: Literal[Role.Student, Role.Tutor], 
         return ResponseBuilder.error_response(message='Role application was not successful')
 
     return ResponseBuilder.success_response(status.HTTP_201_CREATED)
+
+
+@router.get(path=APIEndpoints.Users.GetUserWeekEvents, status_code=status.HTTP_200_OK,
+            response_model=ItemsDto[ScheduleEventDto])
+async def get_user_week_events(user_id: int, start: int, end: int, db: Session = Depends(session)):
+    print(f"start: {start}, end: {end}")
+    events = [
+        ScheduleEventDto(id=1, duration=60, date=1730120400000, type=ScheduleEventType.Class, title='Andrew - Polish'),
+        ScheduleEventDto(id=2, duration=90, date=1730206800000, type=ScheduleEventType.Class, title='Piotr - Polish'),
+    ]
+
+    return ResponseBuilder.success_response(content=ItemsDto[ScheduleEventDto](items=events))

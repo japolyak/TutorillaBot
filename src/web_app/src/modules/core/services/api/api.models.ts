@@ -90,3 +90,16 @@ export interface UserRequestDto {
     userEmail: number;
     userRole: Role;
 }
+
+export enum ScheduleEventType {
+	class = 'Class',
+	dayOff = 'DayOff'
+}
+
+export interface ScheduleEventDto {
+	id: number;
+	title: string;
+	duration: number;
+	date: number;
+	type: ScheduleEventType;
+}

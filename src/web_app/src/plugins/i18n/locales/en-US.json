@@ -24,6 +24,9 @@
 	"XHour": "- | {n} hour | {n} hours",
 	"XHourYMinutes": "- | {n} hour, {0} minutes | {n} hours, {0} minutes",
 	"ForXItsY": "For {0} it's {1}",
+	"Previous": "Prev",
+	"Today": "Today",
+	"Next": "Next",
 	"Validators": {
 		"RequireDigitValidator": "At least one digit is required.",
 		"RequireNonAlphanumericValidator": "At least one special character is required.",

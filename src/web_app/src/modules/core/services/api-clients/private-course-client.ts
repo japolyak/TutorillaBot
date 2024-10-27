@@ -16,7 +16,7 @@ export class PrivateCourseClient {
 		const url = `${this.urlBase}/${privateCourseId}/`;
 
 		const request = httpClient.get(url).json<PrivateCourseDto<CourseMemberDto>>();
-		return  await ApiUtils.createApiResponse(request);
+		return await ApiUtils.createApiResponse(request);
 	}
 
     public static async planNewClass(privateCourseId: number, payload: NewClassDto): Promise<ApiResponse<any>> {

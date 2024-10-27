@@ -9,6 +9,7 @@ class APIEndpoints:
         Prefix = "/users"
         Post = "/"
         GetUser = "/{user_id}/"
+        GetUserWeekEvents = "/{user_id}/events/start/{start}/end/{end}/"
         ApplyRole = "/{user_id}/apply-role/{role}/"
 
     class PrivateCourses:
