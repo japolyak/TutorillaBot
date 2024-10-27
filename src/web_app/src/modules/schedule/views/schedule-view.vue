@@ -41,7 +41,8 @@
             </q-calendar-day>
         </div>
     </div>
-    <planner-dialog />
+
+    <planner-dialog @planned="reload" />
 </template>
 
 <script setup lang="ts">
@@ -58,6 +59,7 @@ import ScheduleEvent from '@/modules/schedule/components/schedule-event.vue';
 import { UserClient } from '@/modules/core/services/api-clients/user-client';
 import { useScheduleStore } from '@/modules/schedule/services/schedule-store';
 import { useUserStore } from '@/modules/core/store/user-store';
+import { ScheduleUtils } from '@/modules/schedule/services/mappers';
 
 const { t } = useI18n();
 const { openDialog, getEvents } = useScheduleStore();
@@ -85,9 +87,10 @@ async function onChange({start, end}) {
     weekEvents.value = await UserClient.loadEvents(userInfo.value.id, startDay, endDay);
 }
 
-async function reload() {
+async function reload(date: number) {
     if (!lastStartDay.value || !lastEndDay.value) return;
 
-     await onChange({ start: lastStartDay.value, end: lastEndDay.value });
+	selectedDate.value = ScheduleUtils.toTimestamp(date).date;
+	await onChange({ start: lastStartDay.value, end: lastEndDay.value });
 }
 </script>

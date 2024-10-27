@@ -89,6 +89,8 @@ import { PrivateCourseClient } from '@/modules/core/services/api-clients/private
 import { useActionSnackbarStore } from '@/modules/core/store/snackbar-store';
 import { useValidators } from '@/composables/validators';
 
+const emit = defineEmits(['planned']);
+
 const adapter = useDate();
 const { t } = useI18n();
 const { required } = useValidators();
@@ -271,7 +273,9 @@ async function planClass() {
 		message: 'Class scheduled successfully!',
 		status: 'success',
 	});
+
 	closeDialog();
+	emit('planned', classDateInUnix.value);
 }
 
 function setPerson(person: CourseModel) {

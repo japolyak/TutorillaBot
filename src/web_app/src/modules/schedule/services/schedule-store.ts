@@ -1,9 +1,16 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import { addToDate, isBetweenDates, parsed, parseTime, parseTimestamp, today } from '@quasar/quasar-ui-qcalendar/src/index.js'
+import {
+	today,
+	addToDate,
+	isBetweenDates,
+	parsed,
+	parseTime,
+	parseTimestamp,
+} from '@quasar/quasar-ui-qcalendar/src/index.js'
 import type { CourseModel } from '@/modules/schedule/models';
 import type { ScheduleEventDto } from '@/modules/core/services/api/api.models';
-import { eventMapper } from '@/modules/schedule/services/mappers';
+import { ScheduleUtils } from '@/modules/schedule/services/mappers';
 
 export const useScheduleStore = defineStore('schedule-store', () => {
 	const selectedDate = ref(today());
@@ -14,7 +21,7 @@ export const useScheduleStore = defineStore('schedule-store', () => {
 		if (!weekEvents.value.length) return {};
 
 		const map = {};
-		const mappedEvents = weekEvents.value.map(eventMapper);
+		const mappedEvents = weekEvents.value.map(ScheduleUtils.eventMapper);
 		// this.events.forEach(event => (map[event.date] = map[event.date] || []).push(event))
 		mappedEvents.forEach(event => {
 			if (!map[event.date]) map[event.date] = [];
