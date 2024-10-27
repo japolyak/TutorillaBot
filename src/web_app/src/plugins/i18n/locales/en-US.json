@@ -21,7 +21,8 @@
 	"Close": "Close",
 	"DateAndTime": "Date and time",
 	"XMinutes": "{0} minutes",
-	"XHourYMinutes": "{0} hour, {1} minutes",
+	"XHour": "- | {n} hour | {n} hours",
+	"XHourYMinutes": "- | {n} hour, {0} minutes | {n} hours, {0} minutes",
 	"ForXItsY": "For {0} it's {1}",
 	"Validators": {
 		"RequireDigitValidator": "At least one digit is required.",
@@ -49,6 +50,7 @@
 		"DateBetweenInclusiveValidator": "The date must be between {0} and {1} (inclusive).",
 		"InvalidDateValidator": "Invalid date.",
 		"InvalidTimeValidator": "Invalid time.",
-		"ValidTimeFormatValidator": "Valid time format: 'HH:mm:ss' or 'HH:mm'."
+		"ValidTimeFormatValidator": "Valid time format: 'HH:mm:ss' or 'HH:mm'.",
+		"DateFromPast": "Selected date is from past. Please, select date that is from future."
 	}
 }

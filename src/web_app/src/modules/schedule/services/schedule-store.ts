@@ -5,12 +5,13 @@ import type { CourseModel } from '@/modules/schedule/models';
 export const useScheduleStore = defineStore('schedule-store', () => {
 	// region Planner dialog
 	const showDialog = ref(false);
+	const isSaving = ref(false);
 
 	const selectedPerson = ref<CourseModel>();
 
 	const classDate = ref<Date>();
-	const classDuration = ref<number>(1);
-	const classDurations = ref<number[]>([0.5, 0.75, 1, 1.25, 1.5]);
+	const classDuration = ref<number>(60);
+	const classDurations = ref<number[]>([30, 45, 60, 75, 90]);
 	const classStartsOn = ref<number>();
 
 	function openDialog(date: Date, hour: number) {
@@ -27,7 +28,9 @@ export const useScheduleStore = defineStore('schedule-store', () => {
 	// endregion
 
     return {
+
 		showDialog,
+		isSaving,
 		selectedPerson,
 		classDate,
 		classDuration,

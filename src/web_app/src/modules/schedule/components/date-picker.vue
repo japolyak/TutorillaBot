@@ -9,12 +9,14 @@
 		max-width="200"
 		:focused="menu"
 		hide-details
+        :error="error"
     >
         <v-menu v-model="menu" activator="parent" min-width="0" :close-on-content-click="false">
             <v-confirm-edit v-model="classDate" @save="menu = false">
                 <template #default="{ actions, model: proxyModel }">
                     <v-date-picker
                         v-model="proxyModel.value"
+                        :min="min"
                         weeks-in-month="dynamic"
                         :hide-header="true"
 						@update:model-value="selectDate"
@@ -27,11 +29,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, shallowRef, watchEffect } from 'vue';
+import { type PropType, ref, shallowRef, watchEffect } from 'vue';
 import { useDate } from 'vuetify';
 import { VConfirmEdit, VDatePicker, VTextField } from 'vuetify/components';
 import { useScheduleStore } from '@/modules/schedule/services/schedule-store';
 import { storeToRefs } from 'pinia';
+
+defineProps({
+    error: {
+        type: Boolean,
+        default: false,
+    },
+    /** ISO Date string */
+    min: {
+        type: String as PropType<string | null | undefined>,
+        default: undefined,
+    }
+});
 
 const adapter = useDate();
 

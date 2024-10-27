@@ -45,13 +45,21 @@
 					<v-col cols="12">
                         <v-select v-bind="selectDurationProps" v-model="classDuration" />
                         <div class="d-flex align-center">
-                            <date-picker />
+                            <date-picker :min="minStartOn" :error="dateIsNotValid" />
                             <v-icon icon="mdi-arrow-right" class="mx-1" />
-                            <v-select v-bind="selectTimeProps" v-model="classStartsOn" max-width="110" />
+                            <v-select
+                                v-bind="selectTimeProps"
+                                v-model="classStartsOn"
+                                max-width="110"
+                                :error="dateIsNotValid"
+                            />
                         </div>
                         <div v-if="forPersonIts" class="mt-4 d-flex align-end">
                             <v-icon icon="mdi-information-outline" size="20" class="mr-2" />
                             <div>{{ forPersonIts }}</div>
+                        </div>
+                        <div v-if="dateIsNotValid" class="mt-4 bg-red">
+                            {{ t('Validators.DateFromPast') }}
                         </div>
 					</v-col>
 				</v-row>
@@ -89,6 +97,7 @@ const { userTimeZone, isTutor } = storeToRefs(useUserStore());
 const { closeDialog } = useScheduleStore();
 const {
     showDialog,
+    isSaving,
     classDate,
     classDuration,
     classDurations,
@@ -97,7 +106,6 @@ const {
 } = storeToRefs(useScheduleStore());
 
 const autocompleteRef = ref<VAutocomplete | null>(null);
-const isSaving = ref(false);
 
 const role = computed(() => isTutor.value ? t('Student') : t('Tutor'));
 
@@ -114,13 +122,16 @@ const classDateInUnix = computed(() => {
     return date.getTime();
 });
 
+const dateIsNotValid = computed(() => classDateInUnix.value < adapter.date()?.getTime());
+const minStartOn = computed(() => adapter.toISO(adapter.endOfDay(adapter.date())));
+
 const forPersonIts = computed(() => {
     if (userTimeZone.value == null || !classDateInUnix.value || !selectedPerson.value) return undefined;
 
     let creatorDateInUnix = classDateInUnix.value;
     const person = selectedPerson.value;
 
-    if (userTimeZone.value !== person.timezone){
+    if (userTimeZone.value !== person.timezone) {
         let offset = 3600000;
 
         if (userTimeZone.value > person.timezone) {
@@ -232,7 +243,7 @@ const coursesFlatList = computed(() => {
 });
 
 async function planClass() {
-    if (!selectedPerson.value || selectedPerson.value.id == null || !classDateInUnix.value) {
+    if (!selectedPerson.value || selectedPerson.value.id == null || !classDateInUnix.value || dateIsNotValid.value) {
         await autocompleteRef.value?.validate();
         return;
     }
@@ -273,10 +284,10 @@ function uniqueItemValue(model: CourseModel) {
 }
 
 function durationTitle(value: number) {
-    if (value === 1) return '1 hour';
-    else if (value < 1) return t('XMinutes', [value * 60])
+    if (value < 60) return t('XMinutes', [value]);
+    if (!(value % 60)) return t('XHour', value / 60);
 
-    return t('XHourYMinutes', [1, value % 1 * 60]);
+    return t('XHourYMinutes', [value - 60 * Math.floor(value / 60)], Math.floor(value / 60));
 }
 
 function timeTitle(value: number) {
@@ -286,6 +297,7 @@ function timeTitle(value: number) {
 }
 
 const workHours = ref<number[]>([
+    0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5,
     5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5,
     10, 10.5, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5,
     15, 15.5, 16, 16.5, 17, 17.5, 18, 18.5, 19, 19.5,
@@ -293,6 +305,7 @@ const workHours = ref<number[]>([
 ]);
 
 const selectDurationProps = computed(() => ({
+    readonly: isSaving.value,
 	hideDetails: true,
 	density: 'compact' as 'compact',
 	variant: 'outlined' as 'outlined',
@@ -303,6 +316,7 @@ const selectDurationProps = computed(() => ({
 }));
 
 const selectTimeProps = computed(() => ({
+    readonly: isSaving.value,
 	hideDetails: true,
 	density: 'compact' as 'compact',
 	variant: 'outlined' as 'outlined',
@@ -312,12 +326,14 @@ const selectTimeProps = computed(() => ({
 }));
 
 const autocompleteProps = computed(() => ({
+    readonly: isSaving.value,
 	returnObject: true,
 	itemColor: '',
 	density: 'compact' as 'compact',
 	variant: 'outlined' as 'outlined',
 	items: coursesFlatList.value,
 	itemTitle: 'name',
+    class: 'person-details',
 	itemValue: uniqueItemValue,
     rules: [required],
 }));
@@ -332,6 +348,19 @@ const autocompleteProps = computed(() => ({
 			.v-card-title {
 				padding: 24px 24px 8px;
 			}
+
+            .v-card-text {
+                padding: 16px 24px;
+
+                .v-row.v-row--dense {
+                    margin-top: 0 !important;
+                }
+
+                .person-details .v-input__details {
+                    padding-inline: 0;
+                    padding-top: 4px;
+                }
+            }
 
 			.v-card-item {
 				padding: 12px 12px 0 0;
