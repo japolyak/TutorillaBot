@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import Engine
+from datetime import datetime
 
-from src.common.models import AssignmentDto
 from src.common.config import admin_tg_id
 
 from src.api.src.database.models import User, Subject, TutorCourse, PrivateCourse, PrivateClass, Textbook
@@ -80,19 +80,23 @@ def insert_mock_data(engine: Engine):
         session.add_all([private_course1, private_course2, private_course3, private_course4, private_course5, private_course6])
         session.commit()
 
-        assignment_one = AssignmentDto(textbook_id=hurra_1.id, description="Do this").model_dump_json()
-        assignment_two = AssignmentDto(textbook_id=hurra_2.id, description="Do this again").model_dump_json()
+        today = datetime.now().replace(hour=14, minute=0, second=0, microsecond=0)
 
-        assignments = {
-            "assignments": [assignment_one, assignment_two]
-        }
+        today_timestamp = int(today.timestamp()) * 1000
+        today_timestamp_later = today_timestamp + 180000
 
-        private_class1 = PrivateClass(private_course_id=private_course1.id, schedule_datetime="2021-06-01 12:00:00", assignment=assignments)
-        private_class2 = PrivateClass(private_course_id=private_course1.id, schedule_datetime="2021-06-01 12:00:00", assignment=assignments, is_scheduled=True, has_occurred=True)
-        private_class3 = PrivateClass(private_course_id=private_course1.id, schedule_datetime="2021-06-01 12:00:00", assignment=assignments, is_scheduled=True, has_occurred=True, is_paid=True)
-        private_class4 = PrivateClass(private_course_id=private_course2.id, schedule_datetime="2021-06-01 12:00:00", assignment=assignments, is_scheduled=True, has_occurred=True)
-        private_class5 = PrivateClass(private_course_id=private_course4.id, schedule_datetime="2021-06-01 12:00:00", assignment=assignments, is_scheduled=True)
-        private_class6 = PrivateClass(private_course_id=private_course4.id, schedule_datetime="2021-06-01 12:00:00", assignment=assignments, is_scheduled=True, has_occurred=True)
+        yesterday_timestamp = today_timestamp - 86400000
+        yesterday_timestamp_later = yesterday_timestamp + 180000
+
+        tomorrow_timestamp = today_timestamp + 86400000
+        tomorrow_timestamp_later = tomorrow_timestamp + 180000
+
+        private_class1 = PrivateClass(private_course_id=private_course1.id, start_time_unix=today_timestamp, duration=1.5)
+        private_class2 = PrivateClass(private_course_id=private_course1.id, start_time_unix=today_timestamp_later, duration=1, is_scheduled=True, has_occurred=True)
+        private_class3 = PrivateClass(private_course_id=private_course1.id, start_time_unix=yesterday_timestamp, duration=2, is_scheduled=True, has_occurred=True, is_paid=True)
+        private_class4 = PrivateClass(private_course_id=private_course2.id, start_time_unix=yesterday_timestamp_later, duration=1.5, is_scheduled=True, has_occurred=True)
+        private_class5 = PrivateClass(private_course_id=private_course4.id, start_time_unix=tomorrow_timestamp, duration=1.5, is_scheduled=True)
+        private_class6 = PrivateClass(private_course_id=private_course4.id, start_time_unix=tomorrow_timestamp_later, duration=1.5, is_scheduled=True, has_occurred=True)
 
         session.add_all([private_class1, private_class2, private_class3, private_class4, private_class5, private_class6])
         session.commit()

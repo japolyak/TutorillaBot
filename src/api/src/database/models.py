@@ -1,5 +1,4 @@
 from sqlalchemy import String, BigInteger, Boolean, ForeignKey, UniqueConstraint, DateTime, Integer, Float
-from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, mapped_column, relationship, Mapped, MappedColumn
 from typing import List
 
@@ -103,8 +102,8 @@ class PrivateClass(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     private_course_id: Mapped[int] = mapped_column(ForeignKey("private_courses.id"))
-    schedule_datetime: Mapped[DateTime] = mapped_column(DateTime(timezone=True))
-    assignment: Mapped[JSONB] = mapped_column(JSONB)
+    start_time_unix: Mapped[int] = mapped_column(BigInteger, server_default="0")
+    duration: Mapped[float] = mapped_column(Float, server_default="0")
     is_scheduled: Mapped[bool] = mapped_column(Boolean, server_default="true")
     has_occurred: Mapped[bool] = mapped_column(Boolean, server_default="false")
     is_paid: Mapped[bool] = mapped_column(Boolean, server_default="false")
