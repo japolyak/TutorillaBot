@@ -150,7 +150,7 @@ class AssignmentDto(BaseDto):
 
 class NewClassDto(BaseDto):
     time: int
-    duration: float
+    duration: int
 
 
 class PrivateClassDto(BaseModel):

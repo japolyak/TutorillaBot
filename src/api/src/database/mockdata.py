@@ -91,12 +91,12 @@ def insert_mock_data(engine: Engine):
         tomorrow_timestamp = today_timestamp + 86400000
         tomorrow_timestamp_later = tomorrow_timestamp + 180000
 
-        private_class1 = PrivateClass(private_course_id=private_course1.id, start_time_unix=today_timestamp, duration=1.5)
-        private_class2 = PrivateClass(private_course_id=private_course1.id, start_time_unix=today_timestamp_later, duration=1, is_scheduled=True, has_occurred=True)
-        private_class3 = PrivateClass(private_course_id=private_course1.id, start_time_unix=yesterday_timestamp, duration=2, is_scheduled=True, has_occurred=True, is_paid=True)
-        private_class4 = PrivateClass(private_course_id=private_course2.id, start_time_unix=yesterday_timestamp_later, duration=1.5, is_scheduled=True, has_occurred=True)
-        private_class5 = PrivateClass(private_course_id=private_course4.id, start_time_unix=tomorrow_timestamp, duration=1.5, is_scheduled=True)
-        private_class6 = PrivateClass(private_course_id=private_course4.id, start_time_unix=tomorrow_timestamp_later, duration=1.5, is_scheduled=True, has_occurred=True)
+        private_class1 = PrivateClass(private_course_id=private_course1.id, start_time_unix=today_timestamp, duration=90)
+        private_class2 = PrivateClass(private_course_id=private_course1.id, start_time_unix=today_timestamp_later, duration=60, is_scheduled=True, has_occurred=True)
+        private_class3 = PrivateClass(private_course_id=private_course1.id, start_time_unix=yesterday_timestamp, duration=120, is_scheduled=True, has_occurred=True, is_paid=True)
+        private_class4 = PrivateClass(private_course_id=private_course2.id, start_time_unix=yesterday_timestamp_later, duration=90, is_scheduled=True, has_occurred=True)
+        private_class5 = PrivateClass(private_course_id=private_course4.id, start_time_unix=tomorrow_timestamp, duration=90, is_scheduled=True)
+        private_class6 = PrivateClass(private_course_id=private_course4.id, start_time_unix=tomorrow_timestamp_later, duration=90, is_scheduled=True, has_occurred=True)
 
         session.add_all([private_class1, private_class2, private_class3, private_class4, private_class5, private_class6])
         session.commit()

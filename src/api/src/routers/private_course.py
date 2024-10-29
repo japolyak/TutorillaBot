@@ -10,6 +10,7 @@ from src.common.models import (PaginatedList, NewClassDto, ClassDto, Role, Priva
 from src.api.src.bot_client.message_sender import send_notification_about_new_class
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.database.crud import private_courses_crud
+from src.api.src.database.crud.events_crud import EventCRUD
 from src.api.src.database.db_setup import session
 from src.api.src.functions.time_transformator import transform_class_time
 from src.api.src.routers.api_enpoints import APIEndpoints
@@ -92,35 +93,13 @@ async def add_new_class(private_course_id: int, new_class: NewClassDto, db: Sess
     schedule = new_class.time
     current_timestamp = int(time.time())
 
-    print(schedule)
-    print(current_timestamp)
-
     if current_timestamp > (schedule / 1000):
-        return ResponseBuilder.error_response(message="Not before today.")
+        return ResponseBuilder.error_response(message="Not before now!")
 
+    EventCRUD.create_class_event(db, private_course_id, new_class.time, new_class.duration)
 
     return ResponseBuilder.success_response(status.HTTP_201_CREATED)
-
-    params = {
-        'pc_id': private_course_id,
-        'sender_role': role,
-        'sc_schedule_datetime': schedule,
-        'sc_assignment': json.dumps({ "assignments": [] }),
-        'recipient_id': None,
-        'recipient_timezone': None,
-        'sender_name': None,
-        'subject_name': None,
-        'error': None
-    }
-
-    result = db.execute(sql_statements.schedule_class_and_get_course, params)
-
-    result_row = result.fetchall()[0]
-
-    db.commit()
-    db.close()
-
-    recipient_id, recipient_timezone, sender_name, subject_name, error_msg = result_row
+    # TODO - reimplement after token implementation
 
     if error_msg:
         return ResponseBuilder.error_response(message=error_msg)

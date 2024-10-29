@@ -103,7 +103,7 @@ class PrivateClass(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     private_course_id: Mapped[int] = mapped_column(ForeignKey("private_courses.id"))
     start_time_unix: Mapped[int] = mapped_column(BigInteger, server_default="0")
-    duration: Mapped[float] = mapped_column(Float, server_default="0")
+    duration: Mapped[int] = mapped_column(Integer, server_default="0")
     is_scheduled: Mapped[bool] = mapped_column(Boolean, server_default="true")
     has_occurred: Mapped[bool] = mapped_column(Boolean, server_default="false")
     is_paid: Mapped[bool] = mapped_column(Boolean, server_default="false")

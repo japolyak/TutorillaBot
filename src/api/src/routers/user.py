@@ -7,6 +7,7 @@ from src.common.models import UserDto, UserBaseDto, Role, ItemsDto, ScheduleEven
 
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.database.crud import user_crud
+from src.api.src.database.crud.events_crud import EventCRUD
 from src.api.src.database.db_setup import session
 from src.api.src.routers.api_enpoints import APIEndpoints
 from src.api.src.routers.sql_statement_repository import sql_statements
@@ -82,10 +83,17 @@ async def apply_for_role(user_id: int, role: Literal[Role.Student, Role.Tutor], 
 @router.get(path=APIEndpoints.Users.GetUserWeekEvents, status_code=status.HTTP_200_OK,
             response_model=ItemsDto[ScheduleEventDto])
 async def get_user_week_events(user_id: int, start: int, end: int, db: Session = Depends(session)):
-    print(f"start: {start}, end: {end}")
+    db_events = EventCRUD.get_events_between_dates(db, start, end)
+
     events = [
-        ScheduleEventDto(id=1, duration=60, date=1730120400000, type=ScheduleEventType.Class, title='Andrew - Polish'),
-        ScheduleEventDto(id=2, duration=90, date=1730206800000, type=ScheduleEventType.Class, title='Piotr - Polish'),
+        ScheduleEventDto(
+            id=event.id,
+            duration=event.duration,
+            date=event.start_time_unix,
+            type=ScheduleEventType.Class,
+            title=f'Class - {event.id}'
+        )
+        for event in db_events
     ]
 
     return ResponseBuilder.success_response(content=ItemsDto[ScheduleEventDto](items=events))
