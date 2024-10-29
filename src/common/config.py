@@ -11,8 +11,10 @@ api_link = os.getenv("API_LINK", "http://127.0.0.1:8000")
 _timeout = os.getenv("TIMEOUT")
 api_timeout = int(_timeout) if _timeout is not None else None
 
-# App
+# API
 allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split('&')
+access_token_expire_minutes = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 300)
+algorithm = os.getenv("ALGORITHM")
 
 # Telegram
 bot_token = os.getenv("BOT_TOKEN", "")

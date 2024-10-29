@@ -8,6 +8,7 @@ class APIEndpoints:
     class Users:
         Prefix = "/users"
         Post = "/"
+        Me = "/me/"
         GetUser = "/{user_id}/"
         GetUserWeekEvents = "/{user_id}/events/start/{start}/end/{end}/"
         ApplyRole = "/{user_id}/apply-role/{role}/"

@@ -1,38 +1,41 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
-import {computed, ref} from 'vue';
-import { useTelegramWebApp } from '@/composables/telegram.web-app';
-import {StringUtils} from '@/utils/string.utils';
-import {AuthenticationClient} from "@/modules/core/services/api-clients/authentication-client";
-import {useUserStore} from "@/modules/core/store/user-store";
+import { computed, ref } from 'vue';
+import { StringUtils } from '@/utils/string.utils';
+import { UserClient } from '@/modules/core/services/api-clients/user-client';
+import { useUserStore } from '@/modules/core/store/user-store';
 
 
-export const useSessionStore = defineStore('session-store', () => {
-	const telegramInitData = ref<string | undefined>();
+export const useSessionStore = defineStore(
+	'session-store',
+	() => {
+		const telegramInitData = ref<string>();
+		const token = ref<string>('adad');
 
-	const isTelegramUser = computed(() => StringUtils.isNotEmpty(telegramInitData.value));
+		const isTelegramUser = computed(() => StringUtils.isNotEmpty(telegramInitData.value));
 
-	async function initializeAuthentication(initData: string): Promise<'allowed' | 'forbidden'> {
-		const user = await AuthenticationClient.validateInitData(initData);
+		async function initializeAuthentication(): Promise<'allowed' | 'forbidden'> {
+			const user = await UserClient.getMe();
 
-		if (!user) {
-			telegramInitData.value = undefined;
-			return 'forbidden';
+			if (!user) return 'forbidden';
+
+			const { setUser } = useUserStore();
+			setUser(user);
+
+			return 'allowed';
 		}
 
-		telegramInitData.value = initData;
-
-		const { setUser } = useUserStore();
-		setUser(user);
-
-		return 'allowed';
+		return {
+			telegramInitData,
+			isTelegramUser,
+			initializeAuthentication,
+		};
+	},
+	{
+		persist: {
+			paths: ['token', ],
+		},
 	}
-
-    return {
-		telegramInitData,
-		isTelegramUser,
-		initializeAuthentication,
-    };
-});
+);
 
 if (import.meta.hot) {
     import.meta.hot.accept(acceptHMRUpdate(useSessionStore, import.meta.hot));

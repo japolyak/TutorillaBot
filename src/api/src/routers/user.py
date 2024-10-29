@@ -17,6 +17,24 @@ router = APIRouter()
 
 
 @router.get(
+    path=APIEndpoints.Users.Me,
+    status_code=status.HTTP_200_OK,
+    response_model=UserDto,
+    summary="Gets user"
+)
+async def get_user(db: Session = Depends(session)):
+    # TODO rewrite by using tokens
+    db_user = user_crud.get_user(db=db, user_id=2200100336)
+
+    if db_user is None:
+        return ResponseBuilder.error_response(message='User was not found')
+
+    user = UserDto.model_validate(db_user)
+
+    return ResponseBuilder.success_response(content=user)
+
+
+@router.get(
     path=APIEndpoints.Users.GetUser,
     status_code=status.HTTP_200_OK,
     response_model=UserDto,

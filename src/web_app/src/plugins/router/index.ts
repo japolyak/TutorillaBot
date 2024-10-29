@@ -3,7 +3,6 @@ import { setupTelegramUser } from './guards/telegram-user-setup'
 import authGuard from './guards/auth.guard'
 import type { Module } from '@/plugins/router/view-definitions';
 import type { RouteAuthMeta } from '@/plugins/router/utils/route-auth-meta';
-import { classPlannerRoutes } from '@/modules/class-planer/class-planner.routes';
 import { coreRoutes } from '@/modules/core/core.routes';
 import { devRoutes } from '@/modules/dev/dev.routes';
 import { adminRoutes } from '@/modules/admin/admin.routes';
@@ -11,12 +10,11 @@ import { tutorRoutes } from '@/modules/tutor/tutor.routes';
 import { studentRoutes } from '@/modules/student/student.routes';
 import { scheduleRoutes } from '@/modules/schedule/schedule.routes';
 
-// TODO - remove when moduls will be ready
+// TODO - remove when all modules will be ready
 function availableRoutes() {
-	if (import.meta.env.VITE_APP_IS_DEV === 'false') return [...classPlannerRoutes];
+	if (import.meta.env.VITE_APP_IS_DEV === 'false') return [...scheduleRoutes];
 
 	return [
-		...classPlannerRoutes,
 		...scheduleRoutes,
 		...adminRoutes,
 		...tutorRoutes,

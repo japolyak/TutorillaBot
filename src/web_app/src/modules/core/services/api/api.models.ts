@@ -15,6 +15,10 @@ export interface ItemsDto<T> {
 	items: T[]
 }
 
+export interface TokenDto {
+	token: string;
+}
+
 interface UserBaseDto {
 	id: number
     firstName: string

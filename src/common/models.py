@@ -49,6 +49,13 @@ class ErrorDto(BaseModel):
         from_attributes = True
 
 
+class TokenDto(BaseDto):
+    token: str
+
+    class Config:
+        from_attributes = True
+
+
 class UserBaseDto(BaseDto):
     id: int
     first_name: str

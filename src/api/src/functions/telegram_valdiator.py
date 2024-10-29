@@ -1,17 +1,15 @@
 import hashlib
 import hmac
 import os
-from urllib.parse import parse_qs
 
 
-def init_data_is_valid(init_data: str) -> bool:
-    parsed_query = parse_qs(init_data)
+def init_data_is_valid(parsed_init_data: dict) -> bool:
     bot_token = os.getenv("BOT_TOKEN")
 
-    parsed_auth_date = parsed_query.get('auth_date', [''])[0]
-    parsed_query_id = parsed_query.get('query_id', [''])[0]
-    parsed_user = parsed_query.get('user', [''])[0]
-    parsed_hash = parsed_query.get('hash', [''])[0]
+    parsed_auth_date = parsed_init_data.get('auth_date', [''])[0]
+    parsed_query_id = parsed_init_data.get('query_id', [''])[0]
+    parsed_user = parsed_init_data.get('user', [''])[0]
+    parsed_hash = parsed_init_data.get('hash', [''])[0]
 
     data_check_string = f"auth_date={parsed_auth_date}\nquery_id={parsed_query_id}\nuser={parsed_user}"
 
