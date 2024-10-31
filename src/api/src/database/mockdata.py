@@ -89,7 +89,7 @@ def insert_mock_data(engine: Engine):
         yesterday_timestamp_later = yesterday_timestamp - 7200000
 
         tomorrow_timestamp = today_timestamp + 86400000
-        tomorrow_timestamp_later = tomorrow_timestamp + 3600000
+        tomorrow_timestamp_later = tomorrow_timestamp + 7200000
 
         private_class1 = PrivateClass(private_course_id=private_course1.id, start_time_unix=today_timestamp, duration=90)
         private_class2 = PrivateClass(private_course_id=private_course1.id, start_time_unix=today_timestamp_later, duration=60, is_scheduled=True, has_occurred=True)

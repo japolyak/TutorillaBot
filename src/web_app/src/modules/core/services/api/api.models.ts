@@ -66,16 +66,6 @@ export interface PrivateCourseDto<TUser> {
 	price: number;
 }
 
-export interface ClassDto {
-    date: Date;
-	status: ClassStatus;
-}
-
-export interface AssignmentDto {
-    textbookId: number;
-    description: string;
-}
-
 export interface NewClassDto {
     time: number;
 	duration: number;

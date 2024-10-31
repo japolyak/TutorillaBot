@@ -37,11 +37,15 @@ async def get_events_in_range(start: int, end: int, user: UserContext, db: DbCon
 @router.post(path=APIEndpoints.Events.CreateClass, status_code=status.HTTP_201_CREATED,
              summary="Add new class for private course")
 async def add_new_class(private_course_id: int, new_class: NewClassDto, user: UserContext, db: DbContext):
-    schedule = new_class.time
-    current_timestamp = int(time.time())
+    current_timestamp = int(time.time()) * 1000
 
-    if current_timestamp > (schedule / 1000):
+    if current_timestamp > new_class.time:
         return ResponseBuilder.error_response(message="Not before now!")
+
+    has_collisions = EventCRUD.class_has_collisions(db, private_course_id, new_class.time, new_class.duration)
+
+    if has_collisions:
+        return ResponseBuilder.error_response(message="Class has collisions!")
 
     EventCRUD.create_class_event(db, private_course_id, new_class.time, new_class.duration)
 

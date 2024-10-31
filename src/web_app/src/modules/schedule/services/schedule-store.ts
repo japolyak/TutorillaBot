@@ -87,6 +87,7 @@ export const useScheduleStore = defineStore('schedule-store', () => {
 		selectedPerson.value = undefined;
 		classDate.value = date;
 		classStartsOn.value = hour;
+		classDuration.value = 60;
 
 		showDialog.value = true;
 	}
