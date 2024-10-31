@@ -56,7 +56,7 @@ import '@quasar/quasar-ui-qcalendar/src/QCalendarTransitions.sass'
 import '@quasar/quasar-ui-qcalendar/src/QCalendarDay.sass'
 import PlannerDialog from '@/modules/schedule/components/planner-dialog.vue';
 import ScheduleEvent from '@/modules/schedule/components/schedule-event.vue';
-import { UserClient } from '@/modules/core/services/api-clients/user-client';
+import { EventsClient } from '@/modules/core/services/api-clients/events-client';
 import { useScheduleStore } from '@/modules/schedule/services/schedule-store';
 import { useUserStore } from '@/modules/core/store/user-store';
 import { ScheduleUtils } from '@/modules/schedule/services/mappers';
@@ -84,7 +84,7 @@ async function onChange({start, end}) {
     lastStartDay.value = start;
     lastEndDay.value = end;
 
-    weekEvents.value = await UserClient.loadEvents(userInfo.value.id, startDay, endDay);
+    weekEvents.value = await EventsClient.loadEvents(startDay, endDay);
 }
 
 async function reload(date: number) {

@@ -10,17 +10,19 @@ class APIEndpoints:
         Post = "/"
         Me = "/me/"
         GetUser = "/{user_id}/"
-        GetUserWeekEvents = "/{user_id}/events/start/{start}/end/{end}/"
         ApplyRole = "/{user_id}/apply-role/{role}/"
+
+    class Events:
+        Prefix = "/events"
+        Range = "/start/{start}/end/{end}/"
+        CreateClass = "/class/courses/{private_course_id}/"
 
     class PrivateCourses:
         Prefix = "/private-courses"
         GetPrivateCourse = "/{private_course_id}/"
         GetClasses = "/{course_id}/classes/"
-        GetClassesByDate = "/{private_course_id}/classes/month/{month}/year/{year}/"
         Get = "/users/{user_id}/subjects/{subject_name}/"
         Enroll = "/{private_course_id}/users/{user_id}/"
-        AddNewClass = "/{private_course_id}/new-class/"
 
     class Admin:
         Prefix = "/admin"
@@ -34,7 +36,7 @@ class APIEndpoints:
         Prefix = "/subjects"
         Get = "/users/{user_id}/available/{is_available}/"
 
-    class WebApp:
+    class Authentication:
         Prefix = "/auth"
         Me = "/me/"
 

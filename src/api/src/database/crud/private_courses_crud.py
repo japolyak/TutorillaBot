@@ -1,28 +1,10 @@
-from datetime import datetime
-from sqlalchemy import func, case, literal_column, select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from typing import Literal
 
-from src.common.models import Role, ClassStatus
+from src.common.models import Role
 
 from src.api.src.database.models import TutorCourse, Subject, PrivateCourse, User, PrivateClass
-
-
-def get_private_course_classes_for_month(db: Session, course_id: int, month: int, year: int):
-    start_date = datetime(year, month - 1, 24)
-    finish_date = datetime(year, month + 1, 6)
-
-    status = (case((PrivateClass.is_paid, literal_column(f"'{ClassStatus.Paid}'")),
-                   (PrivateClass.has_occurred, literal_column(f"'{ClassStatus.Occurred}'")),
-                   else_=literal_column(f"'{ClassStatus.Scheduled}'")))
-
-    query = (db.query(PrivateClass.schedule_datetime, status).filter(
-        course_id == PrivateClass.private_course_id,
-        PrivateClass.schedule_datetime >= start_date,
-        PrivateClass.schedule_datetime <= finish_date)
-    )
-
-    return query.all()
 
 
 def get_private_courses(db: Session, user_id: int, subject_name: str, role: Literal[Role.Tutor, Role.Student]):

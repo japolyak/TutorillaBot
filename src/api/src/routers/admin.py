@@ -1,5 +1,4 @@
-from fastapi import status, Depends, APIRouter
-from sqlalchemy.orm import Session
+from fastapi import status, APIRouter
 from typing import Literal
 
 from src.common.models import UserDto, UserRequestDto, Role, ItemsDto, StatisticsDto
@@ -7,7 +6,7 @@ from src.common.models import UserDto, UserRequestDto, Role, ItemsDto, Statistic
 from src.api.src.bot_client.message_sender import send_decline_message
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.database.crud import admin_crud, user_crud
-from src.api.src.database.db_setup import session
+from src.api.src.database.db_setup import DbContext
 from src.api.src.routers.api_enpoints import APIEndpoints
 
 
@@ -16,7 +15,7 @@ router = APIRouter()
 
 @router.get(path=APIEndpoints.Admin.RequestsStatistics, status_code=status.HTTP_200_OK,
             response_model=StatisticsDto, summary="Get requests statistics")
-async def get_requests_statistics(db: Session = Depends(session)):
+async def get_requests_statistics(db: DbContext):
     students, tutors = admin_crud.requests_statistics(db)
 
     response_model = StatisticsDto(students_requests=students, tutors_requests=tutors)
@@ -26,7 +25,7 @@ async def get_requests_statistics(db: Session = Depends(session)):
 
 @router.get(path=APIEndpoints.Admin.GetRequests, status_code=status.HTTP_200_OK,
             response_model=ItemsDto[UserRequestDto], summary="Get all requests by role")
-async def get_requests(role: Literal[Role.Student, Role.Tutor], db: Session = Depends(session)):
+async def get_requests(role: Literal[Role.Student, Role.Tutor], db: DbContext):
     requests = admin_crud.get_users_requests(db=db, role=role)
 
     if not requests:
@@ -45,7 +44,7 @@ async def get_requests(role: Literal[Role.Student, Role.Tutor], db: Session = De
 
 @router.get(path=APIEndpoints.Admin.GetRequest, status_code=status.HTTP_200_OK, response_model=UserRequestDto,
             summary="Get request by request id")
-async def get_request(role_request_id: int, db: Session = Depends(session)):
+async def get_request(role_request_id: int, db: DbContext):
     db_request = admin_crud.get_user_request(db, role_request_id)
 
     if db_request is None:
@@ -63,7 +62,7 @@ async def get_request(role_request_id: int, db: Session = Depends(session)):
 
 @router.put(path=APIEndpoints.Admin.AcceptRole, status_code=status.HTTP_200_OK, response_model=UserDto,
             summary="Accept user role request")
-async def accept_role(user_id: int, role: Literal[Role.Student], db: Session = Depends(session)):
+async def accept_role(user_id: int, role: Literal[Role.Student], db: DbContext):
     # TODO - rewrite
     db_user = user_crud.get_user(db=db, user_id=user_id)
 
@@ -85,7 +84,7 @@ async def accept_role(user_id: int, role: Literal[Role.Student], db: Session = D
 
 
 @router.put(path=APIEndpoints.Admin.DeclineRole, status_code=status.HTTP_200_OK, summary="Decline user role request")
-async def decline_student_role(user_id: int, db: Session = Depends(session)):
+async def decline_student_role(user_id: int, db: DbContext):
     # TODO - rewrite
     db_user = user_crud.get_user(db=db, user_id=user_id)
 

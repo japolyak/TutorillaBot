@@ -1,10 +1,48 @@
 import jwt
 import hashlib
+from typing import Annotated
+from fastapi import Depends
 from datetime import datetime, timedelta, timezone
+from fastapi.security import OAuth2PasswordBearer
 
 from src.common.config import access_token_expire_minutes, bot_token, algorithm
+from src.common.models import BaseDto, Role
+
+
+class UserContextModel(BaseDto):
+    id: int
+    first_name: str
+    last_name: str
+    role: Role
+    exp: int
+
+    class Config:
+        from_attributes = True
+
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    try:
+        payload = TokenUtils.decode_token(token)
+
+        user = UserContextModel.model_validate(payload)
+
+        return user
+    except Exception as e:
+        print(e)
+
+
+async def get_current_active_user(current_user: Annotated[UserContextModel, Depends(get_current_user)]):
+    return current_user
+
+
+UserContext = Annotated[UserContextModel, Depends(get_current_active_user)]
+
 
 class TokenUtils:
+
     @classmethod
     def create_access_token(cls, data: dict):
         to_encode = data.copy()
@@ -20,7 +58,6 @@ class TokenUtils:
     @classmethod
     def decode_token(cls, token: str):
         header_data = jwt.get_unverified_header(token)
-        print(header_data)
 
         return jwt.decode(token, cls.__get_secret_key(), algorithms=[algorithm, ])
 

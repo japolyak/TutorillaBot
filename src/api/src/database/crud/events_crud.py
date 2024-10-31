@@ -1,8 +1,10 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
-from typing import List
+from typing import List, Literal
 
 from src.api.src.database.models import PrivateClass
+from src.common.models import Role
+
 
 class EventCRUD:
     @staticmethod
@@ -16,7 +18,7 @@ class EventCRUD:
         return new_class
 
     @staticmethod
-    def get_events_between_dates(db: Session, start_time_unix: int, end_time_unix: int) -> List[PrivateClass]:
+    def get_events_between_dates(db: Session, user_id: int, role: Literal[Role.Tutor, Role.Student], start_time_unix: int, end_time_unix: int) -> List[PrivateClass]:
         classes = db.query(PrivateClass).where(
             and_(
                 start_time_unix <= PrivateClass.start_time_unix,

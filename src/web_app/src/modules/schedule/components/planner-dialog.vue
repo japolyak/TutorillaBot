@@ -85,7 +85,7 @@ import DatePicker from '@/modules/schedule/components/date-picker.vue';
 import { useScheduleStore } from '@/modules/schedule/services/schedule-store';
 import type { CourseModel } from '@/modules/schedule/models';
 import { useUserStore } from '@/modules/core/store/user-store';
-import { PrivateCourseClient } from '@/modules/core/services/api-clients/private-course-client';
+import { EventsClient } from '@/modules/core/services/api-clients/events-client';
 import { useActionSnackbarStore } from '@/modules/core/store/snackbar-store';
 import { useValidators } from '@/composables/validators';
 
@@ -257,7 +257,7 @@ async function planClass() {
         duration: classDuration.value,
     };
 
-    const response = await PrivateCourseClient.planNewClass(selectedPerson.value.id, payload);
+    const response = await EventsClient.planNewClass(selectedPerson.value.id, payload);
 
     isSaving.value = false;
 

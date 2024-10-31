@@ -6,7 +6,7 @@ import { storeToRefs } from 'pinia';
 import { useSessionStore } from '@/modules/core/store/session-store';
 
 export class AuthenticationClient {
-	public static async authenticateMe (): Promise<string | null> {
+	public static async authenticateMe(): Promise<string | null> {
 		let initData: string | undefined;
 
 		if (import.meta.env.VITE_APP_IS_DEV === 'true') {
@@ -27,7 +27,7 @@ export class AuthenticationClient {
 		return response.token;
 	}
 
-    public static async validateInitData(initData: string): Promise<TokenDto | null> {
+    private static async validateInitData(initData: string): Promise<TokenDto | null> {
 		const url = `${import.meta.env.VITE_APP_API_URL}auth/me/`;
 
 		const request = ky.get(url, { headers: { 'Init-Data': initData }, timeout: 30000 }).json<TokenDto>();

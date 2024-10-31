@@ -1,13 +1,16 @@
 import os
 import logging
+from typing import Annotated
 
 from alembic import command as alembic_command
 from alembic.config import Config
 from alembic.runtime import migration
 from alembic.script import ScriptDirectory
 
+from fastapi import Depends
+
 from sqlalchemy import create_engine, Engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy_utils import database_exists, create_database
 
 from src.common.config import is_development, sqlalchemy_database_url
@@ -77,3 +80,5 @@ def session():
         yield db
     finally:
         db.close()
+
+DbContext = Annotated[Session, Depends(session)]

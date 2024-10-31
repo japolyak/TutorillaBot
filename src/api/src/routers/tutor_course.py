@@ -1,11 +1,10 @@
-from fastapi import status, APIRouter, Depends
-from sqlalchemy.orm import Session
+from fastapi import status, APIRouter
 
 from src.common.models import TutorCourseDto, NewTutorCourseDto, TutorCourseInlineDto, ItemsDto, UserDto, BlaTutorCourseDto
 
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.database.crud import tutor_course_crud
-from src.api.src.database.db_setup import session
+from src.api.src.database.db_setup import DbContext
 from src.api.src.routers.api_enpoints import APIEndpoints
 
 
@@ -14,7 +13,7 @@ router = APIRouter()
 
 @router.post(path=APIEndpoints.TutorCourse.AddCourse, status_code=status.HTTP_201_CREATED,
              response_model=TutorCourseDto[UserDto], description="Add course for tutor")
-async def add_course(new_tutor_course: NewTutorCourseDto, user_id: int, db: Session = Depends(session)):
+async def add_course(new_tutor_course: NewTutorCourseDto, user_id: int, db: DbContext):
     # TODO - rewrite
     new_tutor_course = tutor_course_crud.add_course(db=db, user_id=user_id, course=new_tutor_course)
 
@@ -25,7 +24,7 @@ async def add_course(new_tutor_course: NewTutorCourseDto, user_id: int, db: Sess
 
 @router.get(path=APIEndpoints.TutorCourse.GetCourses, status_code=status.HTTP_200_OK,
              response_model=ItemsDto[BlaTutorCourseDto], description="Get tutor courses")
-async def get_courses_ids(user_id: int, db: Session = Depends(session)):
+async def get_courses_ids(user_id: int, db: DbContext):
     db_courses = tutor_course_crud.get_courses(db=db, user_id=user_id)
 
     if not db_courses:
@@ -40,7 +39,7 @@ async def get_courses_ids(user_id: int, db: Session = Depends(session)):
 
 @router.get(path=APIEndpoints.TutorCourse.AvailableCourses, status_code=status.HTTP_200_OK,
             response_model=ItemsDto[TutorCourseInlineDto], description="Get available tutors")
-async def get_available_tutor_courses(user_id: int, subject_name: str, db: Session = Depends(session)):
+async def get_available_tutor_courses(user_id: int, subject_name: str, db: DbContext):
     db_tutor_courses = tutor_course_crud.get_available_courses_by_subject(db=db, user_id=user_id, subject_name=subject_name)
 
     if not db_tutor_courses:

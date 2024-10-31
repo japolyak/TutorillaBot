@@ -1,17 +1,12 @@
-from fastapi import status, APIRouter, Depends
-import json
-from sqlalchemy.orm import Session
+from fastapi import status, APIRouter
 from typing import Literal
-import time
 
-from src.common.models import (PaginatedList, NewClassDto, ClassDto, Role, PrivateCourseInlineDto, ItemsDto,
+from src.common.models import (PaginatedList, Role, PrivateCourseInlineDto, ItemsDto,
                                PrivateClassDto, PrivateCourseDto, CourseMemberDto)
 
-from src.api.src.bot_client.message_sender import send_notification_about_new_class
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.database.crud import private_courses_crud
-from src.api.src.database.crud.events_crud import EventCRUD
-from src.api.src.database.db_setup import session
+from src.api.src.database.db_setup import DbContext
 from src.api.src.functions.time_transformator import transform_class_time
 from src.api.src.routers.api_enpoints import APIEndpoints
 from src.api.src.routers.sql_statement_repository import sql_statements
@@ -22,7 +17,7 @@ router = APIRouter()
 
 @router.get(path=APIEndpoints.PrivateCourses.GetClasses, status_code=status.HTTP_200_OK,
             response_model=PaginatedList[PrivateClassDto], summary="Get classes of the course")
-async def get_classes_for_bot(course_id: int, user_id: int, role: Literal[Role.Tutor, Role.Student], page: int, db: Session = Depends(session)):
+async def get_classes_for_bot(course_id: int, user_id: int, role: Literal[Role.Tutor, Role.Student], page: int, db: DbContext):
     result = db.execute(sql_statements.get_classes, {"p1": user_id, "p2": course_id, "p3": page, "p4": role}).fetchall()
 
     total_count = None
@@ -53,22 +48,9 @@ async def get_classes_for_bot(course_id: int, user_id: int, role: Literal[Role.T
     return ResponseBuilder.success_response(content=response_model)
 
 
-@router.get(path=APIEndpoints.PrivateCourses.GetClassesByDate, status_code=status.HTTP_200_OK,
-            response_model=ItemsDto[ClassDto], summary="Get classes of the course for specific month")
-async def get_classes_by_date(private_course_id: int, month: int, year: int, db: Session = Depends(session)):
-    db_classes = private_courses_crud.get_private_course_classes_for_month(db, private_course_id, month, year)
-
-    if not db_classes:
-        return ResponseBuilder.success_response(content=ItemsDto(items=[]))
-
-    classes = [ClassDto(date=db_class[0], status=db_class[1]) for db_class in db_classes]
-
-    return ResponseBuilder.success_response(content=ItemsDto[ClassDto](items=classes))
-
-
 @router.get(path=APIEndpoints.PrivateCourses.Get, status_code=status.HTTP_200_OK,
             response_model=ItemsDto[PrivateCourseInlineDto], summary="Get private courses for user by subject name")
-async def get_private_courses(user_id: int, subject_name: str, role: Literal[Role.Tutor, Role.Student], db: Session = Depends(session)):
+async def get_private_courses(user_id: int, subject_name: str, role: Literal[Role.Tutor, Role.Student], db: DbContext):
     private_courses = private_courses_crud.get_private_courses(db, user_id, subject_name, role)
 
     if not private_courses:
@@ -81,39 +63,15 @@ async def get_private_courses(user_id: int, subject_name: str, role: Literal[Rol
 
 @router.post(path=APIEndpoints.PrivateCourses.Enroll, status_code=status.HTTP_201_CREATED,
              summary="Enroll student to course")
-async def enroll_in_course(user_id: int, private_course_id: int, db: Session = Depends(session)):
+async def enroll_in_course(user_id: int, private_course_id: int, db: DbContext):
     # TODO: Rewrite
     private_courses_crud.enroll_student_to_course(db=db, user_id=user_id, course_id=private_course_id)
     return ResponseBuilder.success_response(status.HTTP_201_CREATED)
 
 
-@router.post(path=APIEndpoints.PrivateCourses.AddNewClass, status_code=status.HTTP_201_CREATED,
-             summary="Add new class for private course")
-async def add_new_class(private_course_id: int, new_class: NewClassDto, db: Session = Depends(session)):
-    schedule = new_class.time
-    current_timestamp = int(time.time())
-
-    if current_timestamp > (schedule / 1000):
-        return ResponseBuilder.error_response(message="Not before now!")
-
-    EventCRUD.create_class_event(db, private_course_id, new_class.time, new_class.duration)
-
-    return ResponseBuilder.success_response(status.HTTP_201_CREATED)
-    # TODO - reimplement after token implementation
-
-    if error_msg:
-        return ResponseBuilder.error_response(message=error_msg)
-
-    class_date = transform_class_time(schedule, recipient_timezone).strftime('%H:%M %d-%m-%Y')
-
-    send_notification_about_new_class(recipient_id, sender_name, subject_name, class_date)
-
-    return ResponseBuilder.success_response(status.HTTP_201_CREATED)
-
-
 @router.get(path=APIEndpoints.PrivateCourses.GetPrivateCourse, status_code=status.HTTP_200_OK,
             response_model=PrivateCourseDto[CourseMemberDto], summary="Get private courses by course id")
-async def get_private_courses(private_course_id: int, db: Session = Depends(session)):
+async def get_private_courses(private_course_id: int, db: DbContext):
     private_course = private_courses_crud.get_private_course_by_course_id(db, private_course_id)
 
     if private_course is None:

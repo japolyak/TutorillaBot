@@ -1,16 +1,15 @@
 from datetime import datetime
-from fastapi import status, Depends, APIRouter
-from sqlalchemy.orm import Session
+from fastapi import status, APIRouter
 from typing import Literal
 
-from src.common.models import UserDto, UserBaseDto, Role, ItemsDto, ScheduleEventDto, ScheduleEventType
+from src.common.models import UserDto, UserBaseDto, Role
 
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.database.crud import user_crud
-from src.api.src.database.crud.events_crud import EventCRUD
-from src.api.src.database.db_setup import session
+from src.api.src.database.db_setup import DbContext
 from src.api.src.routers.api_enpoints import APIEndpoints
 from src.api.src.routers.sql_statement_repository import sql_statements
+from src.api.src.utils.token_utils import UserContext
 
 
 router = APIRouter()
@@ -22,9 +21,8 @@ router = APIRouter()
     response_model=UserDto,
     summary="Gets user"
 )
-async def get_user(db: Session = Depends(session)):
-    # TODO rewrite by using tokens
-    db_user = user_crud.get_user(db=db, user_id=2200100336)
+async def get_user(user_context: UserContext, db: DbContext):
+    db_user = user_crud.get_user(db=db, user_id=user_context.id)
 
     if db_user is None:
         return ResponseBuilder.error_response(message='User was not found')
@@ -40,7 +38,7 @@ async def get_user(db: Session = Depends(session)):
     response_model=UserDto,
     summary="Gets user by id"
 )
-async def get_user(user_id: int, db: Session = Depends(session)):
+async def get_user(user_id: int, db: DbContext):
     db_user = user_crud.get_user(db=db, user_id=user_id)
 
     if db_user is None:
@@ -50,7 +48,7 @@ async def get_user(user_id: int, db: Session = Depends(session)):
 
 
 @router.post(path=APIEndpoints.Users.Post, status_code=status.HTTP_201_CREATED, summary="Adds a new user")
-async def register_user(user: UserBaseDto, db: Session = Depends(session)):
+async def register_user(user: UserBaseDto, db: DbContext):
     params = {
         'u_id': user.id,
         'u_first_name': user.first_name,
@@ -76,7 +74,7 @@ async def register_user(user: UserBaseDto, db: Session = Depends(session)):
 
 @router.post(path=APIEndpoints.Users.ApplyRole, status_code=status.HTTP_201_CREATED,
              summary="Applies user's request for a role")
-async def apply_for_role(user_id: int, role: Literal[Role.Student, Role.Tutor], db: Session = Depends(session)):
+async def apply_for_role(user_id: int, role: Literal[Role.Student, Role.Tutor], db: DbContext):
     params = {
         'u_id': user_id,
         'u_student': role == Role.Student,
@@ -96,22 +94,3 @@ async def apply_for_role(user_id: int, role: Literal[Role.Student, Role.Tutor], 
         return ResponseBuilder.error_response(message='Role application was not successful')
 
     return ResponseBuilder.success_response(status.HTTP_201_CREATED)
-
-
-@router.get(path=APIEndpoints.Users.GetUserWeekEvents, status_code=status.HTTP_200_OK,
-            response_model=ItemsDto[ScheduleEventDto])
-async def get_user_week_events(user_id: int, start: int, end: int, db: Session = Depends(session)):
-    db_events = EventCRUD.get_events_between_dates(db, start, end)
-
-    events = [
-        ScheduleEventDto(
-            id=event.id,
-            duration=event.duration,
-            date=event.start_time_unix,
-            type=ScheduleEventType.Class,
-            title=f'Class - {event.id}'
-        )
-        for event in db_events
-    ]
-
-    return ResponseBuilder.success_response(content=ItemsDto[ScheduleEventDto](items=events))
