@@ -1,7 +1,7 @@
 import jwt
 import hashlib
 from typing import Annotated
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 from datetime import datetime, timedelta, timezone
 from fastapi.security import OAuth2PasswordBearer
 
@@ -20,28 +20,8 @@ class UserContextModel(BaseDto):
         from_attributes = True
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-    try:
-        payload = TokenUtils.decode_token(token)
-
-        user = UserContextModel.model_validate(payload)
-
-        return user
-    except Exception as e:
-        print(e)
-
-
-async def get_current_active_user(current_user: Annotated[UserContextModel, Depends(get_current_user)]):
-    return current_user
-
-
-UserContext = Annotated[UserContextModel, Depends(get_current_active_user)]
-
-
 class TokenUtils:
+    oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
     @classmethod
     def create_access_token(cls, data: dict):
@@ -56,19 +36,39 @@ class TokenUtils:
         return encoded_jwt
 
     @classmethod
+    async def get_current_user(cls, token: Annotated[str, Depends(oauth2_scheme)]):
+        payload = TokenUtils.decode_token(token)
+
+        user = UserContextModel.model_validate(payload)
+
+        return user
+
+    @classmethod
     def decode_token(cls, token: str):
-        header_data = jwt.get_unverified_header(token)
+        try:
+            decoded_token = jwt.decode(token, cls.__get_secret_key(), algorithms=[algorithm, ])
 
-        return jwt.decode(token, cls.__get_secret_key(), algorithms=[algorithm, ])
-
-    @classmethod
-    def is_token_valid(cls, token: str) -> bool:
-        return True
-
-    @classmethod
-    def is_token_expired(cls, token: str) -> bool:
-        return True
+            return decoded_token
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token has expired.",
+                headers={"WWW-Authenticate": "Bearer"}
+            )
+        except jwt.InvalidTokenError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token.",
+                headers={"WWW-Authenticate": "Bearer"}
+            )
 
     @classmethod
     def __get_secret_key(cls):
         return hashlib.sha256(bot_token.encode()).digest()
+
+
+async def get_current_active_user(current_user: Annotated[UserContextModel, Depends(TokenUtils.get_current_user)]):
+    return current_user
+
+
+UserContext = Annotated[UserContextModel, Depends(get_current_active_user)]
