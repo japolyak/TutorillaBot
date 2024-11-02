@@ -9,11 +9,11 @@ from src.bot.src.handlers.message_handlers.registration import RegistrationConte
 translations = {
     "en-US": {
         "Main menu": "main_menu",
-        "Office": "my_office",
+        # "Office": "my_office",
         "Courses": "tutor_courses",
         "Students": "tutor_students",
         "Add course": "add_course",
-        "Classroom": "open_classroom",
+        # "Classroom": "open_classroom",
         "My classes": "student_courses",
         "Subscribe course": "subscribe_course",
         "Admin panel": "show_admin_panel",
