@@ -4,7 +4,7 @@ from urllib.parse import parse_qs
 from src.common.models import UserDto, Role, TokenDto
 
 from src.api.src.builders.response_builder import ResponseBuilder
-from src.api.src.database.crud import user_crud
+from src.api.src.database.crud.user_crud import UserCRUD
 from src.api.src.database.db_setup import DbContext
 from src.api.src.functions.telegram_valdiator import init_data_is_valid
 from src.api.src.routers.api_enpoints import APIEndpoints
@@ -30,7 +30,7 @@ async def validate_telegram_user(request: Request, db: DbContext):
 
     user_id = StringUtils.get_prop_as_int(init_data, "user", "id")
 
-    db_user = user_crud.get_user(db=db, user_id=user_id)
+    db_user = UserCRUD.get_user(db=db, user_id=user_id)
 
     if db_user is None:
         return ResponseBuilder.error_response(message='User was not found')

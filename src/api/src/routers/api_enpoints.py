@@ -19,9 +19,10 @@ class APIEndpoints:
 
     class PrivateCourses:
         Prefix = "/private-courses"
+        Get = "/"
         GetPrivateCourse = "/{private_course_id}/"
         GetClasses = "/{course_id}/classes/"
-        Get = "/users/{user_id}/subjects/{subject_name}/"
+        GetBySubjects = "/users/{user_id}/subjects/{subject_name}/"
         Enroll = "/{private_course_id}/users/{user_id}/"
 
     class Admin:

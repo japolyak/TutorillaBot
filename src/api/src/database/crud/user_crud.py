@@ -6,44 +6,46 @@ from src.common.models import Role
 from src.api.src.database.models import User, UserRequest
 
 
-def get_user(db: Session, user_id: int) -> User | None:
-    query = db.query(User).filter(user_id == User.id)
+class UserCRUD:
+    @staticmethod
+    def get_user(db: Session, user_id: int) -> User | None:
+        query = db.query(User).filter(user_id == User.id)
 
-    return query.first()
+        return query.first()
 
+    @staticmethod
+    def accept_role_request(db: Session, user_id: int, role: Literal[Role.Tutor, Role.Student]):
+        db_user_request = db.query(UserRequest).filter(user_id == UserRequest.user_id).first()
 
-def accept_role_request(db: Session, user_id: int, role: Literal[Role.Tutor, Role.Student]):
-    db_user_request = db.query(UserRequest).filter(user_id == UserRequest.user_id).first()
+        if db_user_request is None:
+            return None
 
-    if db_user_request is None:
-        return None
+        db_user = db.query(User).filter(user_id == User.id).first()
 
-    db_user = db.query(User).filter(user_id == User.id).first()
+        if not db_user:
+            return None
 
-    if not db_user:
-        return None
+        if role == Role.Student:
+            db_user.is_student = True
+        elif role == Role.Tutor:
+            db_user.is_tutor = True
 
-    if role == Role.Student:
-        db_user.is_student = True
-    elif role == Role.Tutor:
-        db_user.is_tutor = True
+        db_user.is_active = True
 
-    db_user.is_active = True
+        db.delete(db_user_request)
+        db.commit()
+        db.refresh(db_user)
 
-    db.delete(db_user_request)
-    db.commit()
-    db.refresh(db_user)
+        return db_user
 
-    return db_user
+    @staticmethod
+    def decline_role_request(db: Session, user_id: int) -> bool:
+        db_user_request = db.query(UserRequest).filter(user_id == UserRequest.user_id).first()
 
+        if db_user_request is None:
+            return False
 
-def decline_role_request(db: Session, user_id: int) -> bool:
-    db_user_request = db.query(UserRequest).filter(user_id == UserRequest.user_id).first()
+        db.delete(db_user_request)
+        db.commit()
 
-    if db_user_request is None:
-        return False
-
-    db.delete(db_user_request)
-    db.commit()
-
-    return True
+        return True

@@ -57,6 +57,7 @@ import '@quasar/quasar-ui-qcalendar/src/QCalendarDay.sass'
 import PlannerDialog from '@/modules/schedule/components/planner-dialog.vue';
 import ScheduleEvent from '@/modules/schedule/components/schedule-event.vue';
 import { EventsClient } from '@/modules/core/services/api-clients/events-client';
+import { PrivateCourseClient } from '@/modules/core/services/api-clients/private-course-client';
 import { useScheduleStore } from '@/modules/schedule/services/schedule-store';
 import { useUserStore } from '@/modules/core/store/user-store';
 import { ScheduleUtils } from '@/modules/schedule/services/mappers';
@@ -64,13 +65,28 @@ import { ScheduleUtils } from '@/modules/schedule/services/mappers';
 const { t } = useI18n();
 const { openDialog, getEvents } = useScheduleStore();
 const { weekEvents, lastStartDay, lastEndDay, selectedDate } = storeToRefs(useScheduleStore());
-const { userInfo } = storeToRefs(useUserStore());
+const { userInfo, coursesLoaded, courses, getCourses } = storeToRefs(useUserStore());
 
 const adapter = useDate();
 
 const calendar = ref<QCalendarDay>();
 
-function onClickTime({ scope }) {
+async function loadCourses() {
+	if (coursesLoaded.value) return;
+
+	const response = await PrivateCourseClient.loadPrivateCourses();
+
+	if (response.isSuccess) {
+		courses.value = response.data.items;
+		coursesLoaded.value = true;
+	}
+}
+
+async function onClickTime({ scope }) {
+	await loadCourses();
+
+	if (!getCourses.value.length) return;
+
     const date = adapter.parseISO(scope.timestamp.date);
     openDialog(date, scope.timestamp.hour);
 }

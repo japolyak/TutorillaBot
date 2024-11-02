@@ -19,6 +19,8 @@ Application requires the following environment variables for service configurati
 Environment variables:
 * `ALLOWED_ORIGINS` - list of divided by `&` allowed origins for CORS. **Required** for `production`
 * `IS_DEVELOPMENT` - determines development or production environment - `True` or `False`. **Required** for `development`.
+* `ALGORITHM` - algorithm used for encoding token. **Required**
+* `ACCESS_TOKEN_EXPIRE_MINUTES` - token's expiration time in minutes. **Required** for `production`
 
 Telegram related variables:
 

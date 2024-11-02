@@ -1,7 +1,8 @@
 from telebot import service_utils
-from telebot.types import ReplyKeyboardMarkup, KeyboardButton
+from telebot.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 from typing import List
 
+from src.common.config import web_app_link
 from src.common.redis_configuration import redis_instance as r
 
 from src.bot.src.services.i18n.i18n import t
@@ -19,13 +20,18 @@ class ReplyKeyboardMarkupCreator:
 
         top_row = []
 
-        if is_tutor:
-            office_btn = KeyboardButton(text=t(user_id, "OfficeKBtn", locale))
-            top_row.append(office_btn)
+        if is_tutor or is_student:
+            schedule_btn = KeyboardButton(text=t(user_id, "ScheduleIKBtn", locale),
+                                          web_app=WebAppInfo(url=f"{web_app_link}/schedule"))
+            top_row.append(schedule_btn)
 
-        if is_student:
-            classroom_btn = KeyboardButton(text=t(user_id, "ClassroomKBtn", locale))
-            top_row.append(classroom_btn)
+        # if is_tutor:
+        #     office_btn = KeyboardButton(text=t(user_id, "OfficeKBtn", locale))
+        #     top_row.append(office_btn)
+        #
+        # if is_student:
+        #     classroom_btn = KeyboardButton(text=t(user_id, "ClassroomKBtn", locale))
+        #     top_row.append(classroom_btn)
 
         if top_row.__len__() > 0:
             markup.add_row(top_row)

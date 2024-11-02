@@ -12,7 +12,7 @@ export class ScheduleUtils {
 
 		return {
 			id: event.id,
-			title: event.title,
+			title: `${event.subjectName} | ${event.personName}`,
 			date: timestamp.date,
 			time: timestamp.time,
 			duration: event.duration,

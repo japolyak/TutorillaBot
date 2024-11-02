@@ -1,6 +1,6 @@
 import { acceptHMRUpdate, defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import type { CourseMemberDto, PrivateCourseDto, UserDto } from '@/modules/core/services/api/api.models';
+import type { UserDto, ScheduleCourseDto } from '@/modules/core/services/api/api.models';
 import { Role } from '@/modules/core/services/api/api.models';
 
 
@@ -9,6 +9,8 @@ export const useUserStore = defineStore('user-store', () => {
 
 	const isTutor = computed(() => user.value?.isTutor ?? false);
 	const isStudent = computed(() => user.value?.isStudent ?? false);
+	const isAdmin = computed(() => user.value?.isAdmin ?? false);
+	const hasAdminRole = computed(() => isStudent.value);
 
 	const userFullName = computed(() => {
 		if (!user.value) return 'Tutorilla';
@@ -28,31 +30,17 @@ export const useUserStore = defineStore('user-store', () => {
 		return roles;
 	});
 
-	const privateCourse = ref<PrivateCourseDto<CourseMemberDto> | null>(null);
-
-	const privateCourseId = computed(() => privateCourse.value?.id ?? null);
-
-	const userRoleInPrivateCourse = computed(() => {
-		if (!user.value || !privateCourse.value) return null;
-
-		if (privateCourse.value.student.id === user.value.id) return Role.Student;
-		if (privateCourse.value.tutorCourse.tutor.id === user.value.id) return Role.Tutor;
-
-		return null;
-	});
-
-	const isTutorInPrivateCourse = computed(() => (userRoleInPrivateCourse.value === Role.Tutor));
-
 	const userInfo = computed(() => user.value);
 	const userTimeZone = computed(() => user.value?.timeZone ?? null);
 	const locale = computed(() => user.value?.locale ?? 'en-US');
 
+	const coursesLoaded = ref(false);
+
+	const courses = ref<ScheduleCourseDto[]>([]);
+	const getCourses = computed(() => courses.value);
+
 	function setUser(payload: UserDto) {
 		user.value = payload;
-	}
-
-	function setPrivateCourse(payload: PrivateCourseDto<CourseMemberDto>) {
-		privateCourse.value = payload;
 	}
 
 	function hasRoles(...roles: Role[]): boolean {
@@ -62,10 +50,6 @@ export const useUserStore = defineStore('user-store', () => {
 	}
 
     return {
-		privateCourse,
-		privateCourseId,
-		userRoleInPrivateCourse,
-		isTutorInPrivateCourse,
 		userInfo,
 		isTutor,
 		isStudent,
@@ -73,8 +57,10 @@ export const useUserStore = defineStore('user-store', () => {
 		userFullName,
 		userTimeZone,
 		setUser,
-		setPrivateCourse,
 		hasRoles,
+		coursesLoaded,
+		courses,
+		getCourses,
     };
 });
 

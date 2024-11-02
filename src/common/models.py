@@ -52,9 +52,6 @@ class ErrorDto(BaseModel):
 class TokenDto(BaseDto):
     token: str
 
-    class Config:
-        from_attributes = True
-
 
 class UserBaseDto(BaseDto):
     id: int
@@ -80,9 +77,6 @@ class UserRequestDto(BaseDto):
     user_last_name: str
     user_email: str
     user_role: Role
-
-    class Config:
-        from_attributes = True
 
 
 class SubjectDto(BaseDto):
@@ -142,7 +136,7 @@ class PrivateCourseInlineDto(BaseModel):
     @classmethod
     def from_tuple(cls, values: Tuple[int, str, str, int]):
         if len(values) != 4:
-            raise ValueError("List must contain exactly two elements: [name, age]")
+            raise ValueError("List must contain exactly 4 elements: [id, name, subject, classes]")
 
         return cls(id=values[0], person_name=values[1], subject_name=values[2], number_of_classes=values[3])
 
@@ -198,9 +192,6 @@ class StatisticsDto(BaseDto):
     students_requests: int
     tutors_requests: int
 
-    class Config:
-        from_attributes = True
-
 
 class ScheduleEventType(StrEnum):
     Class = 'Class'
@@ -209,10 +200,33 @@ class ScheduleEventType(StrEnum):
 
 class ScheduleEventDto(BaseDto):
     id: int
-    title: str
     duration: int
     date: int
     type: ScheduleEventType
+    person_name: str
+    subject_name: str
 
-    class Config:
-        from_attributes = True
+
+class ScheduleCoursePersonDto(BaseDto):
+    private_course_id: int
+    participant_id: int
+    participant_name: str
+    participant_timezone: float
+
+    @classmethod
+    def from_tuple(cls, values: Tuple[int, int, str, float]):
+        if len(values) != 4:
+            raise ValueError("List must contain exactly 4 elements.")
+
+        return cls(
+            private_course_id=values[0],
+            participant_id=values[1],
+            participant_name=values[2],
+            participant_timezone=values[3]
+        )
+
+
+class ScheduleCourseDto(BaseDto):
+    subject_id: int
+    subject_name: str
+    persons: List[ScheduleCoursePersonDto]

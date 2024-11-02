@@ -36,36 +36,6 @@ export interface UserDto extends UserBaseDto {
     isAdmin: boolean
 }
 
-export interface CourseMemberDto {
-	id: number;
-	firstName: string;
-}
-
-export interface SubjectDto {
-	id: number;
-	name: string;
-}
-
-export interface TextbookDto {
-	id: number;
-	title: string;
-}
-
-export interface TutorCourseDto<TUser> {
-	id: number;
-	tutor: TUser;
-	subject: SubjectDto;
-	textbooks: TextbookDto[];
-	price: number | null;
-}
-
-export interface PrivateCourseDto<TUser> {
-	id: number;
-	tutorCourse: TutorCourseDto<TUser>;
-	student: TUser;
-	price: number;
-}
-
 export interface NewClassDto {
     time: number;
 	duration: number;
@@ -92,8 +62,22 @@ export enum ScheduleEventType {
 
 export interface ScheduleEventDto {
 	id: number;
-	title: string;
+	subjectName: string;
+	personName: string;
 	duration: number;
 	date: number;
 	type: ScheduleEventType;
+}
+
+export interface ScheduleCoursePersonDto {
+	privateCourseId: number
+    participantId: number
+    participantName: string
+    participantTimezone: number
+}
+
+export interface ScheduleCourseDto {
+	subjectId: number
+    subjectName: string
+    persons: ScheduleCoursePersonDto[]
 }

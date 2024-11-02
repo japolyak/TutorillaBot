@@ -46,6 +46,7 @@ en = {
     "SubscribeIKBtn": Template("Subscribe"),
     "ReturnToSelectSubjectsIKBtn": Template("Return to select subjects"),
     "PlanClassIKBtn": Template("Plan class"),
+    "ScheduleIKBtn": Template("Schedule"),
     "AllClassesIKBtn": Template("All classes"),
     "AcceptIKBtn": Template("Accept"),
     "DeclineIKBtn": Template("Decline"),

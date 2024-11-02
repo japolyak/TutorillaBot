@@ -5,7 +5,7 @@ from typing import Literal
 from src.common.models import UserDto, UserBaseDto, Role
 
 from src.api.src.builders.response_builder import ResponseBuilder
-from src.api.src.database.crud import user_crud
+from src.api.src.database.crud.user_crud import UserCRUD
 from src.api.src.database.db_setup import DbContext
 from src.api.src.routers.api_enpoints import APIEndpoints
 from src.api.src.routers.sql_statement_repository import sql_statements
@@ -22,7 +22,7 @@ router = APIRouter()
     summary="Gets user"
 )
 async def get_user(user_context: UserContext, db: DbContext):
-    db_user = user_crud.get_user(db=db, user_id=user_context.id)
+    db_user = UserCRUD.get_user(db=db, user_id=user_context.id)
 
     if db_user is None:
         return ResponseBuilder.error_response(message='User was not found')
@@ -39,7 +39,7 @@ async def get_user(user_context: UserContext, db: DbContext):
     summary="Gets user by id"
 )
 async def get_user(user_id: int, db: DbContext):
-    db_user = user_crud.get_user(db=db, user_id=user_id)
+    db_user = UserCRUD.get_user(db=db, user_id=user_id)
 
     if db_user is None:
         return ResponseBuilder.error_response(message='User was not found')

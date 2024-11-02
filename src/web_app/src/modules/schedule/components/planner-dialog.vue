@@ -80,7 +80,6 @@ import { useDate } from 'vuetify';
 import { computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { VAutocomplete } from 'vuetify/components';
-import { Role } from '@/modules/core/services/api/api.models';
 import DatePicker from '@/modules/schedule/components/date-picker.vue';
 import { useScheduleStore } from '@/modules/schedule/services/schedule-store';
 import type { CourseModel } from '@/modules/schedule/models';
@@ -95,7 +94,7 @@ const adapter = useDate();
 const { t } = useI18n();
 const { required } = useValidators();
 const { showSnackbar } = useActionSnackbarStore();
-const { userTimeZone, isTutor } = storeToRefs(useUserStore());
+const { userTimeZone, isTutor, getCourses } = storeToRefs(useUserStore());
 const { closeDialog } = useScheduleStore();
 const {
     showDialog,
@@ -155,63 +154,6 @@ const forPersonIts = computed(() => {
     return t('ForXItsY', [person.name, dayPart]);
 });
 
-interface PersonDto {
-	id: number;
-	name: string;
-    timezone: number;
-	role: Role.Tutor | Role.Student;
-	privateCourseId: number;
-}
-
-interface CourseDto {
-	id: number;
-	subject: string;
-	persons: PersonDto[];
-}
-
-const mockCourses: CourseDto[] = [
-	{
-		id: 1,
-		subject: 'Math',
-		persons: [
-			{
-				id: 1,
-				name: 'Andrew',
-				timezone: 2,
-				role: Role.Student,
-				privateCourseId: 1,
-			},
-			{
-				id: 2,
-                timezone: 3,
-				name: 'Kate',
-				role: Role.Student,
-				privateCourseId: 2,
-			}
-		]
-	},
-	{
-		id: 2,
-		subject: 'Polish',
-		persons: [
-			{
-				id: 3,
-                timezone: 1,
-				name: 'Irvin',
-				role: Role.Student,
-				privateCourseId: 3,
-			},
-			{
-				id: 2,
-                timezone: 0,
-				name: 'Andrew',
-				role: Role.Student,
-				privateCourseId: 4,
-			}
-		]
-	},
-];
-
 function toFlatCourseModel(
 	type: 'subject' | 'person',
 	id: number,
@@ -224,8 +166,6 @@ function toFlatCourseModel(
 	return { id, name, selected, subject, timezone, disabled, type };
 }
 
-const personCourses = ref<CourseDto[]>(mockCourses);
-
 function selectedPersonTitle(item: CourseModel) {
 	return `${item.subject} | ${item.name}`
 }
@@ -235,10 +175,10 @@ function itemDisabled(item: CourseModel) {
 }
 
 const coursesFlatList = computed(() => {
-	return personCourses.value.flatMap(course => {
-		const persons = course.persons.map(p => toFlatCourseModel('person', p.privateCourseId, p.name, course.subject, p.timezone));
+	return getCourses.value.flatMap(course => {
+		const persons = course.persons.map(p => toFlatCourseModel('person', p.privateCourseId, p.participantName, course.subjectName, p.participantTimezone));
 
-		const subject = toFlatCourseModel('subject', course.id, course.subject, undefined, undefined, false, true);
+		const subject = toFlatCourseModel('subject', course.subjectId, course.subjectName, undefined, undefined, false, true);
 
 		return [subject, ...persons];
 	})

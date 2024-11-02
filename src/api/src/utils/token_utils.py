@@ -36,7 +36,7 @@ class TokenUtils:
         return encoded_jwt
 
     @classmethod
-    async def get_current_user(cls, token: Annotated[str, Depends(oauth2_scheme)]):
+    async def get_current_user(cls, token: Annotated[str, Depends(oauth2_scheme)]) -> UserContextModel:
         payload = TokenUtils.decode_token(token)
 
         user = UserContextModel.model_validate(payload)
@@ -44,7 +44,7 @@ class TokenUtils:
         return user
 
     @classmethod
-    def decode_token(cls, token: str):
+    def decode_token(cls, token: str) -> dict:
         try:
             decoded_token = jwt.decode(token, cls.__get_secret_key(), algorithms=[algorithm, ])
 
@@ -63,11 +63,11 @@ class TokenUtils:
             )
 
     @classmethod
-    def __get_secret_key(cls):
+    def __get_secret_key(cls) -> bytes:
         return hashlib.sha256(bot_token.encode()).digest()
 
 
-async def get_current_active_user(current_user: Annotated[UserContextModel, Depends(TokenUtils.get_current_user)]):
+async def get_current_active_user(current_user: Annotated[UserContextModel, Depends(TokenUtils.get_current_user)]) -> UserContextModel:
     return current_user
 
 

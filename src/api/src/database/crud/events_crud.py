@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
-from typing import List, Literal
+from typing import Literal
 
-from src.api.src.database.models import PrivateClass
+from src.api.src.database.models import PrivateClass, PrivateCourse, TutorCourse, Subject, User
 from src.common.models import Role
 
 
@@ -51,12 +51,30 @@ class EventCRUD:
         return new_class
 
     @staticmethod
-    def get_events_between_dates(db: Session, user_id: int, role: Literal[Role.Tutor, Role.Student], start_time_unix: int, end_time_unix: int) -> List[PrivateClass]:
-        classes = db.query(PrivateClass).where(
-            and_(
+    def get_events_between_dates(user_id: int, role: Literal[Role.Tutor, Role.Student], start_time_unix: int, end_time_unix: int, db: Session):
+        classes = (
+            db
+            .query(PrivateClass.id, PrivateClass.duration, PrivateClass.start_time_unix, Subject.name, User.first_name)
+            .join(PrivateClass.private_course)
+            .join(PrivateCourse.tutor_course)
+            .join(TutorCourse.subject)
+            .filter(
                 start_time_unix <= PrivateClass.start_time_unix,
                 end_time_unix >= PrivateClass.start_time_unix
             )
-        ).all()
+        )
 
-        return classes
+        if role == Role.Tutor:
+            classes = (
+                classes
+                .join(PrivateCourse.student)
+                .filter(user_id == TutorCourse.tutor_id)
+            )
+        else:
+            classes = (
+                classes
+                .join(TutorCourse.tutor)
+                .filter(user_id == PrivateCourse.student_id)
+            )
+
+        return classes.all()
