@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import '@vuepic/vue-datepicker/dist/main.css';
 import Snackbar from '@/modules/core/components/snackbar.vue';
 import MainMenu from '@/modules/core/components/main-menu.vue';
 import TopBar from '@/modules/core/components/top-bar.vue';
