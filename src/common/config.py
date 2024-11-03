@@ -13,7 +13,7 @@ api_timeout = int(_timeout) if _timeout is not None else None
 
 # API
 allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split('&')
-access_token_expire_minutes = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 300)
+access_token_expire_minutes = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 300))
 algorithm = os.getenv("ALGORITHM")
 
 # Telegram
