@@ -28,7 +28,7 @@ export class AuthenticationClient {
 	}
 
     private static async validateInitData(initData: string): Promise<TokenDto | null> {
-		const url = `${import.meta.env.VITE_APP_API_URL}auth/me/`;
+		const url = `${import.meta.env.VITE_APP_API_URL}/auth/me/`;
 
 		const request = ky.get(url, { headers: { 'Init-Data': initData }, timeout: 30000 }).json<TokenDto>();
 		const apiResponse = await ApiUtils.createApiResponse(request);

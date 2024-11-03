@@ -15,8 +15,8 @@ from src.api.src.utils.token_utils import TokenUtils
 router = APIRouter()
 
 
-@router.get(path=APIEndpoints.Authentication.Me, status_code=status.HTTP_200_OK, response_model=UserDto,
-            summary="Validates telegram user and returns user data")
+@router.get(path=APIEndpoints.Authentication.Me, status_code=status.HTTP_200_OK, response_model=TokenDto,
+            summary="Validates telegram user and returns token")
 async def validate_telegram_user(request: Request, db: DbContext):
     init_data: None or str = request.headers.get("Init-Data")
 
