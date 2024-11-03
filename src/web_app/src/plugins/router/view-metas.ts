@@ -16,8 +16,8 @@ export const viewMetaDefinitions: Record<View, RouteMeta> = {
 		.partOfModule(Module.scheduleModule)
 		.withRoles(Role.Tutor, Role.Student)
 		.build(),
-	[View.adminView]: new RouteMetaBuilder()
-		.withTitle('AdminPage')
+	[View.adminPanelView]: new RouteMetaBuilder()
+		.withTitle('AdminPanel')
 		.partOfModule(Module.adminModule)
 		.withRoles(Role.Admin)
 		.build(),

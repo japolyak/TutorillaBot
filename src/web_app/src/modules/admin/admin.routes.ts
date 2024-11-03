@@ -2,7 +2,7 @@ import { View } from '@/plugins/router/view-definitions';
 import type { RouteRecordRaw } from 'vue-router';
 import { viewMetaDefinitions } from '@/plugins/router/view-metas';
 import Dashboard from '@/modules/core/components/dashboard.vue';
-import AdminView from '@/modules/admin/views/admin-view.vue';
+import AdminPanelView from '@/modules/admin/views/admin-panel-view.vue';
 import AdminRequestsRoleView from '@/modules/admin/views/admin-requests-role-view.vue';
 import AdminRequestsView from '@/modules/admin/views/admin-requests-view.vue';
 import AdminUsersView from '@/modules/admin/views/admin-users-view.vue';
@@ -10,14 +10,14 @@ import AdminUsersView from '@/modules/admin/views/admin-users-view.vue';
 
 export const adminRoutes: RouteRecordRaw[] = [
 	{
-		path: '/admin',
+		path: '/admin-panel',
 		component: Dashboard,
 		children: [
 			{
 				path: '',
-				name: View.adminView,
-				component: AdminView,
-				meta: viewMetaDefinitions[View.adminView],
+				name: View.adminPanelView,
+				component: AdminPanelView,
+				meta: viewMetaDefinitions[View.adminPanelView],
 			},
 			{
 				path: 'requests',

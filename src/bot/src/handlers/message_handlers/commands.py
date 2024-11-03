@@ -16,7 +16,7 @@ translations = {
         # "Classroom": "open_classroom",
         "My classes": "student_courses",
         "Subscribe course": "subscribe_course",
-        "Admin panel": "show_admin_panel",
+        # "Admin panel": "show_admin_panel",
         "Tutor requests": "get_tutor_role_requests",
         "Student requests": "get_student_role_requests",
     }

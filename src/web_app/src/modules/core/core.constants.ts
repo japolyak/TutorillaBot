@@ -11,7 +11,7 @@ export const mainMenuItems: MainMenuGroup[] = [
 		children: [],
 	},
 	{
-		mainView: View.adminView,
+		mainView: View.adminPanelView,
 		children: [View.adminUserView, View.adminRequestsView],
 	},
 	{

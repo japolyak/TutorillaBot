@@ -15,6 +15,7 @@ class ReplyKeyboardMarkupCreator:
         is_tutor = int(r.hget(user_id, "is_tutor") or 0)
         is_student = int(r.hget(user_id, "is_student") or 0)
         is_admin = int(r.hget(user_id, "is_admin") or 0)
+        is_super_admin = int(r.hget(user_id, "is_super_admin") or 0)
 
         markup = CustomReplyKeyboardMarkup(resize_keyboard=True)
 
@@ -36,8 +37,9 @@ class ReplyKeyboardMarkupCreator:
         if top_row.__len__() > 0:
             markup.add_row(top_row)
 
-        if is_admin:
-            admin_panel_btn = KeyboardButton(text=t(user_id, "AdminPanelKBtn", locale))
+        if is_admin or is_super_admin:
+            admin_panel_btn = KeyboardButton(text=t(user_id, "AdminPanelKBtn", locale),
+                                             web_app=WebAppInfo(url=f"{web_app_link}/admin-panel"))
             markup.add(admin_panel_btn)
 
         # TODO markup.add(profile_btn, support_btn)

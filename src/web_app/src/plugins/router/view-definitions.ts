@@ -8,7 +8,7 @@ export enum Module {
 
 export enum View {
 	fallbackView = 'FallbackView',
-	adminView = 'AdminView',
+	adminPanelView = 'AdminPanelView',
 	adminUserView = 'AdminUsersView',
 	adminRequestsView = 'AdminRequestsView',
 	adminRequestsRoleView = 'AdminRequestsRoleView',
@@ -21,7 +21,7 @@ export enum View {
 }
 
 export const moduleViewDefinition: Record<Module, View> = {
-	[Module.adminModule]: View.adminView,
+	[Module.adminModule]: View.adminPanelView,
 	[Module.tutorModule]: View.tutorView,
 	[Module.studentModule]: View.studentView,
 	[Module.scheduleModule]: View.scheduleView,

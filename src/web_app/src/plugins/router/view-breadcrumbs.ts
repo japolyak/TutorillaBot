@@ -17,9 +17,9 @@ export const viewBreadcrumbDefinitions: Record<View, null | ViewBreadcrumbs> = {
 			disabled: false,
 		},
 	],
-	[View.adminView]: [
+	[View.adminPanelView]: [
 		{
-			title: 'AdminPage',
+			title: 'AdminPanel',
 			disabled: false,
 		},
 	],
