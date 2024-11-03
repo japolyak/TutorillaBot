@@ -1,5 +1,5 @@
 from sqlalchemy import func, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 from typing import Literal
 
 from src.common.models import Role
@@ -65,6 +65,25 @@ class PrivateCourseCRUD:
             query = query.join(PrivateCourse.student).filter(user_id == TutorCourse.tutor_id)
 
         return query.all()
+
+    @staticmethod
+    def get_private_course_info(private_course_id: int, db: Session):
+        student = aliased(User)
+        tutor = aliased(User)
+
+        private_course = (
+            db
+            .query(Subject.name, student.id, student.first_name, student.time_zone, tutor.id, tutor.first_name, tutor.time_zone)
+            .join(PrivateCourse.tutor_course)
+            .join(student, PrivateCourse.student)
+            .join(TutorCourse.subject)
+            .join(tutor, TutorCourse.tutor)
+            .filter(private_course_id == PrivateCourse.id)
+            .one_or_none()
+        )
+
+        return private_course
+
 
     @staticmethod
     def get_private_course_by_course_id(db: Session, private_course_id: int) -> PrivateCourse | None:

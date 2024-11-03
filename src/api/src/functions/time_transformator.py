@@ -1,8 +1,10 @@
-from datetime import timezone, timedelta, datetime
-from typing import Literal
+from datetime import datetime
 
 
-def transform_class_time(some_data: datetime, time_zone: float) -> datetime:
-    new_timezone = timezone(timedelta(hours=time_zone))
+def transform_class_time(date_in_unix_ts: int, timezone: float) -> str:
+    date_in_unix_ts /= 1000
 
-    return some_data.astimezone(new_timezone)
+    if timezone != 0:
+        date_in_unix_ts += timezone * 60 *60
+
+    return datetime.fromtimestamp(date_in_unix_ts).strftime('%H:%M %d-%m-%Y')

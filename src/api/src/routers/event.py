@@ -1,11 +1,13 @@
 from fastapi import status, APIRouter
 import time
+from operator import itemgetter
 
 from src.common.models import ScheduleEventDto, NewClassDto, ItemsDto, ScheduleEventType, Role
 
 from src.api.src.bot_client.message_sender import send_notification_about_new_class
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.database.crud.events_crud import EventCRUD
+from src.api.src.database.crud.private_courses_crud import PrivateCourseCRUD
 from src.api.src.database.db_setup import DbContext
 from src.api.src.functions.time_transformator import transform_class_time
 from src.api.src.routers.api_enpoints import APIEndpoints
@@ -49,6 +51,11 @@ async def add_new_class(private_course_id: int, new_class: NewClassDto, user: Us
     if current_timestamp > new_class.time:
         return ResponseBuilder.error_response(message="Not before now!")
 
+    private_course_info = PrivateCourseCRUD.get_private_course_info(private_course_id, db)
+
+    if private_course_info is None:
+        return ResponseBuilder.error_response(message="Course does not exist!")
+
     has_collisions = EventCRUD.class_has_collisions(db, private_course_id, new_class.time, new_class.duration)
 
     if has_collisions:
@@ -56,14 +63,13 @@ async def add_new_class(private_course_id: int, new_class: NewClassDto, user: Us
 
     EventCRUD.create_class_event(db, private_course_id, new_class.time, new_class.duration)
 
-    return ResponseBuilder.success_response(status.HTTP_201_CREATED)
-    # TODO - reimplement after token implementation
+    if user.role is Role.Tutor:
+        subject, sender_name, recipient_id, recipient_timezone = itemgetter(0, 5, 1, 3)(private_course_info)
+    else:
+        subject, sender_name, recipient_id, recipient_timezone = itemgetter(0, 2, 4, 6)(private_course_info)
 
-    if error_msg:
-        return ResponseBuilder.error_response(message=error_msg)
+    class_date = transform_class_time(new_class.time, recipient_timezone)
 
-    class_date = transform_class_time(schedule, recipient_timezone).strftime('%H:%M %d-%m-%Y')
-
-    send_notification_about_new_class(recipient_id, sender_name, subject_name, class_date)
+    send_notification_about_new_class(recipient_id, sender_name, subject, class_date)
 
     return ResponseBuilder.success_response(status.HTTP_201_CREATED)
