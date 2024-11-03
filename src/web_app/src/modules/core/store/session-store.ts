@@ -8,6 +8,7 @@ import { useUserStore } from '@/modules/core/store/user-store';
 export const useSessionStore = defineStore(
 	'session-store',
 	() => {
+		const isAuthorized = ref<boolean>(false);
 		const telegramInitData = ref<string>();
 		const token = ref<string>('adad');
 
@@ -26,6 +27,7 @@ export const useSessionStore = defineStore(
 
 		return {
 			telegramInitData,
+			isAuthorized,
 			isTelegramUser,
 			initializeAuthentication,
 		};

@@ -21,8 +21,9 @@ export class AuthenticationClient {
 		const response = await AuthenticationClient.validateInitData(initData);
 		if (!response) return null;
 
-		const { telegramInitData } = storeToRefs(useSessionStore());
+		const { telegramInitData, isAuthorized } = storeToRefs(useSessionStore());
 		telegramInitData.value = initData;
+		isAuthorized.value = true;
 
 		return response.token;
 	}
