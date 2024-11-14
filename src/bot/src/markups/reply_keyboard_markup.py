@@ -76,18 +76,6 @@ class ReplyKeyboardMarkupCreator:
 
         return markup
 
-    @classmethod
-    def admin_panel_markup(cls, user_id: int, locale: str) -> ReplyKeyboardMarkup:
-        markup = ReplyKeyboardMarkup(resize_keyboard=True)
-
-        tutor_requests_btn = KeyboardButton(text=t(user_id, "TutorRequestsKBtn", locale))
-        student_requests_btn = KeyboardButton(text=t(user_id, "StudentRequestsKBtn", locale))
-        back_to_admin_panel = KeyboardButton(text=t(user_id, "MainMenuKBtn", locale))
-
-        markup.add(tutor_requests_btn, student_requests_btn).add(back_to_admin_panel)
-
-        return markup
-
 
 class CustomReplyKeyboardMarkup(ReplyKeyboardMarkup):
     def add_row(self, buttons: List[KeyboardButton], row_width=None):

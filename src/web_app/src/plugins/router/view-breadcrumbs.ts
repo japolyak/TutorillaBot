@@ -23,13 +23,7 @@ export const viewBreadcrumbDefinitions: Record<View, null | ViewBreadcrumbs> = {
 			disabled: false,
 		},
 	],
-	[View.adminUserView]: [
-		{
-			title: 'Users',
-			disabled: false,
-		},
-	],
-	[View.adminRequestsView]: [
+	[View.adminPanelRequestsView]: [
 		{
 			title: 'RegistrationRequests',
 			disabled: false,

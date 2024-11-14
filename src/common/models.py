@@ -23,9 +23,9 @@ class ClassStatus(StrEnum):
 
 
 class Role(StrEnum):
-    Admin = 'Admin'
     Tutor = 'Tutor'
     Student = 'Student'
+    Admin = 'Admin'
 
 
 class PaginatedList(BaseModel, Generic[T]):

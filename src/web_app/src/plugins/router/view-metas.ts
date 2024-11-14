@@ -18,22 +18,22 @@ export const viewMetaDefinitions: Record<View, RouteMeta> = {
 		.build(),
 	[View.adminPanelView]: new RouteMetaBuilder()
 		.withTitle('AdminPanel')
-		.partOfModule(Module.adminModule)
+		.partOfModule(Module.adminPanelModule)
 		.withRoles(Role.Admin)
 		.build(),
 	[View.adminUserView]: new RouteMetaBuilder()
 		.withTitle('Users')
-		.partOfModule(Module.adminModule)
+		.partOfModule(Module.adminPanelModule)
 		.withRoles(Role.Admin)
 		.build(),
-	[View.adminRequestsView]: new RouteMetaBuilder()
+	[View.adminPanelRequestsView]: new RouteMetaBuilder()
 		.withTitle('RegistrationRequests')
-		.partOfModule(Module.adminModule)
+		.partOfModule(Module.adminPanelModule)
 		.withRoles(Role.Admin)
 		.build(),
 	[View.adminRequestsRoleView]: new RouteMetaBuilder()
 		.withTitle('RegistrationRequests')
-		.partOfModule(Module.adminModule)
+		.partOfModule(Module.adminPanelModule)
 		.withRoles(Role.Admin)
 		.build(),
 	[View.tutorView]: new RouteMetaBuilder()

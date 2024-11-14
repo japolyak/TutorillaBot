@@ -5,18 +5,18 @@ import type { Module } from '@/plugins/router/view-definitions';
 import type { RouteAuthMeta } from '@/plugins/router/utils/route-auth-meta';
 import { coreRoutes } from '@/modules/core/core.routes';
 import { devRoutes } from '@/modules/dev/dev.routes';
-import { adminRoutes } from '@/modules/admin/admin.routes';
+import { adminPanelRoutes } from '@/modules/admin-panel/admin-panel.routes';
 import { tutorRoutes } from '@/modules/tutor/tutor.routes';
 import { studentRoutes } from '@/modules/student/student.routes';
 import { scheduleRoutes } from '@/modules/schedule/schedule.routes';
 
 // TODO - remove when all modules will be ready
 function availableRoutes() {
-	if (import.meta.env.VITE_APP_IS_DEV === 'false') return [...scheduleRoutes];
+	if (import.meta.env.VITE_APP_IS_DEV === 'false') return [...scheduleRoutes, ...adminPanelRoutes];
 
 	return [
 		...scheduleRoutes,
-		...adminRoutes,
+		...adminPanelRoutes,
 		...tutorRoutes,
 		...studentRoutes,
 		...devRoutes,

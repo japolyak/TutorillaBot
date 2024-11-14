@@ -9,6 +9,7 @@ from src.api.src.database.crud.user_crud import UserCRUD
 from src.api.src.database.crud.admin_crud import AdminCRUD
 from src.api.src.database.db_setup import DbContext
 from src.api.src.routers.api_enpoints import APIEndpoints
+from src.api.src.utils.token_utils import UserContext
 
 
 router = APIRouter()
@@ -16,7 +17,10 @@ router = APIRouter()
 
 @router.get(path=APIEndpoints.Admin.RequestsStatistics, status_code=status.HTTP_200_OK,
             response_model=StatisticsDto, summary="Get requests statistics")
-async def get_requests_statistics(db: DbContext):
+async def get_requests_statistics(user: UserContext, db: DbContext):
+    if user.role not in [Role.Admin,]:
+        return ResponseBuilder.error_response(status.HTTP_403_FORBIDDEN, message="Access denied!")
+
     students, tutors = AdminCRUD.requests_statistics(db)
 
     response_model = StatisticsDto(students_requests=students, tutors_requests=tutors)
@@ -26,7 +30,10 @@ async def get_requests_statistics(db: DbContext):
 
 @router.get(path=APIEndpoints.Admin.GetRequests, status_code=status.HTTP_200_OK,
             response_model=ItemsDto[UserRequestDto], summary="Get all requests by role")
-async def get_requests(role: Literal[Role.Student, Role.Tutor], db: DbContext):
+async def get_requests(role: Literal[Role.Student, Role.Tutor], user: UserContext, db: DbContext):
+    if user.role not in [Role.Admin,]:
+        return ResponseBuilder.error_response(status.HTTP_403_FORBIDDEN, message="Access denied!")
+
     requests = AdminCRUD.get_users_requests(db=db, role=role)
 
     if not requests:
@@ -43,40 +50,20 @@ async def get_requests(role: Literal[Role.Student, Role.Tutor], db: DbContext):
     return ResponseBuilder.success_response(content=ItemsDto[UserRequestDto](items=mapped_requests))
 
 
-@router.get(path=APIEndpoints.Admin.GetRequest, status_code=status.HTTP_200_OK, response_model=UserRequestDto,
-            summary="Get request by request id")
-async def get_request(role_request_id: int, db: DbContext):
-    db_request = AdminCRUD.get_user_request(db, role_request_id)
-
-    if db_request is None:
-        return ResponseBuilder.error_response(message='User request was not found')
-
-    response_model = UserRequestDto(id=db_request[0],
-                                    user_id=db_request[1],
-                                    user_first_name=db_request[2],
-                                    user_last_name=db_request[3],
-                                    user_email=db_request[4],
-                                    user_role=db_request[5])
-
-    return ResponseBuilder.success_response(content=response_model)
-
-
 @router.put(path=APIEndpoints.Admin.AcceptRole, status_code=status.HTTP_200_OK, response_model=UserDto,
             summary="Accept user role request")
-async def accept_role(user_id: int, role: Literal[Role.Student], db: DbContext):
-    # TODO - rewrite
-    db_user = UserCRUD.get_user(db=db, user_id=user_id)
+async def accept_role(request_id: int, user: UserContext, db: DbContext):
+    if user.role not in [Role.Admin, ]:
+        return ResponseBuilder.error_response(status.HTTP_403_FORBIDDEN, message="Access denied!")
+
+    db_user = UserCRUD.get_user_by_request_id(db=db, request_id=request_id)
 
     if db_user is None:
         return ResponseBuilder.error_response(message='User was not found')
+    elif db_user.is_tutor and db_user.is_student:
+        return ResponseBuilder.error_response(message='User has all possible roles')
 
-    if db_user.is_tutor:
-        return ResponseBuilder.error_response(message='User has tutor role')
-
-    if db_user.is_student:
-        return ResponseBuilder.error_response(message='User has student role')
-
-    response_model = UserCRUD.accept_role_request(db=db, user_id=user_id, role=role)
+    response_model = UserCRUD.accept_role_request(db=db, request_id=request_id, user=db_user)
 
     if not response_model:
         return ResponseBuilder.error_response(message='Role request was not found')
@@ -85,14 +72,16 @@ async def accept_role(user_id: int, role: Literal[Role.Student], db: DbContext):
 
 
 @router.put(path=APIEndpoints.Admin.DeclineRole, status_code=status.HTTP_200_OK, summary="Decline user role request")
-async def decline_student_role(user_id: int, db: DbContext):
-    # TODO - rewrite
-    db_user = UserCRUD.get_user(db=db, user_id=user_id)
+async def decline_student_role(request_id: int, user: UserContext, db: DbContext):
+    if user.role not in [Role.Admin, ]:
+        return ResponseBuilder.error_response(status.HTTP_403_FORBIDDEN, message="Access denied!")
+
+    db_user = UserCRUD.get_user_by_request_id(db=db, request_id=request_id)
 
     if db_user is None:
         return ResponseBuilder.error_response(message='User was not found')
 
-    declination = UserCRUD.decline_role_request(db=db, user_id=user_id)
+    declination = UserCRUD.decline_role_request(db=db, request_id=request_id)
 
     if not declination:
         return ResponseBuilder.error_response(message='Role request was not found')

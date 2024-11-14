@@ -3,7 +3,7 @@ from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from typing import Literal, List
 
 from src.common.config import web_app_link
-from src.common.models import PaginatedList, SubjectDto, UserRequestDto, Role, PrivateClassDto, ClassStatus, BlaTutorCourseDto, TextbookDto
+from src.common.models import PaginatedList, SubjectDto, Role, PrivateClassDto, ClassStatus, BlaTutorCourseDto
 
 from src.bot.src.enums import Emoji
 from src.bot.src.handlers.callback_query_handler.callback_prefix import CallBackPrefix
@@ -185,33 +185,6 @@ class InlineKeyboardMarkupCreator:
         return markup
 
     @staticmethod
-    def requests_markup(requests: list[UserRequestDto], locale) -> InlineKeyboardMarkup:
-        markup = InlineKeyboardMarkup()
-
-        [markup.add(
-            InlineKeyboardButton(text=f"{i.user_first_name} {i.user_last_name} - {i.id}",
-                                 callback_data=f"{CallBackPrefix.RoleRequest} {i.id} {locale}")
-        ) for i in requests]
-
-        return markup
-
-    @staticmethod
-    def request_decision_markup(user_id: int, role: str, locale: str) -> InlineKeyboardMarkup:
-        markup = InlineKeyboardMarkup()
-
-        accept_btn = InlineKeyboardButton(text=f"{Emoji.Accept.value} {t(user_id, "AcceptIKBtn", locale)}",
-                                          callback_data=f"{CallBackPrefix.AcceptRole} {user_id} {role} {locale}")
-        decline_btn = InlineKeyboardButton(text=f"{Emoji.Decline.value} {t(user_id, "DeclineIKBtn", locale)}",
-                                           callback_data=f"{CallBackPrefix.DeclineRole} {user_id} {locale}")
-        back_to_requests = InlineKeyboardButton(
-            text=f"{Emoji.BackArrow.value} {t(user_id, "BackToCourseIKBtn", locale)}",
-            callback_data=f"{CallBackPrefix.BackToUsersRequests} {role} {locale}")
-
-        markup.add(accept_btn).add(decline_btn).add(back_to_requests)
-
-        return markup
-
-    @staticmethod
     def course_markup(user_id: int, locale: str, tutor_course_id: int) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 
@@ -224,39 +197,6 @@ class InlineKeyboardMarkupCreator:
 
         # markup.add(textbooks, add_textbooks).add(back)
         markup.add().add(back)
-
-        return markup
-
-    @staticmethod
-    def textbooks_markup(user_id: int, locale: str, course_id: int, textbooks: List[TextbookDto]) -> InlineKeyboardMarkup:
-        markup = InlineKeyboardMarkup()
-
-        if len(textbooks) > 0:
-            for textbook in textbooks:
-                btn = InlineKeyboardButton(text=textbook.title,
-                                           callback_data=f"{CallBackPrefix.ShowTextbook} {textbook.id}")
-                markup.add(btn)
-
-        back = InlineKeyboardButton(text=t(user_id, "BackToCourseIKBtn", locale),
-                                    callback_data=f"{CallBackPrefix.BackToCourse} {course_id} {locale}")
-
-        markup.add(back)
-
-        return markup
-
-    @staticmethod
-    def new_textbooks_markup(user_id: int, locale: str):
-        markup = InlineKeyboardMarkup()
-
-        # if len(textbooks) > 0:
-        #     for textbook in textbooks:
-        #         btn = InlineKeyboardButton(text=textbook.title,
-        #                                    callback_data=f"{CallBackPrefix.ShowTextbook} {textbook.id}")
-        #         markup.add(btn)
-
-        save = InlineKeyboardButton(text="Save textbook", callback_data=f"{CallBackPrefix.SaveTextbooks} {locale}")
-
-        markup.add(save)
 
         return markup
 

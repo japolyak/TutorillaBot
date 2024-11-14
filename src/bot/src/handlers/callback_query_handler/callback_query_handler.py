@@ -1,9 +1,8 @@
-from telebot.types import CallbackQuery, Message
+from telebot.types import CallbackQuery
 from telebot.states.sync.context import StateContext
 
 from src.common.bot import bot
 
-from src.bot.src.handlers.callback_query_handler.actions.admin_actions import AdminActions
 from src.bot.src.handlers.callback_query_handler.actions.registration_actions import RegistrationActions
 from src.bot.src.handlers.callback_query_handler.actions.shared_actions import SharedActions
 from src.bot.src.handlers.callback_query_handler.actions.student_actions import StudentActions
@@ -37,12 +36,6 @@ actions = {
     # Student actions
     CallBackPrefix.SubscribeCourse: StudentActions.subscribe_course_callback,
     CallBackPrefix.ReturnToSelect: StudentActions.return_to_select_callback,
-
-    # Admin actions
-    CallBackPrefix.RoleRequest: AdminActions.open_user_request,
-    CallBackPrefix.AcceptRole: AdminActions.accept_user_request,
-    CallBackPrefix.DeclineRole: AdminActions.decline_user_request,
-    CallBackPrefix.BackToUsersRequests: AdminActions.back_to_requests,
 }
 
 

@@ -38,9 +38,8 @@ class UserRequest(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    request_datetime: Mapped[DateTime] = mapped_column(DateTime(timezone=True))
-    tutor_role: Mapped[bool] = mapped_column(Boolean, server_default="false")
-    student_role: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    request_time_unix: Mapped[int] = mapped_column(BigInteger, server_default="0")
+    role: Mapped[int] = mapped_column(Integer, server_default="0")
 
     user: Mapped["User"] = relationship("User", back_populates="user_request")
 

@@ -14,6 +14,7 @@
 	"Schedule": "Schedule",
 	"Error": "Error",
 	"RegistrationRequests": "Registration requests",
+	"NoRequests": "No requests",
 	"ClassPlanner": "Class planner",
 	"NotTodayBuddy": "Not today, buddy!",
 	"ScheduleClass": "Schedule class",
@@ -27,6 +28,8 @@
 	"Previous": "Prev",
 	"Today": "Today",
 	"Next": "Next",
+	"Accept": "Accept",
+	"Decline": "Decline",
 	"Validators": {
 		"RequireDigitValidator": "At least one digit is required.",
 		"RequireNonAlphanumericValidator": "At least one special character is required.",

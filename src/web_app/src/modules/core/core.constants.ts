@@ -12,7 +12,7 @@ export const mainMenuItems: MainMenuGroup[] = [
 	},
 	{
 		mainView: View.adminPanelView,
-		children: [View.adminUserView, View.adminRequestsView],
+		children: [View.adminPanelRequestsView],
 	},
 	{
 		mainView: View.studentView,

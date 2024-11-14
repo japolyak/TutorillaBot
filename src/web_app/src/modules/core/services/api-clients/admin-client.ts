@@ -19,4 +19,17 @@ export class AdminClient {
 		return await ApiUtils.createApiResponse(request);
 	}
 
+	public static async acceptRoleRequest(requestId: number): Promise<ApiResponse<any>> {
+		const url = `${this.urlBase}/role-requests/${requestId}/accept/`;
+		const request = httpClient.put(url);
+
+		return await ApiUtils.createApiResponse(request);
+	}
+
+	public static async declineRoleRequest(requestId: number): Promise<ApiResponse<any>> {
+		const url = `${this.urlBase}/role-requests/${requestId}/decline/`;
+		const request = httpClient.put(url);
+
+		return await ApiUtils.createApiResponse(request);
+	}
 }

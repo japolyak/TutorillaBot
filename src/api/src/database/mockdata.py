@@ -4,7 +4,7 @@ from datetime import datetime
 
 from src.common.config import admin_tg_id
 
-from src.api.src.database.models import User, Subject, TutorCourse, PrivateCourse, PrivateClass, Textbook
+from src.api.src.database.models import User, Subject, TutorCourse, PrivateCourse, PrivateClass, Textbook, UserRequest
 
 
 def create_admin(engine: Engine, is_dev: bool):
@@ -99,4 +99,10 @@ def insert_mock_data(engine: Engine):
         private_class6 = PrivateClass(private_course_id=private_course4.id, start_time_unix=tomorrow_timestamp_later, duration=90, is_scheduled=True, has_occurred=True)
 
         session.add_all([private_class1, private_class2, private_class3, private_class4, private_class5, private_class6])
+        session.commit()
+
+        tutor_request = UserRequest(user_id=user4.id, request_time_unix=today_timestamp, role=1)
+        student_request = UserRequest(user_id=user1.id, request_time_unix=today_timestamp, role=2)
+
+        session.add_all([student_request, tutor_request])
         session.commit()

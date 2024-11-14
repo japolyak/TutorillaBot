@@ -25,7 +25,7 @@ export const useUserStore = defineStore('user-store', () => {
 
 		if (isTutor.value) roles.push(Role.Tutor);
 		if (isStudent.value) roles.push(Role.Student);
-		if (user.value.isAdmin) roles.push(Role.Admin);
+		if (isAdmin.value) roles.push(Role.Admin);
 
 		return roles;
 	});
@@ -46,7 +46,7 @@ export const useUserStore = defineStore('user-store', () => {
 	function hasRoles(...roles: Role[]): boolean {
 		if (!roles.length) return true;
 
-		return !userRoles.value.length ? false : !!userRoles.value.filter(r => roles.includes(r));
+		return !userRoles.value.length ? false : !!userRoles.value.filter(r => roles.includes(r)).length;
 	}
 
     return {

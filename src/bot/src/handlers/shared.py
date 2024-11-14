@@ -59,22 +59,6 @@ class Shared:
         # bot.send_message(chat_id=user_id, text="...", reply_markup=hide_reply_keyboard)
 
     @staticmethod
-    def role_requests(user_id: int, role: Literal[Role.Student, Role.Tutor], locale: str):
-        response = AdminClient.role_requests(role=role)
-
-        if not response.is_successful:
-            bot.send_message(chat_id=user_id, text=t(user_id, "RetrievingDataError", locale))
-            return
-
-        if not response.data.items:
-            bot.send_message(chat_id=user_id, text=t(user_id, "NoRequests", locale))
-            return
-
-        markup = InlineKeyboardMarkupCreator.requests_markup(response.data.items, locale)
-
-        bot.send_message(chat_id=user_id, text=t(user_id, "AllRequests", locale), reply_markup=markup)
-
-    @staticmethod
     def send_available_subjects(user_id: int, locale: str):
         response = SubjectClient.get_users_subjects(user_id, Role.Student, True)
 

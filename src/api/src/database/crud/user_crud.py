@@ -1,7 +1,4 @@
 from sqlalchemy.orm import Session
-from typing import Literal
-
-from src.common.models import Role
 
 from src.api.src.database.models import User, UserRequest
 
@@ -9,38 +6,40 @@ from src.api.src.database.models import User, UserRequest
 class UserCRUD:
     @staticmethod
     def get_user(db: Session, user_id: int) -> User | None:
-        query = db.query(User).filter(user_id == User.id)
+        user = db.query(User).filter(User.id == user_id).first()
 
-        return query.first()
+        return user
 
     @staticmethod
-    def accept_role_request(db: Session, user_id: int, role: Literal[Role.Tutor, Role.Student]):
-        db_user_request = db.query(UserRequest).filter(user_id == UserRequest.user_id).first()
+    def get_user_by_request_id(db: Session, request_id: int) -> User | None:
+        user = db.query(User).join(UserRequest).filter(UserRequest.id == request_id).first()
+
+        return user
+
+    @staticmethod
+    def accept_role_request(db: Session, request_id: int, user: User):
+        return True
+        db_user_request = db.query(UserRequest).filter(UserRequest.id == request_id).first()
 
         if db_user_request is None:
             return None
 
-        db_user = db.query(User).filter(user_id == User.id).first()
+        if db_user_request.role == 2:
+            user.is_student = True
+        elif db_user_request.role == 1:
+            user.is_tutor = True
 
-        if not db_user:
-            return None
-
-        if role == Role.Student:
-            db_user.is_student = True
-        elif role == Role.Tutor:
-            db_user.is_tutor = True
-
-        db_user.is_active = True
+        user.is_active = True
 
         db.delete(db_user_request)
         db.commit()
-        db.refresh(db_user)
+        db.refresh(user)
 
-        return db_user
+        return user
 
     @staticmethod
-    def decline_role_request(db: Session, user_id: int) -> bool:
-        db_user_request = db.query(UserRequest).filter(user_id == UserRequest.user_id).first()
+    def decline_role_request(db: Session, request_id: int) -> bool:
+        db_user_request = db.query(UserRequest).filter(UserRequest.id == request_id).first()
 
         if db_user_request is None:
             return False

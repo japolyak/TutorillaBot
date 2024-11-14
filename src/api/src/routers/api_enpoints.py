@@ -28,10 +28,9 @@ class APIEndpoints:
     class Admin:
         Prefix = "/admin"
         RequestsStatistics = "/requests-statistics/"
-        GetRequest = "/user-requests/{role_request_id}/"
         GetRequests = "/role-requests/{role}/"
-        AcceptRole = "/users/{user_id}/accept-role/{role}/"
-        DeclineRole = "/users/{user_id}/decline-role/"
+        AcceptRole = "/role-requests/{request_id}/accept/"
+        DeclineRole = "/role-requests/{request_id}/decline/"
 
     class Subjects:
         Prefix = "/subjects"
