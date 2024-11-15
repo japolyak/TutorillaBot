@@ -12,7 +12,7 @@ It connects to both the API and the Web App to facilitate real-time communicatio
 It also integrates with **Redis** for caching and fast data retrieval.
 * **Redis** - Acts as an in-memory data store, providing caching and quick access to frequently requested user data.
 * **Web App** - Allows users to schedule lessons and manage their bookings.
-* **API** - Handles the communication between the Telegram Bot, Web App, and the database.
+* **API** - Handles the communication between the Telegram Bot, Web App and the database.
 It handles data processing, storage, and retrieval, ensuring seamless integration and operation across the platform.
 
 Due to the chosen cloud technologies and the location of the virtual machines, the initial interaction with the bot can

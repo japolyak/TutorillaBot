@@ -6,14 +6,14 @@ from sqlalchemy import engine_from_config, pool
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../..')))
 
-from src.common.config import sqlalchemy_database_url
+from src.common.config import connection_string
 from src.api.src.database.models import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
-config.set_main_option("sqlalchemy.url", str(sqlalchemy_database_url))
+config.set_main_option("sqlalchemy.url", connection_string)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

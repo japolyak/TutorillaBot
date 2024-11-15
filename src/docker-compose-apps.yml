@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  bot:
+    container_name: tutorilla-bot
+    build:
+      context: .
+      dockerfile: bot.Dockerfile
+    depends_on:
+      - api
+      - web-app
+
+  api:
+    container_name: tutorilla-api
+    build:
+      context: .
+      dockerfile: api.Dockerfile
+
+  web-app:
+    container_name: tutorilla-web-app
+    build:
+      context: .
+      dockerfile: webapp.Dockerfile

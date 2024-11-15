@@ -13,12 +13,12 @@ from sqlalchemy import create_engine, Engine
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy_utils import database_exists, create_database
 
-from src.common.config import is_development, sqlalchemy_database_url
+from src.common.config import is_development, connection_string
 from src.api.src.database.mockdata import insert_mock_data, create_admin
 
 
 log = logging.getLogger(__name__)
-engine = create_engine(sqlalchemy_database_url, echo=is_development)
+engine = create_engine(connection_string, echo=is_development)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
@@ -53,11 +53,11 @@ def migrate(engine: Engine):
 
 def initialize_database():
     try:
-        if database_exists(sqlalchemy_database_url):
+        if database_exists(connection_string):
             migrate(engine)
             return
 
-        create_database(sqlalchemy_database_url)
+        create_database(connection_string)
         log.info(msg="Database created")
 
         migrate(engine)
