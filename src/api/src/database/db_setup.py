@@ -11,9 +11,10 @@ from fastapi import Depends
 
 from sqlalchemy import create_engine, Engine
 from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.schema import CreateSchema
 from sqlalchemy_utils import database_exists, create_database
 
-from src.common.config import is_development, connection_string
+from src.common.config import is_development, connection_string, schema_name
 from src.api.src.database.mockdata import insert_mock_data, create_admin
 
 
@@ -59,6 +60,11 @@ def initialize_database():
 
         create_database(connection_string)
         log.info(msg="Database created")
+
+        conn = engine.connect()
+        if not conn.dialect.has_schema(conn, schema_name):
+            conn.execute(CreateSchema(schema_name))
+            conn.commit()
 
         migrate(engine)
 

@@ -27,6 +27,7 @@ admin_tg_id = int(os.getenv("ADMIN_TG_ID"))
 _database_username = os.getenv(f"DB_USER", "postgres")
 _database_password = os.getenv(f"DB_PASSWORD", "postgres")
 _database_name = os.getenv(f"DB_NAME", "postgres")
+schema_name = "core"
 connection_string = f"postgresql+psycopg2://{_database_username}:{_database_password}@127.0.0.1:5432/{_database_name}"
 
 # REDIS
