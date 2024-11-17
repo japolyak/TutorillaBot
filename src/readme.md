@@ -41,7 +41,7 @@ and setup
 ```
 docker network create tutorilla-network
 
-docker-compose -f docker-compose-storages.yml up -d
+docker compose -f docker-compose-storages.yml -p tutorilla up -d
 
-docker-compose -f docker-compose-apps.yml up -d
+docker compose -f docker-compose-apps.yml -p tutorilla up -d
 ```

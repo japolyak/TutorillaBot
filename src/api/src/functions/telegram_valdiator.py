@@ -1,20 +1,34 @@
-import hashlib
-import hmac
-import os
+from hashlib import sha256
+from hmac import new as hmac_new
+from urllib.parse import unquote
+
+from src.common.config import bot_token
 
 
-def init_data_is_valid(parsed_init_data: dict) -> bool:
-    bot_token = os.getenv("BOT_TOKEN")
+def init_data_is_valid(init_data: str, c_str = "WebAppData") -> bool:
+    # Reimplemented based on https://gist.github.com/nukdokplex/79438159cb4e757c15ded719e1a83163
+    hash_string = ""
 
-    parsed_auth_date = parsed_init_data.get('auth_date', [''])[0]
-    parsed_query_id = parsed_init_data.get('query_id', [''])[0]
-    parsed_user = parsed_init_data.get('user', [''])[0]
-    parsed_hash = parsed_init_data.get('hash', [''])[0]
+    init_data_dict = dict()
 
-    data_check_string = f"auth_date={parsed_auth_date}\nquery_id={parsed_query_id}\nuser={parsed_user}"
+    for chunk in init_data.split("&"):
+        [key, value] = chunk.split("=", 1)
+        if key == "hash":
+            hash_string = value
+            continue
+        init_data_dict[key] = unquote(value)
 
-    secret_key = hmac.new("WebAppData".encode(), bot_token.encode(), hashlib.sha256).digest()
-    computed_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).digest()
-    hex_signature = ''.join(format(b, '02x') for b in computed_hash)
+    if hash_string == "":
+        return False
 
-    return hex_signature == parsed_hash
+    init_data = "\n".join(
+        [
+            f"{key}={init_data_dict[key]}"
+            for key in sorted(init_data_dict.keys())
+        ]
+    )
+
+    secret_key = hmac_new(c_str.encode(), bot_token.encode(), sha256).digest()
+    computed_hash = hmac_new(secret_key, init_data.encode(), sha256).hexdigest()
+
+    return computed_hash == hash_string

@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Request, status
-from urllib.parse import parse_qs
 
 from src.common.models import UserDto, Role, TokenDto
 
@@ -23,9 +22,7 @@ async def validate_telegram_user(request: Request, db: DbContext):
     if not init_data:
         return ResponseBuilder.error_response(message='Telegram Init-Data is missing')
 
-    parsed_init_data = parse_qs(init_data)
-
-    if not init_data_is_valid(parsed_init_data):
+    if not init_data_is_valid(init_data):
         return ResponseBuilder.error_response(message='Telegram Init-Data validation failed')
 
     user_id = StringUtils.get_prop_as_int(init_data, "user", "id")
