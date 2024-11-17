@@ -3,7 +3,7 @@ version: '3.8'
 services:
   redis:
     container_name: tutorilla-cache
-    image: redis:alpine
+    image: redis:7.4.1
     restart: always
     ports:
       - '127.0.0.1:6379:6379'
@@ -12,15 +12,21 @@ services:
 
   postgres:
     container_name: tutorilla-database
-    image: postgres:alpine
+    image: postgres:16.5-bookworm
     restart: always
     ports:
       - '5432:5432'
+    volumes:
+      - tutorilla_db:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     networks:
       - tutorilla-network
+
+volumes:
+  tutorilla_db:
+    name: tutorilla_db
 
 networks:
   tutorilla-network:

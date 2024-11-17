@@ -1,5 +1,8 @@
 
 
+* Redis 7.4.1
+* PostgreSQL 16.5-bookworm
+
 ## DNS
 
 Used free dynamic Duck DNS - https://www.duckdns.org
