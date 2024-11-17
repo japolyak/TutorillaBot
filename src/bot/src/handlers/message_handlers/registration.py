@@ -24,7 +24,7 @@ class RegistrationContext:
             user = response.data
             RedisUser.add_user(redis, chat_id, user)
 
-            markup = ReplyKeyboardMarkupCreator.main_menu_markup(chat_id, user.locale)
+            markup = InlineKeyboardMarkupCreator.main_menu_markup(chat_id, user.locale)
             bot.send_message(chat_id=chat_id,
                              text=t(chat_id, "Welcome", user.locale, name=user.first_name),
                              reply_markup=markup)

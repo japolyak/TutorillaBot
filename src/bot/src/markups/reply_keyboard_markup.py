@@ -11,7 +11,7 @@ from src.bot.src.services.i18n.i18n import t
 class ReplyKeyboardMarkupCreator:
     @classmethod
     def main_menu_markup(cls, user_id, locale: str) -> ReplyKeyboardMarkup:
-        # TODO - remove it from here!
+        # TODO - rethink implementation, because KeyboardButton does not pass telegramInitData to front app.
         is_tutor = int(r.hget(user_id, "is_tutor") or 0)
         is_student = int(r.hget(user_id, "is_student") or 0)
         is_admin = int(r.hget(user_id, "is_admin") or 0)
