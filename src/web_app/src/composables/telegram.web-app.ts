@@ -24,7 +24,7 @@ export function useTelegramWebApp() {
 	}
 
 	function toggleEvent<T extends EventNames>(eventName: T, callback: (params: EventParams[T]) => unknown) {
-		webApp.onEvent(eventName, callback());
+		webApp.onEvent(eventName, callback);
 	}
 
 	return {

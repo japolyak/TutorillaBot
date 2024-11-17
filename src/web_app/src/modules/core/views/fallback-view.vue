@@ -1,5 +1,5 @@
 <template>
-	<v-empty-state :headline="t('NotTodayBuddy')" icon="mdi-alert-outline" />
+	<v-empty-state :headline="t('NotTodayBuddy')" title="Very sad:(" icon="mdi-alert-outline" />
 </template>
 
 <script setup lang="ts">
