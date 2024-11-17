@@ -18,7 +18,7 @@ export const useScheduleStore = defineStore('schedule-store', () => {
 	const weekEvents = ref<ScheduleEventDto[]>([]);
 
 	const eventsMap = computed(() => {
-		if (!weekEvents.value.length) return {};
+		if (!weekEvents.value?.length) return {};
 
 		const map = {};
 		const mappedEvents = weekEvents.value.map(ScheduleUtils.eventMapper);

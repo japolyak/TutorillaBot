@@ -6,7 +6,7 @@ import { useSessionStore } from '@/modules/core/store/session-store';
 
 
 export const httpClient: KyInstance = ky.create({
-    prefixUrl: import.meta.env.VITE_APP_API_URL,
+    prefixUrl: import.meta.env.VITE_APP_API_LINK,
 	hooks: {
 		beforeRequest: [
 			async (request) => {

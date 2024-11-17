@@ -32,7 +32,7 @@ To facilitate debugging and development, you need to deploy the application to `
 This setup will allow your locally running web application to connect to locally running `API`, but Telegram WebApp API will not be available.
 
 To be able to debug application with Telegram WebApp API, do first of above steps and serve `API` over https.
-Add url to `API` as `VITE_APP_API_URL` environment variable on `netlify`.
+Add url to `API` as `VITE_APP_API_LINK` environment variable on `netlify`.
 At this point local database should be the same as remote.
 
 ## Production
@@ -40,6 +40,6 @@ At this point local database should be the same as remote.
 The production environment uses **Docker** containers and is deployed on **Google Cloud Platform** to ensure reliability and scalability.
 The following environment variables are required for configuring the services:
 
-* `PORT` - Port used by `nginx` to run the application.
-* `VITE_APP_API_URL` - URL to the `API`.
-* `VITE_APP_IS_DEV` - Indicates whether the build is in development mode - `true` or `false`
+* `WEB_APP_PORT` - Port used by `nginx` to run the application.
+* `VITE_APP_API_LINK` - URL to the `API`.
+* `VITE_APP_IS_DEV` - Indicates whether the build is in development mode - `1` or `0`

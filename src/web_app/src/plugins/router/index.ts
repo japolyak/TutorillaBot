@@ -12,7 +12,7 @@ import { scheduleRoutes } from '@/modules/schedule/schedule.routes';
 
 // TODO - remove when all modules will be ready
 function availableRoutes() {
-	if (import.meta.env.VITE_APP_IS_DEV === 'false') return [...scheduleRoutes, ...adminPanelRoutes];
+	if (import.meta.env.VITE_APP_IS_DEV === '0') return [...scheduleRoutes, ...adminPanelRoutes];
 
 	return [
 		...scheduleRoutes,
