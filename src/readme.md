@@ -29,6 +29,13 @@ sudo nginx -t
 sudo systemctl reload nginx # or restart
 ```
 
+move to `/etc/nginx/sites-available/mydomain`
+
+and setup
+```sh
+
+```
+
 ## Deployment
 
 ```

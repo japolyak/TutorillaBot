@@ -39,7 +39,7 @@ class ReplyKeyboardMarkupCreator:
 
         if is_admin or is_super_admin:
             admin_panel_btn = KeyboardButton(text=t(user_id, "AdminPanelKBtn", locale),
-                                             web_app=WebAppInfo(url=f"{web_app_link}/admin-panel"))
+                                             web_app=WebAppInfo(url=f"{web_app_link}/dev"))
             markup.add(admin_panel_btn)
 
         # TODO markup.add(profile_btn, support_btn)
