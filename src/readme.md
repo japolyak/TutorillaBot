@@ -48,3 +48,16 @@ docker compose -f docker-compose-storages.yml -p tutorilla up -d
 
 docker compose -f docker-compose-apps.yml -p tutorilla up -d
 ```
+
+## Redis setup
+
+```sh
+sudo apt update
+
+sudo apt install redis-server -y
+
+redis-server --version
+
+sudo systemctl start redis
+sudo systemctl enable redis
+```

@@ -7,6 +7,8 @@ services:
     restart: always
     ports:
       - '127.0.0.1:6379:6379'
+    volumes:
+      - tutorilla_redis:/data
     networks:
       - tutorilla-network
 
@@ -27,6 +29,8 @@ services:
 volumes:
   tutorilla_db:
     name: tutorilla_db
+  tutorilla_redis:
+    name: tutorilla_redis
 
 networks:
   tutorilla-network:
