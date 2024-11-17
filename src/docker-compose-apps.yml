@@ -1,29 +1,46 @@
 version: '3.8'
 
 services:
-#  bot:
-#    container_name: tutorilla-bot
-#    build:
-#      context: .
-#      dockerfile: bot.Dockerfile
-#    depends_on:
-#      - api
-#      - web-app
-#
-#  api:
-#    container_name: tutorilla-api
-#    build:
-#      context: .
-#      dockerfile: api.Dockerfile
+  api:
+    container_name: tutorilla-api
+    build:
+      context: .
+      dockerfile: api.Dockerfile
+    env_file:
+      - .env
+    ports:
+      - '8000:8000'
+    networks:
+      - tutorilla-network
+
+  bot:
+    container_name: tutorilla-bot
+    build:
+      context: .
+      dockerfile: bot.Dockerfile
+    env_file:
+      - .env
+    ports:
+      - '88:88'
+    depends_on:
+      - api
+    networks:
+      - tutorilla-network
 
   web-app:
     container_name: tutorilla-web-app
     build:
       context: .
       dockerfile: webapp.Dockerfile
-    environment:
-      - PORT=80
-      - VITE_APP_IS_DEV=false
-      - VITE_APP_API_URL=http://localhost:8000
+    env_file:
+      - .env
     ports:
-      - '80:80'
+      - '3021:3021'
+    depends_on:
+      - api
+    networks:
+      - tutorilla-network
+
+networks:
+  tutorilla-network:
+    external: true

@@ -11,4 +11,6 @@ WORKDIR /src/bot
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD uvicorn src.main:app --host 0.0.0.0 --port $PORT
+WORKDIR /src/bot/src
+
+CMD ["python", "main.py"]

@@ -2,7 +2,6 @@ import json
 from redis import Redis
 from requests import Response
 from telebot.types import ReplyKeyboardRemove, CallbackQuery
-from telebot.states.sync.context import StateContext
 from typing import List, Any
 
 from src.common.bot import bot
@@ -14,18 +13,16 @@ from src.bot.src.services.api.clients.registration_client import RegistrationCli
 from src.bot.src.handlers.callback_query_handler.callback_prefix import CallBackPrefix
 from src.bot.src.handlers.shared import Shared
 from src.bot.src.handlers.message_handlers.registration import registration_first_name
-from src.bot.src.states import RegistrationState
 
 
 class RegistrationActions:
     @staticmethod
-    def registration_locale(call: CallbackQuery, callback_data: List[Any], state: StateContext, *args, **kwargs):
+    def registration_locale(call: CallbackQuery, callback_data: List[Any], redis: Redis, *args, **kwargs):
         chat_id = call.from_user.id
 
         locale = callback_data[0]
 
-        state.add_data(locale=locale)
-        state.set(RegistrationState.first_name)
+        redis.hset(str(chat_id), "locale", locale)
 
         bot.edit_message_reply_markup(chat_id=chat_id, message_id=call.message.message_id, reply_markup=None)
         bot.send_message(chat_id=chat_id, text=t(chat_id, 'ProvideYourFirstname', locale))

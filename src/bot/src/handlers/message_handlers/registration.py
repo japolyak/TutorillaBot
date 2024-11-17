@@ -2,7 +2,7 @@ from telebot.types import Message
 from redis import Redis
 
 from src.common.bot import bot
-from src.common.redis_configuration import redis_instance as r
+from src.bot.src.redis_configuration import redis_instance as r
 
 from src.bot.src.handlers.shared import Shared
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator

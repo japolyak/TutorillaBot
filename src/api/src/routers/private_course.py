@@ -10,7 +10,6 @@ from src.api.src.database.db_setup import DbContext
 from src.api.src.utils.token_utils import UserContext
 from src.api.src.functions.time_transformator import transform_class_time
 from src.api.src.routers.api_enpoints import APIEndpoints
-from src.api.src.routers.sql_statement_repository import sql_statements
 from src.api.src.utils.model_utils import ModelUtils
 
 

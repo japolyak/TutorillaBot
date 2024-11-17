@@ -1,7 +1,7 @@
 from typing import Literal, Callable, Optional
 
 from src.common.bot import bot
-from src.common.redis_configuration import redis_instance as r
+from src.bot.src.redis_configuration import redis_instance as r
 from src.common.models import Role
 
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator

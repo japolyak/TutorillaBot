@@ -3,7 +3,7 @@ from telebot.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 from typing import List
 
 from src.common.config import web_app_link
-from src.common.redis_configuration import redis_instance as r
+from src.bot.src.redis_configuration import redis_instance as r
 
 from src.bot.src.services.i18n.i18n import t
 
