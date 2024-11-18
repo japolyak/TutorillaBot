@@ -10,21 +10,22 @@ from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCrea
 from src.bot.src.services.api.clients.private_course_client import PrivateCourseClient
 from src.bot.src.services.api.clients.tutor_course_client import TutorCourseClient
 from src.bot.src.services.i18n.i18n import t
-from src.bot.src.services.redis_service.redis_user_management import RedisUser
+from src.bot.src.services.redis_service.redis_user_management import RedisManagement
 
 
 def inline_handler_guard(query: InlineQuery, command: Optional[str], role: Optional[str]):
     if not command:
         return False
-    user_id = query.from_user.id
+
+    user_id = str(query.from_user.id)
 
     match command:
         case "Courses":
-            return RedisUser.has_role(r, user_id, Role.Tutor) if role == Role.Tutor else RedisUser.has_role(r, user_id, Role.Student)
+            return RedisManagement().has_role(user_id, Role.Tutor) if role == Role.Tutor else RedisManagement().has_role(user_id, Role.Student)
         case "Students":
-            return RedisUser.has_role(r, user_id, Role.Student)
+            return RedisManagement().has_role(user_id, Role.Student)
         case "Subscribe":
-            return RedisUser.has_role(r, user_id, Role.Student)
+            return RedisManagement().has_role(user_id, Role.Student)
         case _:
             return False
 

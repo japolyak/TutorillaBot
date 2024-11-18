@@ -58,6 +58,6 @@ sudo apt install redis-server -y
 
 redis-server --version
 
-sudo systemctl start redis
-sudo systemctl enable redis
+#replace username, password and table_number (0-15)
+ACL SETUSER username on >password +@all -select +select|table_number ~*
 ```

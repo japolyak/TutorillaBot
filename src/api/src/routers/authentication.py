@@ -5,7 +5,7 @@ from src.common.models import UserDto, Role, TokenDto
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.database.crud.user_crud import UserCRUD
 from src.api.src.database.db_setup import DbContext
-from src.api.src.functions.telegram_valdiator import init_data_is_valid
+from src.common.telegram_valdiator import TelegramInitData
 from src.api.src.routers.api_enpoints import APIEndpoints
 from src.api.src.utils.string_utils import StringUtils
 from src.api.src.utils.token_utils import TokenUtils
@@ -22,7 +22,7 @@ async def validate_telegram_user(request: Request, db: DbContext):
     if not init_data:
         return ResponseBuilder.error_response(message='Telegram Init-Data is missing')
 
-    if not init_data_is_valid(init_data):
+    if not TelegramInitData.validate(init_data):
         return ResponseBuilder.error_response(message='Telegram Init-Data validation failed')
 
     user_id = StringUtils.get_prop_as_int(init_data, "user", "id")

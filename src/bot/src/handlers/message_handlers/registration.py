@@ -7,10 +7,10 @@ from src.bot.src.redis_configuration import redis_instance as r
 from src.bot.src.handlers.shared import Shared
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
-from src.bot.src.services.api.clients.registration_client import RegistrationClient
+from src.bot.src.services.api.clients.user_client import UserClient
 from src.bot.src.services.i18n.i18n import t
 from src.bot.src.validators import Validator
-from src.bot.src.services.redis_service.redis_user_management import RedisUser
+from src.bot.src.services.redis_service.redis_user_management import RedisManagement
 
 
 class RegistrationContext:
@@ -18,11 +18,11 @@ class RegistrationContext:
     def start_function(message: Message, redis: Redis, *args, **kwargs):
         chat_id = message.from_user.id
 
-        response = RegistrationClient.get_user(chat_id)
+        response = UserClient.get_user(chat_id, tg_data=message)
 
         if response.is_successful():
             user = response.data
-            RedisUser.add_user(redis, chat_id, user)
+            RedisManagement().add_user(chat_id, user)
 
             markup = InlineKeyboardMarkupCreator.main_menu_markup(chat_id, user.locale)
             bot.send_message(chat_id=chat_id,

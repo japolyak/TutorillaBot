@@ -2,31 +2,42 @@ from redis import Redis
 from typing import Literal
 
 from src.common.models import UserDto, Role
+from src.bot.src.redis_configuration import redis_instance
 
 
-class RedisUser:
-    @staticmethod
-    def add_user(redis: Redis, user_id: int, user: UserDto):
-        redis.hset(user_id, "id", int(user.id))
-        redis.hset(user_id, "first_name", user.first_name)
-        redis.hset(user_id, "last_name", user.last_name)
-        redis.hset(user_id, "email", user.email)
-        redis.hset(user_id, "time_zone", user.time_zone)
+class RedisManagement:
+    __r: Redis = redis_instance
 
-        redis.hset(user_id, "locale", user.locale)
-        redis.hset(user_id, "is_active", int(user.is_active))
-        redis.hset(user_id, "is_student", int(user.is_student))
-        redis.hset(user_id, "is_tutor", int(user.is_tutor))
-        redis.hset(user_id, "is_admin", int(user.is_admin))
+    def add_user(self, user_id: str, user: UserDto):
+        self.__r.hset(user_id, "id", int(user.id))
+        self.__r.hset(user_id, "first_name", user.first_name)
+        self.__r.hset(user_id, "last_name", user.last_name)
+        self.__r.hset(user_id, "email", user.email)
+        self.__r.hset(user_id, "time_zone", user.time_zone)
 
-    @staticmethod
-    def has_role(r: Redis, user_id: str, role: Literal[Role.Tutor, Role.Student, Role.Admin]):
+        self.__r.hset(user_id, "locale", user.locale)
+        self.__r.hset(user_id, "is_active", int(user.is_active))
+        self.__r.hset(user_id, "is_student", int(user.is_student))
+        self.__r.hset(user_id, "is_tutor", int(user.is_tutor))
+        self.__r.hset(user_id, "is_admin", int(user.is_admin))
+
+    def has_role(self, user_id: str, role: Literal[Role.Tutor, Role.Student, Role.Admin]):
         match role:
             case Role.Tutor:
-                return r.hget(user_id, "is_tutor") == "1"
+                return self.__r.hget(user_id, "is_tutor") == "1"
             case Role.Student:
-                return r.hget(user_id, "is_student") == "1"
+                return self.__r.hget(user_id, "is_student") == "1"
             case Role.Admin:
-                return r.hget(user_id, "is_admin") == "1"
+                return self.__r.hget(user_id, "is_admin") == "1"
             case _:
                 return False
+
+    def get_user_token(self, user_id: int):
+        user_id = str(user_id)
+
+        return self.__r.hget(user_id, "Bearer")
+
+    def set_user_token(self, user_id: int, token: str):
+        user_id = str(user_id)
+
+        return self.__r.hset(user_id, "Bearer", token)
