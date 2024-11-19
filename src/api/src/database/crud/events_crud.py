@@ -68,13 +68,13 @@ class EventCRUD:
             classes = (
                 classes
                 .join(PrivateCourse.student)
-                .filter(user_id == TutorCourse.tutor_id)
+                .filter(TutorCourse.tutor_id == user_id)
             )
         else:
             classes = (
                 classes
                 .join(TutorCourse.tutor)
-                .filter(user_id == PrivateCourse.student_id)
+                .filter(PrivateCourse.student_id == user_id)
             )
 
         return classes.all()

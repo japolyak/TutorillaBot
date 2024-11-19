@@ -6,7 +6,6 @@ from src.common.models import Role
 
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.services.api.clients.subject_client import SubjectClient
-from src.bot.src.services.api.clients.admin_client import AdminClient
 from src.bot.src.services.api.clients.tutor_course_client import TutorCourseClient
 from src.bot.src.services.i18n.i18n import t
 

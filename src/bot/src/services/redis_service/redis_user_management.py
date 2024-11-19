@@ -8,8 +8,9 @@ from src.bot.src.redis_configuration import redis_instance
 class RedisManagement:
     __r: Redis = redis_instance
 
-    def add_user(self, user_id: str, user: UserDto):
-        self.__r.hset(user_id, "id", int(user.id))
+    def add_user(self, user_id: int, user: UserDto):
+        user_id = str(user_id)
+        self.__r.hset(user_id, "id", user_id)
         self.__r.hset(user_id, "first_name", user.first_name)
         self.__r.hset(user_id, "last_name", user.last_name)
         self.__r.hset(user_id, "email", user.email)
@@ -41,3 +42,8 @@ class RedisManagement:
         user_id = str(user_id)
 
         return self.__r.hset(user_id, "Bearer", token)
+
+    def remove_user_token(self, user_id: int):
+        user_id = str(user_id)
+
+        return self.__r.hdel(user_id, "Bearer")

@@ -6,7 +6,6 @@ from src.bot.src.redis_configuration import redis_instance as r
 
 from src.bot.src.handlers.shared import Shared
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
-from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from src.bot.src.services.api.clients.user_client import UserClient
 from src.bot.src.services.i18n.i18n import t
 from src.bot.src.validators import Validator
@@ -18,7 +17,7 @@ class RegistrationContext:
     def start_function(message: Message, redis: Redis, *args, **kwargs):
         chat_id = message.from_user.id
 
-        response = UserClient.get_user(chat_id, tg_data=message)
+        response = UserClient.get_user(tg_data=message)
 
         if response.is_successful():
             user = response.data

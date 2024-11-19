@@ -1,9 +1,9 @@
-import jwt
 import hashlib
-from typing import Annotated
-from fastapi import Depends, HTTPException, status
+import jwt
 from datetime import datetime, timedelta, timezone
+from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from typing import Annotated, Optional
 
 from src.common.config import access_token_expire_minutes, bot_token, algorithm
 from src.common.models import BaseDto, Role
@@ -13,8 +13,9 @@ class UserContextModel(BaseDto):
     id: int
     first_name: str
     last_name: str
-    role: Role
+    role: Optional[Role] = None
     exp: int
+    registered: Optional[bool] = False
 
     class Config:
         from_attributes = True

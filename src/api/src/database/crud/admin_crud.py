@@ -16,9 +16,9 @@ class AdminCRUD:
                  .join(UserRequest.user))
 
         if role == Role.Tutor:
-            query = query.filter(1 == UserRequest.role)
+            query = query.filter(UserRequest.role == 1)
         else:
-            query = query.filter(2 == UserRequest.role)
+            query = query.filter(UserRequest.role == 2)
 
         return query.all()
 

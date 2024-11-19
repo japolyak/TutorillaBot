@@ -1,10 +1,22 @@
-import requests
-from typing import Optional, Union
+from requests import Response, Session
+from typing import Optional, Union, Generic, Type, Any
 from telebot.types import Message, CallbackQuery
 
+from src.common.models import T, ErrorDto, TokenDto
 from src.common.config import api_link
 from src.common.telegram_valdiator import TelegramInitData
 from src.bot.src.services.redis_service.redis_user_management import RedisManagement
+
+
+class ApiResponse(Generic[T]):
+    def __init__(self, data: Optional[T] = None, error: Optional[ErrorDto] = None):
+        self.__success = data is not None
+        self.data = data
+        self.error = error
+
+    def is_successful(self) -> bool:
+        return self.__success
+
 
 class HTTPClient:
     __base_url = api_link
@@ -12,7 +24,7 @@ class HTTPClient:
 
     def __init__(self, url: str):
         self.module_url = f"{self.__base_url}/{url}/"
-        self.session = requests.Session()
+        self.session = Session()
 
     def check_session(self, **kwargs):
         if kwargs["tg_data"] is None:
@@ -41,34 +53,60 @@ class HTTPClient:
 
         response = self.session.request(
             method="GET",
-            url=self.__base_url + "/auth/me/",
+            url=self.__base_url + "/auth/tg/",
             headers=headers
         )
 
-        return response.json()['token']
+        result = self.__response(response, TokenDto)
 
-    def request(self, method, url, **kwargs):
+        if not result.is_successful():
+            raise Exception('Token was not got:(')
+
+        return result.data.token
+
+    def request(self, method, url, model_class: Type[T], **kwargs):
+        data = kwargs.get("data")
+        passed_headers: Optional[dict] = kwargs.get("headers")
+
         headers = {
-            "Authorization": f"Bearer {self.token}",
-            **kwargs,
+            "Authorization": f"Bearer {self.token}"
         }
+
+        if passed_headers is not None:
+            headers.update(**passed_headers)
 
         response = self.session.request(
             method=method,
             url=self.module_url + url,
+            data=data,
             headers=headers
         )
 
-        return response
+        return self.__response(response, model_class)
 
-    def get(self, url, **kwargs):
-        return self.request("GET", url, **kwargs)
+    @classmethod
+    def __response(cls, response: Response, model_class: Type[T]) -> ApiResponse[T]:
+        if not response.ok:
+            error = ErrorDto(**response.json())
+            return ApiResponse[T](error=error)
 
-    def post(self, url, **kwargs):
-        return self.request("POST", url, **kwargs)
+        # TODO - rethink implementation
+        if model_class is None and response.ok:
+            return ApiResponse[T](data=Any)
 
-    def put(self, url, **kwargs):
-        return self.request("PUT", url, **kwargs)
+        json_data = response.json()
+        data = model_class(**json_data)
 
-    def delete(self, url, **kwargs):
-        return self.request("DELETE", url, **kwargs)
+        return ApiResponse[T](data=data)
+
+    def get(self, url, model_class: Type[T], **kwargs):
+        return self.request("GET", url, model_class, **kwargs)
+
+    def post(self, url, model_class: Type[T], **kwargs):
+        return self.request("POST", url, model_class, **kwargs)
+
+    def put(self, url, model_class: Type[T], **kwargs):
+        return self.request("PUT", url, model_class, **kwargs)
+
+    def delete(self, model_class: Type[T], url, **kwargs):
+        return self.request("DELETE", url, model_class, **kwargs)

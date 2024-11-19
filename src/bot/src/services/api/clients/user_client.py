@@ -1,15 +1,23 @@
-from ..http_client import HTTPClient
+from ..http_client import HTTPClient, ApiResponse
 
 from src.common.models import UserDto
-
-from src.bot.src.services.api.api_utils import ApiUtils, ApiResponse
 
 
 class UserClient:
     client = HTTPClient("users")
 
     @classmethod
-    def get_user(cls, user_id: int, **kwargs) -> ApiResponse[UserDto]:
-        response = cls.client.check_session(**kwargs).get(f"{user_id}/")
+    def get_user(cls, **kwargs) -> ApiResponse[UserDto]:
+        url = "me/"
 
-        return ApiUtils.create_api_response(response, UserDto)
+        return cls.client.check_session(**kwargs).get(url, UserDto)
+
+    @classmethod
+    def signup_user(cls, payload, **kwargs) -> ApiResponse[None]:
+        return cls.client.check_session(**kwargs).post("", None, data=payload)
+
+    @classmethod
+    def apply_for_role(cls, role: str, **kwargs) -> ApiResponse[None]:
+        url = f"apply-role/{role}/"
+
+        return cls.client.check_session(**kwargs).post(url, None)

@@ -9,8 +9,7 @@ class APIEndpoints:
         Prefix = "/users"
         Post = "/"
         Me = "/me/"
-        GetUser = "/{user_id}/"
-        ApplyRole = "/{user_id}/apply-role/{role}/"
+        ApplyRole = "/apply-role/{role}/"
 
     class Events:
         Prefix = "/events"
@@ -39,6 +38,7 @@ class APIEndpoints:
     class Authentication:
         Prefix = "/auth"
         Me = "/me/"
+        Tg = "/tg/"
 
     class Textbook:
         Prefix = "/textbooks"
