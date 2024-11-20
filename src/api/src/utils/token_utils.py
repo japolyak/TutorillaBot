@@ -7,9 +7,9 @@ from typing import Annotated, Optional
 
 from src.common.config import bot_token, algorithm, access_token_ttl_in_minutes, refresh_token_ttl_in_days
 from src.common.models import BaseDto, Role
+from src.common.telegram_init_data import TelegramUser
 
 from src.api.src.database.models import User
-from src.api.src.utils.string_utils import StringUtils
 
 
 class RefreshUserContextModel(BaseDto):
@@ -49,11 +49,8 @@ class TokenPayload(BaseDto):
         return cls(id=user.id, first_name=user.first_name, last_name=user.last_name)
 
     @classmethod
-    def initial_user(cls, user_id: int, init_data: Optional[str]):
-        first_name = StringUtils.get_prop_as_int(init_data, "user", "first_name")
-        last_name = StringUtils.get_prop_as_int(init_data, "user", "last_name")
-
-        return cls(id=user_id, first_name=first_name, last_name=last_name)
+    def initial_user(cls, user: TelegramUser):
+        return cls(id=user.id, first_name=user.first_name, last_name=user.last_name)
 
 
 class TokenUtils:

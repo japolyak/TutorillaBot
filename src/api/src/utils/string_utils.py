@@ -1,12 +1,12 @@
-import json
 from typing import AnyStr
-from urllib.parse import parse_qs
 
 
 class StringUtils:
-    @staticmethod
-    def get_prop_as_int(qs: AnyStr, key: str, key2) -> int:
-        parsed_query = parse_qs(qs)
-        parsed_prop = json.loads(parsed_query.get(key, [''])[0])
+    @classmethod
+    def is_none_or_empty(cls, value: AnyStr) -> bool:
+        if value is None:
+            return True
+        elif len(value) == 0:
+            return True
 
-        return parsed_prop[key2]
+        return False

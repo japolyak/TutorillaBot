@@ -7,7 +7,7 @@ import { useSessionStore } from '@/modules/core/store/session-store';
 import { StringUtils } from '@/utils/string.utils';
 
 export class AuthenticationClient {
-	public static async authenticateMe(): Promise<string | null> {
+	public static async authenticateMe(): Promise<TokenDto | null> {
 		let initData: string | undefined;
 
 		if (import.meta.env.VITE_APP_IS_DEV === '1') {
@@ -19,20 +19,29 @@ export class AuthenticationClient {
 
 		if (StringUtils.isEmpty(initData)) return null;
 
-		const response = await AuthenticationClient.validateInitData(initData);
+		const response = await AuthenticationClient.getSession(initData);
 		if (!response) return null;
 
 		const { telegramInitData, isAuthorized } = storeToRefs(useSessionStore());
 		telegramInitData.value = initData;
 		isAuthorized.value = true;
 
-		return response.token;
+		return response;
 	}
 
-    private static async validateInitData(initData: string): Promise<TokenDto | null> {
+    private static async getSession(initData: string): Promise<TokenDto | null> {
 		const url = `${import.meta.env.VITE_APP_API_LINK}/auth/me/`;
 
-		const request = ky.get(url, { headers: { 'Init-Data': initData }, timeout: 30000 }).json<TokenDto>();
+		const request = ky.get(url, { headers: { 'Init-Data': initData } }).json<TokenDto>();
+		const apiResponse = await ApiUtils.createApiResponse(request);
+
+		return apiResponse.isSuccess ? apiResponse.data : null;
+    }
+
+    private static async refreshSession(initData: string): Promise<TokenDto | null> {
+		const url = `${import.meta.env.VITE_APP_API_LINK}/auth/refresh/`;
+
+		const request = ky.get(url, { headers: { 'Init-Data': initData } }).json<TokenDto>();
 		const apiResponse = await ApiUtils.createApiResponse(request);
 
 		return apiResponse.isSuccess ? apiResponse.data : null;

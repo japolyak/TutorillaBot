@@ -38,8 +38,7 @@ class APIEndpoints:
     class Authentication:
         Prefix = "/auth"
         Me = "/me/"
-        Tg = "/tg/"
-        Prolong = "/prolong/"
+        Prolong = "/refresh/"
 
     class Textbook:
         Prefix = "/textbooks"

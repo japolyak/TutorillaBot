@@ -16,7 +16,8 @@ export interface ItemsDto<T> {
 }
 
 export interface TokenDto {
-	token: string;
+	accessToken: string;
+	refreshToken: string;
 }
 
 interface UserBaseDto {

@@ -12,18 +12,20 @@ export const httpClient: KyInstance = ky.create({
 			async (request) => {
 				const { isAuthorized } = storeToRefs(useSessionStore());
 
-				let token = localStorage.getItem('authToken');
+				let token = sessionStorage.getItem('accessToken');
 
 				if (!isAuthorized.value && StringUtils.isNotEmpty(token)) {
-					localStorage.removeItem('authToken');
+					sessionStorage.removeItem('accessToken');
 					token = null;
 				}
 
 				if (StringUtils.isEmpty(token)) {
-					token = await AuthenticationClient.authenticateMe();
-					if (!token) return;
+					const response = await AuthenticationClient.authenticateMe();
+					if (!response) return;
 
-					localStorage.setItem('authToken', token);
+					token = response.accessToken;
+
+					sessionStorage.setItem('accessToken', token);
 				}
 
 				request.headers.set('Authorization', `Bearer ${token}`);

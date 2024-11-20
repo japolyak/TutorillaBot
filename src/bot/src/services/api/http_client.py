@@ -4,7 +4,7 @@ from telebot.types import Message, CallbackQuery
 
 from src.common.models import T, ErrorDto, TokenDto
 from src.common.config import api_link
-from src.common.telegram_valdiator import TelegramInitData
+from src.common.telegram_init_data import TelegramInitData
 from src.bot.src.services.redis_service.redis_user_management import RedisManagement
 
 
@@ -38,10 +38,11 @@ class HTTPClient:
             refresh_token = RedisManagement().get_token(tg_data.from_user.id, "refresh")
 
             if refresh_token is None:
-                init_data = TelegramInitData.create(tg_data)
+                init_data = TelegramInitData().create_str_init_data(tg_data, {"from_bot": True})
+
                 access_token, refresh_token = self.__authenticate(init_data)
             else:
-                access_token, refresh_token = self.__prolong_access_token(refresh_token)
+                access_token, refresh_token = self.__refresh_access_token(refresh_token)
 
             RedisManagement().set_user_token(tg_data.from_user.id, access_token, refresh_token)
 
@@ -56,7 +57,7 @@ class HTTPClient:
 
         response = self.session.request(
             method="GET",
-            url=self.__base_url + "/auth/tg/",
+            url=self.__base_url + "/auth/me/",
             headers=headers
         )
 
@@ -67,14 +68,14 @@ class HTTPClient:
 
         return result.data.access_token, result.data.refresh_token
     
-    def __prolong_access_token(self, refresh_token: str) -> Tuple[str, str]:
+    def __refresh_access_token(self, refresh_token: str) -> Tuple[str, str]:
         headers = {
             "Authorization": f"Bearer {refresh_token}"
         }
 
         response = self.session.request(
             method="GET",
-            url=self.__base_url + "/auth/prolong/",
+            url=self.__base_url + "/auth/refresh/",
             headers=headers
         )
 
