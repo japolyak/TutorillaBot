@@ -8,12 +8,11 @@ load_dotenv()
 log_level = os.getenv("LOG_LEVEL", "DEBUG")
 is_development = os.getenv("IS_DEVELOPMENT", "0") == "1"
 api_link = os.getenv("API_LINK", "http://127.0.0.1:8000")
-_timeout = os.getenv("TIMEOUT")
-api_timeout = None if _timeout is None else int(_timeout)
+access_token_ttl_in_minutes = 15
+refresh_token_ttl_in_days = 7
 
 # API
 allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split('&')
-access_token_expire_minutes = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 300))
 algorithm = os.getenv("ALGORITHM")
 
 # Telegram

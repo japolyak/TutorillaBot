@@ -1,7 +1,9 @@
 from redis import Redis
-from typing import Literal
+from typing import Literal, Optional
+from datetime import timedelta
 
 from src.common.models import UserDto, Role
+from src.common.config import access_token_ttl_in_minutes, refresh_token_ttl_in_days
 from src.bot.src.redis_configuration import redis_instance
 
 
@@ -33,17 +35,15 @@ class RedisManagement:
             case _:
                 return False
 
-    def get_user_token(self, user_id: int):
-        user_id = str(user_id)
+    def get_token(self, user_id: int, token_type: Literal["access", "refresh"]) -> Optional[str]:
+        return self.__r.getex(f"{token_type}_token:{user_id}")
 
-        return self.__r.hget(user_id, "Bearer")
+    def set_user_token(self, user_id: int, access_token: str, refresh_token: str):
+        access_token_ttl = timedelta(minutes=access_token_ttl_in_minutes)
+        refresh_token_ttl = timedelta(days=refresh_token_ttl_in_days)
 
-    def set_user_token(self, user_id: int, token: str):
-        user_id = str(user_id)
+        self.__r.setex(f"access_token:{user_id}", access_token_ttl, access_token)
+        self.__r.setex(f"refresh_token:{user_id}", refresh_token_ttl, refresh_token)
 
-        return self.__r.hset(user_id, "Bearer", token)
-
-    def remove_user_token(self, user_id: int):
-        user_id = str(user_id)
-
-        return self.__r.hdel(user_id, "Bearer")
+    def remove_tokens(self, user_id: int):
+        self.__r.delete(f"access_token:{user_id}", f"refresh_token:{user_id}")

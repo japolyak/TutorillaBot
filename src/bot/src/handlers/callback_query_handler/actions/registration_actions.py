@@ -54,7 +54,7 @@ class RegistrationActions:
 
             return
 
-        RedisManagement().remove_user_token(chat_id)
+        RedisManagement().remove_tokens(chat_id)
 
         markup = InlineKeyboardMarkupCreator.choose_occupation(chat_id, locale)
         bot.send_message(chat_id=chat_id,

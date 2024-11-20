@@ -1,5 +1,5 @@
 from requests import Response, Session
-from typing import Optional, Union, Generic, Type, Any
+from typing import Optional, Union, Generic, Type, Any, Tuple
 from telebot.types import Message, CallbackQuery
 
 from src.common.models import T, ErrorDto, TokenDto
@@ -20,7 +20,7 @@ class ApiResponse(Generic[T]):
 
 class HTTPClient:
     __base_url = api_link
-    token: Optional[str] = None
+    access_token: Optional[str] = None
 
     def __init__(self, url: str):
         self.module_url = f"{self.__base_url}/{url}/"
@@ -32,21 +32,24 @@ class HTTPClient:
 
         tg_data: Optional[Union[Message, CallbackQuery]] = kwargs["tg_data"]
 
-        token = RedisManagement().get_user_token(tg_data.from_user.id)
+        access_token = RedisManagement().get_token(tg_data.from_user.id, "access")
 
-        if token is None:
-            init_data = TelegramInitData.create(tg_data)
-            token = self.__authenticate(init_data)
+        if access_token is None:
+            refresh_token = RedisManagement().get_token(tg_data.from_user.id, "refresh")
 
-        if token is None:
-            raise Exception('Token was not got:(')
+            if refresh_token is None:
+                init_data = TelegramInitData.create(tg_data)
+                access_token, refresh_token = self.__authenticate(init_data)
+            else:
+                access_token, refresh_token = self.__prolong_access_token(refresh_token)
 
-        self.token = token
-        RedisManagement().set_user_token(tg_data.from_user.id, token)
+            RedisManagement().set_user_token(tg_data.from_user.id, access_token, refresh_token)
+
+        self.access_token = access_token
 
         return self
 
-    def __authenticate(self, init_data: str) -> Optional[str]:
+    def __authenticate(self, init_data: str) -> Tuple[str, str]:
         headers = {
             "Init-Data": init_data,
         }
@@ -59,17 +62,35 @@ class HTTPClient:
 
         result = self.__response(response, TokenDto)
 
-        if not result.is_successful():
-            raise Exception('Token was not got:(')
+        if not result.is_successful() or result.data is None:
+            raise Exception('No tokens:(')
 
-        return result.data.token
+        return result.data.access_token, result.data.refresh_token
+    
+    def __prolong_access_token(self, refresh_token: str) -> Tuple[str, str]:
+        headers = {
+            "Authorization": f"Bearer {refresh_token}"
+        }
+
+        response = self.session.request(
+            method="GET",
+            url=self.__base_url + "/auth/prolong/",
+            headers=headers
+        )
+
+        result = self.__response(response, TokenDto)
+
+        if not result.is_successful() or result.data is None:
+            raise Exception('No tokens:(')
+
+        return result.data.access_token, result.data.refresh_token
 
     def request(self, method, url, model_class: Type[T], **kwargs):
         data = kwargs.get("data")
         passed_headers: Optional[dict] = kwargs.get("headers")
 
         headers = {
-            "Authorization": f"Bearer {self.token}"
+            "Authorization": f"Bearer {self.access_token}"
         }
 
         if passed_headers is not None:
