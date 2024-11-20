@@ -8,7 +8,7 @@ load_dotenv()
 log_level = os.getenv("LOG_LEVEL", "DEBUG")
 is_development = os.getenv("IS_DEVELOPMENT", "0") == "1"
 api_link = os.getenv("API_LINK", "http://127.0.0.1:8000")
-access_token_ttl_in_minutes = 1
+access_token_ttl_in_minutes = 15
 refresh_token_ttl_in_days = 7
 
 # API
