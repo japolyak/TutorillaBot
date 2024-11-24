@@ -12,7 +12,7 @@ access_token_ttl_in_minutes = 15
 refresh_token_ttl_in_days = 7
 
 # API
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split('&')
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split('&')
 algorithm = os.getenv("ALGORITHM")
 
 # Telegram

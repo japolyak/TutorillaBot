@@ -2,12 +2,12 @@ from redis import Redis
 from typing import Literal, Optional
 from datetime import timedelta
 
-from src.common.models import UserDto, Role
 from src.common.config import access_token_ttl_in_minutes, refresh_token_ttl_in_days
-from src.bot.src.redis_configuration import redis_instance
+from src.common.models import UserDto, Role
+from src.common.redis_configuration import redis_instance
 
 
-class RedisManagement:
+class Storage:
     __r: Redis = redis_instance
 
     def add_user(self, user_id: int, user: UserDto):
@@ -35,15 +35,32 @@ class RedisManagement:
             case _:
                 return False
 
-    def get_token(self, user_id: int, token_type: Literal["access", "refresh"]) -> Optional[str]:
-        return self.__r.getex(f"{token_type}_token:{user_id}")
-
-    def set_user_token(self, user_id: int, access_token: str, refresh_token: str):
+    def set_user_session(self, user_id: int, access_token: str, refresh_token: str):
         access_token_ttl = timedelta(minutes=access_token_ttl_in_minutes)
         refresh_token_ttl = timedelta(days=refresh_token_ttl_in_days)
 
-        self.__r.setex(f"access_token:{user_id}", access_token_ttl, access_token)
-        self.__r.setex(f"refresh_token:{user_id}", refresh_token_ttl, refresh_token)
+        self.__r.setex(f"accessToken:{user_id}", access_token_ttl, access_token)
+        self.__r.setex(f"sessionKey:{user_id}", refresh_token_ttl, refresh_token)
 
-    def remove_tokens(self, user_id: int):
-        self.__r.delete(f"access_token:{user_id}", f"refresh_token:{user_id}")
+    def get_access_token(self, user_id: int) -> Optional[str]:
+        return self.__r.getex(f"accessToken:{user_id}")
+
+    def get_session_key(self, user_id: int) -> Optional[str]:
+        return self.__r.getex(f"sessionKey:{user_id}")
+
+    def set_user_refresh_token(self, key: str, token: str):
+        refresh_token_ttl = timedelta(days=refresh_token_ttl_in_days)
+
+        self.__r.setex(f"sessionKey:{key}", refresh_token_ttl, token)
+
+    def get_refresh_token(self, session_key: str) -> Optional[str]:
+        return self.__r.getex(f"sessionKey:{session_key}")
+
+    def delete_session(self, user_id: int):
+        names = [f"accessToken:{user_id}", f"sessionKey:{user_id}"]
+        session_key = self.get_session_key(user_id)
+
+        if session_key:
+            names.append(f"sessionKey:{session_key}")
+
+        self.__r.delete(*names)

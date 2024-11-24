@@ -13,7 +13,7 @@ from src.bot.src.services.api.clients.user_client import UserClient
 from src.bot.src.handlers.callback_query_handler.callback_prefix import CallBackPrefix
 from src.bot.src.handlers.shared import Shared
 from src.bot.src.handlers.message_handlers.registration import registration_first_name
-from src.bot.src.services.redis_service.redis_user_management import RedisManagement
+from src.common.redis_user_management import Storage
 
 
 class RegistrationActions:
@@ -54,7 +54,7 @@ class RegistrationActions:
 
             return
 
-        RedisManagement().remove_tokens(chat_id)
+        Storage().delete_session(chat_id)
 
         markup = InlineKeyboardMarkupCreator.choose_occupation(chat_id, locale)
         bot.send_message(chat_id=chat_id,

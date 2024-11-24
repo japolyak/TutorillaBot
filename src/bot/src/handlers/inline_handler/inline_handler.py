@@ -3,14 +3,13 @@ from telebot.types import InputTextMessageContent, InlineQuery, InlineQueryResul
 from typing import Literal, List, Optional
 
 from src.common.bot import bot
-from src.bot.src.redis_configuration import redis_instance as r
 from src.common.models import Role, PrivateCourseInlineDto
 
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.services.api.clients.private_course_client import PrivateCourseClient
 from src.bot.src.services.api.clients.tutor_course_client import TutorCourseClient
 from src.bot.src.services.i18n.i18n import t
-from src.bot.src.services.redis_service.redis_user_management import RedisManagement
+from src.common.redis_user_management import Storage
 
 
 def inline_handler_guard(query: InlineQuery, command: Optional[str], role: Optional[str]):
@@ -21,11 +20,11 @@ def inline_handler_guard(query: InlineQuery, command: Optional[str], role: Optio
 
     match command:
         case "Courses":
-            return RedisManagement().has_role(user_id, Role.Tutor) if role == Role.Tutor else RedisManagement().has_role(user_id, Role.Student)
+            return Storage().has_role(user_id, Role.Tutor) if role == Role.Tutor else Storage().has_role(user_id, Role.Student)
         case "Students":
-            return RedisManagement().has_role(user_id, Role.Student)
+            return Storage().has_role(user_id, Role.Student)
         case "Subscribe":
-            return RedisManagement().has_role(user_id, Role.Student)
+            return Storage().has_role(user_id, Role.Student)
         case _:
             return False
 

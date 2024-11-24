@@ -1,12 +1,14 @@
-import hashlib
-import jwt
+from hashlib import sha256
+from time import time
+from jwt import encode, decode, ExpiredSignatureError, InvalidTokenError
 from datetime import datetime, timedelta, timezone
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Cookie
 from fastapi.security import OAuth2PasswordBearer
-from typing import Annotated, Optional
+from typing import Annotated, Optional, Tuple
 
 from src.common.config import bot_token, algorithm, access_token_ttl_in_minutes, refresh_token_ttl_in_days
 from src.common.models import BaseDto, Role
+from src.common.redis_user_management import Storage
 from src.common.telegram_init_data import TelegramUser
 
 from src.api.src.database.models import User
@@ -57,11 +59,14 @@ class TokenUtils:
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
     @classmethod
-    def create_token_pair(cls, payload: TokenPayload):
-        return (
-            cls.__create_token(payload.model_dump(), minutes=access_token_ttl_in_minutes),
-            cls.__create_token(payload.model_dump(exclude={"role"}), days=refresh_token_ttl_in_days)
-        )
+    def create_token_pair(cls, payload: TokenPayload) -> Tuple[str, str]:
+        access_token = cls.__create_token(payload.model_dump(), minutes=access_token_ttl_in_minutes)
+        refresh_token = cls.__create_token(payload.model_dump(exclude={"role"}), days=refresh_token_ttl_in_days)
+        session_key = cls.__create_refresh_key(payload.id)
+
+        Storage().set_user_refresh_token(session_key, refresh_token)
+
+        return access_token, session_key
 
     @classmethod
     def __create_token(cls, data: dict, days=0, minutes=0):
@@ -71,9 +76,17 @@ class TokenUtils:
         expires = datetime.now(timezone.utc) + token_ttl
 
         to_encode.update({"exp": expires})
-        encoded_jwt = jwt.encode(to_encode, cls.__get_secret_key(), algorithm=algorithm)
+        encoded_jwt = encode(to_encode, cls.__get_secret_key(), algorithm=algorithm)
 
         return encoded_jwt
+
+    @classmethod
+    def __create_refresh_key(cls, user_id: int) -> str:
+        timestamp = time()
+        raw_data = f"{user_id}:{timestamp}"
+
+        session_key = sha256(raw_data.encode()).hexdigest()
+        return session_key
 
     @classmethod
     async def get_current_user(cls, token: Annotated[str, Depends(oauth2_scheme)]) -> UserContextModel:
@@ -84,8 +97,22 @@ class TokenUtils:
         return user
 
     @classmethod
-    async def get_refresh_user(cls, token: Annotated[str, Depends(oauth2_scheme)]) -> RefreshUserContextModel:
-        payload = TokenUtils.decode_token(token)
+    async def get_refresh_user(
+            cls,
+            session_key: Annotated[str | None, Cookie(alias="sessionKey")] = None
+    ) -> RefreshUserContextModel:
+        print("-------------")
+        print(session_key)
+        print("_____________")
+        refresh_token = Storage().get_refresh_token(session_key)
+
+        if not refresh_token:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Session has expired."
+            )
+
+        payload = TokenUtils.decode_token(refresh_token)
 
         user = RefreshUserContextModel.model_validate(payload)
 
@@ -94,16 +121,16 @@ class TokenUtils:
     @classmethod
     def decode_token(cls, token: str) -> dict:
         try:
-            decoded_token = jwt.decode(token, cls.__get_secret_key(), algorithms=[algorithm, ])
+            decoded_token = decode(token, cls.__get_secret_key(), algorithms=[algorithm, ])
 
             return decoded_token
-        except jwt.ExpiredSignatureError:
+        except ExpiredSignatureError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Token has expired.",
                 headers={"WWW-Authenticate": "Bearer"}
             )
-        except jwt.InvalidTokenError:
+        except InvalidTokenError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid token.",
@@ -112,7 +139,7 @@ class TokenUtils:
 
     @classmethod
     def __get_secret_key(cls) -> bytes:
-        return hashlib.sha256(bot_token.encode()).digest()
+        return sha256(bot_token.encode()).digest()
 
 
 async def get_current_active_user(current_user: Annotated[UserContextModel, Depends(TokenUtils.get_current_user)]) -> UserContextModel:

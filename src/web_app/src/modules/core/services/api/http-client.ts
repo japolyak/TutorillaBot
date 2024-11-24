@@ -7,6 +7,8 @@ import { useSessionStore } from '@/modules/core/store/session-store';
 
 export const httpClient: KyInstance = ky.create({
     prefixUrl: import.meta.env.VITE_APP_API_LINK,
+	credentials: 'include',
+	cache: 'no-store',
 	hooks: {
 		beforeRequest: [
 			async (request) => {
@@ -23,12 +25,20 @@ export const httpClient: KyInstance = ky.create({
 					const response = await AuthenticationClient.authenticateMe();
 					if (!response) return;
 
-					token = response.accessToken;
-
+					// token = response.accessToken;
+					token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjIwMDEwMDMzNiwiZmlyc3RfbmFtZSI6IkFydGVtIiwibGFzdF9uYW1lIjoiVGVzdCIsInJvbGUiOiJUdXRvciIsInJlZ2lzdGVyZWQiOnRydWUsImV4cCI6MTczMjQ3Mzk1M30.Ns478ZecQzTvaIJXuoWvblw7DKu9JTXluJK7TrvkHf8'
 					sessionStorage.setItem('accessToken', token);
 				}
 
 				request.headers.set('Authorization', `Bearer ${token}`);
+			},
+		],
+		afterResponse: [
+			async (request, options, response) => {
+				if (response.status === 401) {
+					const response = await AuthenticationClient.refreshSession();
+					if (response) sessionStorage.setItem('accessToken', response.accessToken);
+				}
 			},
 		],
 	},

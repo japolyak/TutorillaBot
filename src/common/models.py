@@ -51,7 +51,6 @@ class ErrorDto(BaseModel):
 
 class TokenDto(BaseDto):
     access_token: str
-    refresh_token: str
 
 
 class UserBaseDto(BaseDto):

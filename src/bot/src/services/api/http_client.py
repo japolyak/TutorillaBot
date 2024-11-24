@@ -1,11 +1,12 @@
 from requests import Response, Session
+from requests.cookies import RequestsCookieJar
 from typing import Optional, Union, Generic, Type, Any, Tuple
 from telebot.types import Message, CallbackQuery
 
 from src.common.models import T, ErrorDto, TokenDto
 from src.common.config import api_link
 from src.common.telegram_init_data import TelegramInitData
-from src.bot.src.services.redis_service.redis_user_management import RedisManagement
+from src.common.redis_user_management import Storage
 
 
 class ApiResponse(Generic[T]):
@@ -32,25 +33,26 @@ class HTTPClient:
 
         tg_data: Optional[Union[Message, CallbackQuery]] = kwargs["tg_data"]
 
-        access_token = RedisManagement().get_token(tg_data.from_user.id, "access")
+        access_token = Storage().get_access_token(tg_data.from_user.id)
 
         if access_token is None:
-            refresh_token = RedisManagement().get_token(tg_data.from_user.id, "refresh")
+            session_key = Storage().get_session_key(tg_data.from_user.id)
 
-            if refresh_token is None:
+            if session_key is None:
                 init_data = TelegramInitData().create_str_init_data(tg_data, {"from_bot": True})
 
-                access_token, refresh_token = self.__authenticate(init_data)
+                access_token, session_key = self.__authenticate(init_data)
             else:
-                access_token, refresh_token = self.__refresh_access_token(refresh_token)
+                access_token, session_key = self.__refresh_access_token(session_key)
 
-            RedisManagement().set_user_token(tg_data.from_user.id, access_token, refresh_token)
+            Storage().set_user_session(tg_data.from_user.id, access_token, session_key)
+            self.session.cookies.set("sessionKey", session_key)
 
         self.access_token = access_token
 
         return self
 
-    def __authenticate(self, init_data: str) -> Tuple[str, str]:
+    def __authenticate(self, init_data: str) -> Tuple[str, Optional[str]]:
         headers = {
             "Init-Data": init_data,
         }
@@ -61,16 +63,16 @@ class HTTPClient:
             headers=headers
         )
 
-        result = self.__response(response, TokenDto)
+        result, cookies = self.__response(response, TokenDto)
 
         if not result.is_successful() or result.data is None:
             raise Exception('No tokens:(')
 
-        return result.data.access_token, result.data.refresh_token
-    
-    def __refresh_access_token(self, refresh_token: str) -> Tuple[str, str]:
+        return result.data.access_token, cookies.get("sessionKey")
+
+    def __refresh_access_token(self, session_key: str) -> Tuple[str, str]:
         headers = {
-            "Authorization": f"Bearer {refresh_token}"
+            "SessionKey": session_key
         }
 
         response = self.session.request(
@@ -79,12 +81,12 @@ class HTTPClient:
             headers=headers
         )
 
-        result = self.__response(response, TokenDto)
+        result, cookies = self.__response(response, TokenDto)
 
         if not result.is_successful() or result.data is None:
             raise Exception('No tokens:(')
 
-        return result.data.access_token, result.data.refresh_token
+        return result.data.access_token, cookies.get("sessionKey")
 
     def request(self, method, url, model_class: Type[T], **kwargs):
         data = kwargs.get("data")
@@ -104,22 +106,22 @@ class HTTPClient:
             headers=headers
         )
 
-        return self.__response(response, model_class)
+        return self.__response(response, model_class)[0]
 
     @classmethod
-    def __response(cls, response: Response, model_class: Type[T]) -> ApiResponse[T]:
+    def __response(cls, response: Response, model_class: Type[T]) ->Tuple[ApiResponse[T], Optional[RequestsCookieJar]]:
         if not response.ok:
             error = ErrorDto(**response.json())
-            return ApiResponse[T](error=error)
+            return ApiResponse[T](error=error), None
 
         # TODO - rethink implementation
         if model_class is None and response.ok:
-            return ApiResponse[T](data=Any)
+            return ApiResponse[T](data=Any), response.cookies
 
         json_data = response.json()
         data = model_class(**json_data)
 
-        return ApiResponse[T](data=data)
+        return ApiResponse[T](data=data), response.cookies
 
     def get(self, url, model_class: Type[T], **kwargs):
         return self.request("GET", url, model_class, **kwargs)

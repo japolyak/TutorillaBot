@@ -8,7 +8,7 @@ from src.common.models import PaginatedList, SubjectDto, Role, PrivateClassDto, 
 from src.bot.src.enums import Emoji
 from src.bot.src.handlers.callback_query_handler.callback_prefix import CallBackPrefix
 from src.bot.src.services.i18n.i18n import t
-from src.bot.src.redis_configuration import redis_instance as r
+from src.common.redis_configuration import redis_instance as r
 
 
 class InlineKeyboardMarkupCreator:

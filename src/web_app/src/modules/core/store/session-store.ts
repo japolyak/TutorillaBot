@@ -25,11 +25,17 @@ export const useSessionStore = defineStore(
 			return 'allowed';
 		}
 
+		function authorize(initData: string) {
+			telegramInitData.value = initData;
+			isAuthorized.value = true;
+		}
+
 		return {
 			telegramInitData,
 			isAuthorized,
 			isTelegramUser,
 			initializeAuthentication,
+			authorize,
 		};
 	},
 	{

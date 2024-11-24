@@ -2,14 +2,14 @@ from telebot.types import Message
 from redis import Redis
 
 from src.common.bot import bot
-from src.bot.src.redis_configuration import redis_instance as r
+from src.common.redis_configuration import redis_instance as r
 
 from src.bot.src.handlers.shared import Shared
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.services.api.clients.user_client import UserClient
 from src.bot.src.services.i18n.i18n import t
 from src.bot.src.validators import Validator
-from src.bot.src.services.redis_service.redis_user_management import RedisManagement
+from src.common.redis_user_management import Storage
 
 
 class RegistrationContext:
@@ -21,7 +21,7 @@ class RegistrationContext:
 
         if response.is_successful():
             user = response.data
-            RedisManagement().add_user(chat_id, user)
+            Storage().add_user(chat_id, user)
 
             markup = InlineKeyboardMarkupCreator.main_menu_markup(chat_id, user.locale)
             bot.send_message(chat_id=chat_id,

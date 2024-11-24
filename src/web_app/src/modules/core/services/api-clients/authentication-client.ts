@@ -2,7 +2,6 @@ import ky from 'ky';
 import type { TokenDto } from '@/modules/core/services/api/api.models';
 import { ApiUtils } from '@/modules/core/services/api/api.utils';
 import { useTelegramWebApp } from '@/composables/telegram.web-app';
-import { storeToRefs } from 'pinia';
 import { useSessionStore } from '@/modules/core/store/session-store';
 import { StringUtils } from '@/utils/string.utils';
 
@@ -22,9 +21,14 @@ export class AuthenticationClient {
 		const response = await AuthenticationClient.getSession(initData);
 		if (!response) return null;
 
-		const { telegramInitData, isAuthorized } = storeToRefs(useSessionStore());
-		telegramInitData.value = initData;
-		isAuthorized.value = true;
+		useSessionStore().authorize(initData);
+
+		return response;
+	}
+
+	public static async refreshSession(): Promise<TokenDto | null> {
+		const response = await AuthenticationClient.refreshSessionRequest();
+		if (!response) return null;
 
 		return response;
 	}
@@ -32,16 +36,22 @@ export class AuthenticationClient {
     private static async getSession(initData: string): Promise<TokenDto | null> {
 		const url = `${import.meta.env.VITE_APP_API_LINK}/auth/me/`;
 
-		const request = ky.get(url, { headers: { 'Init-Data': initData } }).json<TokenDto>();
+		const request = ky.get(
+			url,
+			{ headers: { 'Init-Data': initData }, cache: 'no-store', credentials: 'include' },
+		).json<TokenDto>();
 		const apiResponse = await ApiUtils.createApiResponse(request);
 
 		return apiResponse.isSuccess ? apiResponse.data : null;
     }
 
-    private static async refreshSession(initData: string): Promise<TokenDto | null> {
+    private static async refreshSessionRequest(): Promise<TokenDto | null> {
 		const url = `${import.meta.env.VITE_APP_API_LINK}/auth/refresh/`;
 
-		const request = ky.get(url, { headers: { 'Init-Data': initData } }).json<TokenDto>();
+		const request = ky.get(
+			url,
+			{ cache: 'no-store', credentials: 'include' },
+		).json<TokenDto>();
 		const apiResponse = await ApiUtils.createApiResponse(request);
 
 		return apiResponse.isSuccess ? apiResponse.data : null;

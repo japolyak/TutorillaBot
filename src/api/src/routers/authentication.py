@@ -34,11 +34,11 @@ async def validate_bot_user(request: Request, db: DbContext):
     else:
         payload = TokenPayload.from_db_model(db_user)
 
-    access_token, refresh_token = TokenUtils.create_token_pair(payload)
+    access_token, session_key = TokenUtils.create_token_pair(payload)
 
-    result = TokenDto(access_token=access_token, refresh_token=refresh_token)
+    result = TokenDto(access_token=access_token)
 
-    return ResponseBuilder.success_response(content=result)
+    return ResponseBuilder.success_response(content=result, cookies={ 'sessionKey': session_key })
 
 
 @router.get(path=APIEndpoints.Authentication.Prolong, status_code=status.HTTP_200_OK, response_model=TokenDto,
@@ -53,8 +53,8 @@ async def refresh_access_token(user: RefreshUserContext, db: DbContext):
     else:
         payload = TokenPayload.from_user_context(user)
 
-    access_token, refresh_token = TokenUtils.create_token_pair(payload)
+    access_token, session_key = TokenUtils.create_token_pair(payload)
 
-    result = TokenDto(access_token=access_token, refresh_token=refresh_token)
+    result = TokenDto(access_token=access_token)
 
-    return ResponseBuilder.success_response(content=result)
+    return ResponseBuilder.success_response(content=result, cookies={ 'sessionKey': session_key })
