@@ -8,7 +8,7 @@ from typing import Annotated, Optional, Tuple
 
 from src.common.config import bot_token, algorithm, access_token_ttl_in_minutes, refresh_token_ttl_in_days
 from src.common.models import BaseDto, Role
-from src.common.redis_user_management import Storage
+from src.common.storage import Storage
 from src.common.telegram_init_data import TelegramUser
 
 from src.api.src.database.models import User

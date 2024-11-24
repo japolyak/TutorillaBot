@@ -9,7 +9,7 @@ from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCrea
 from src.bot.src.services.api.clients.user_client import UserClient
 from src.bot.src.services.i18n.i18n import t
 from src.bot.src.validators import Validator
-from src.common.redis_user_management import Storage
+from src.common.storage import Storage
 
 
 class RegistrationContext:

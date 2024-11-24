@@ -9,7 +9,7 @@ from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCrea
 from src.bot.src.services.api.clients.private_course_client import PrivateCourseClient
 from src.bot.src.services.api.clients.tutor_course_client import TutorCourseClient
 from src.bot.src.services.i18n.i18n import t
-from src.common.redis_user_management import Storage
+from src.common.storage import Storage
 
 
 def inline_handler_guard(query: InlineQuery, command: Optional[str], role: Optional[str]):

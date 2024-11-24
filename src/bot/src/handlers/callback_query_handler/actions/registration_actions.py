@@ -13,7 +13,7 @@ from src.bot.src.services.api.clients.user_client import UserClient
 from src.bot.src.handlers.callback_query_handler.callback_prefix import CallBackPrefix
 from src.bot.src.handlers.shared import Shared
 from src.bot.src.handlers.message_handlers.registration import registration_first_name
-from src.common.redis_user_management import Storage
+from src.common.storage import Storage
 
 
 class RegistrationActions:

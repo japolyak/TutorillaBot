@@ -6,7 +6,7 @@ from telebot.types import Message, CallbackQuery
 from src.common.models import T, ErrorDto, TokenDto
 from src.common.config import api_link
 from src.common.telegram_init_data import TelegramInitData
-from src.common.redis_user_management import Storage
+from src.common.storage import Storage
 
 
 class ApiResponse(Generic[T]):
