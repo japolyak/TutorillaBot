@@ -5,9 +5,9 @@ from src.common.models import (PaginatedList, Role, PrivateCourseInlineDto, Item
                                PrivateClassDto, PrivateCourseDto, CourseMemberDto, ScheduleCourseDto)
 
 from src.api.src.builders.response_builder import ResponseBuilder
+from src.api.src.contexts.db_contex import DbContext
+from src.api.src.contexts.user_context import UserContext
 from src.api.src.database.crud.private_courses_crud import PrivateCourseCRUD
-from src.api.src.database.db_setup import DbContext
-from src.api.src.utils.token_utils import UserContext
 from src.api.src.functions.time_transformator import transform_class_time
 from src.api.src.routers.api_enpoints import APIEndpoints
 from src.api.src.utils.model_utils import ModelUtils
@@ -18,7 +18,7 @@ router = APIRouter()
 
 # @router.get(path=APIEndpoints.PrivateCourses.GetClasses, status_code=status.HTTP_200_OK,
 #             response_model=PaginatedList[PrivateClassDto], summary="Get classes of the course")
-# async def get_classes_for_bot(course_id: int, user_id: int, role: Literal[Role.Tutor, Role.Student], page: int, db: DbContext):
+# async def get_classes_for_bot(course_id: int, user_id: int, role: Literal[Role.Tutor, Role.Student], page: int, user: UserContext, db: DbContext):
 #     result = db.execute(sql_statements.get_classes, {"p1": user_id, "p2": course_id, "p3": page, "p4": role}).fetchall()
 #
 #     total_count = None
@@ -67,7 +67,7 @@ async def get_private_courses(user: UserContext, db: DbContext):
 
 @router.get(path=APIEndpoints.PrivateCourses.GetBySubjects, status_code=status.HTTP_200_OK,
             response_model=ItemsDto[PrivateCourseInlineDto], summary="Get private courses for user by subject name")
-async def get_private_courses(user_id: int, subject_name: str, role: Literal[Role.Tutor, Role.Student], db: DbContext):
+async def get_private_courses(user_id: int, subject_name: str, role: Literal[Role.Tutor, Role.Student], user: UserContext, db: DbContext):
     private_courses = PrivateCourseCRUD.get_private_courses_by_subject(db, user_id, subject_name, role)
 
     if not private_courses:
@@ -80,7 +80,7 @@ async def get_private_courses(user_id: int, subject_name: str, role: Literal[Rol
 
 @router.post(path=APIEndpoints.PrivateCourses.Enroll, status_code=status.HTTP_201_CREATED,
              summary="Enroll student to course")
-async def enroll_in_course(user_id: int, private_course_id: int, db: DbContext):
+async def enroll_in_course(user_id: int, private_course_id: int, user: UserContext, db: DbContext):
     # TODO: Rewrite
     PrivateCourseCRUD.enroll_student_to_course(db=db, user_id=user_id, course_id=private_course_id)
     return ResponseBuilder.success_response(status.HTTP_201_CREATED)
@@ -88,7 +88,7 @@ async def enroll_in_course(user_id: int, private_course_id: int, db: DbContext):
 
 @router.get(path=APIEndpoints.PrivateCourses.GetPrivateCourse, status_code=status.HTTP_200_OK,
             response_model=PrivateCourseDto[CourseMemberDto], summary="Get private courses by course id")
-async def get_private_courses(private_course_id: int, db: DbContext):
+async def get_private_courses(private_course_id: int, user: UserContext, db: DbContext):
     private_course = PrivateCourseCRUD.get_private_course_by_course_id(db, private_course_id)
 
     if private_course is None:

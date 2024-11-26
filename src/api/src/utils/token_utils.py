@@ -101,9 +101,6 @@ class TokenUtils:
             cls,
             session_key: Annotated[str | None, Cookie(alias="sessionKey")] = None
     ) -> RefreshUserContextModel:
-        print("-------------")
-        print(session_key)
-        print("_____________")
         refresh_token = Storage().get_refresh_token(session_key)
 
         if not refresh_token:
@@ -140,14 +137,3 @@ class TokenUtils:
     @classmethod
     def __get_secret_key(cls) -> bytes:
         return sha256(bot_token.encode()).digest()
-
-
-async def get_current_active_user(current_user: Annotated[UserContextModel, Depends(TokenUtils.get_current_user)]) -> UserContextModel:
-    return current_user
-
-async def get_refresh_user(current_user: Annotated[RefreshUserContextModel, Depends(TokenUtils.get_refresh_user)]) -> RefreshUserContextModel:
-    return current_user
-
-
-UserContext = Annotated[UserContextModel, Depends(get_current_active_user)]
-RefreshUserContext = Annotated[RefreshUserContextModel, Depends(get_refresh_user)]

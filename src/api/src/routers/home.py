@@ -9,7 +9,4 @@ router = APIRouter()
 
 @router.get(APIEndpoints.Home.Get)
 async def root():
-    # return ResponseBuilder.error_response(message="Test")
     return ResponseBuilder.success_response(content={"message": f"Welcome home!"})
-
-    # return {"message": f"Welcome home!"}

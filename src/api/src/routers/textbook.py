@@ -3,8 +3,9 @@ from fastapi import status, APIRouter
 from src.common.models import ItemsDto, TextbookDto
 
 from src.api.src.builders.response_builder import ResponseBuilder
+from src.api.src.contexts.db_contex import DbContext
+from src.api.src.contexts.user_context import UserContext
 from src.api.src.database.crud.textbook_crud import TextbookCRUD
-from src.api.src.database.db_setup import DbContext
 from src.api.src.routers.api_enpoints import APIEndpoints
 
 
@@ -13,7 +14,7 @@ router = APIRouter()
 
 @router.get(path=APIEndpoints.Textbook.Get, status_code=status.HTTP_200_OK,
             response_model=ItemsDto[TextbookDto])
-async def get_textbooks(tutor_course_id: int, db: DbContext):
+async def get_textbooks(tutor_course_id: int, user: UserContext, db: DbContext):
     db_textbooks = TextbookCRUD.get_textbooks(db, tutor_course_id)
 
     if not db_textbooks:

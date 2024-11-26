@@ -25,8 +25,8 @@ export const httpClient: KyInstance = ky.create({
 					const response = await AuthenticationClient.authenticateMe();
 					if (!response) return;
 
-					// token = response.accessToken;
-					token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjIwMDEwMDMzNiwiZmlyc3RfbmFtZSI6IkFydGVtIiwibGFzdF9uYW1lIjoiVGVzdCIsInJvbGUiOiJUdXRvciIsInJlZ2lzdGVyZWQiOnRydWUsImV4cCI6MTczMjQ3Mzk1M30.Ns478ZecQzTvaIJXuoWvblw7DKu9JTXluJK7TrvkHf8'
+					token = response.accessToken;
+
 					sessionStorage.setItem('accessToken', token);
 				}
 
@@ -37,7 +37,18 @@ export const httpClient: KyInstance = ky.create({
 			async (request, options, response) => {
 				if (response.status === 401) {
 					const response = await AuthenticationClient.refreshSession();
-					if (response) sessionStorage.setItem('accessToken', response.accessToken);
+					if (response) {
+						sessionStorage.setItem('accessToken', response.accessToken);
+
+						const url = request.url.replace(import.meta.env.VITE_APP_API_LINK, '');
+						return ky(url, {
+							...options,
+							headers: {
+								...options.headers,
+								Authorization: `Bearer ${response.accessToken}`,
+							},
+						});
+					}
 				}
 			},
 		],

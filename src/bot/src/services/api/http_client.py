@@ -44,9 +44,11 @@ class HTTPClient:
                 access_token, session_key = self.__authenticate(init_data)
             else:
                 access_token, session_key = self.__refresh_access_token(session_key)
+                Storage().delete_old_session(tg_data.from_user.id, session_key)
 
-            Storage().set_user_session(tg_data.from_user.id, access_token, session_key)
-            self.session.cookies.set("sessionKey", session_key)
+            if session_key:
+                Storage().set_user_session(tg_data.from_user.id, access_token, session_key)
+                self.session.cookies.set("sessionKey", session_key)
 
         self.access_token = access_token
 

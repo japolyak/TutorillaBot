@@ -1,16 +1,13 @@
 import os
 import logging
-from typing import Annotated
 
 from alembic import command as alembic_command
 from alembic.config import Config
 from alembic.runtime import migration
 from alembic.script import ScriptDirectory
 
-from fastapi import Depends
-
 from sqlalchemy import create_engine, Engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.schema import CreateSchema
 from sqlalchemy_utils import database_exists, create_database
 
@@ -78,13 +75,3 @@ def initialize_database():
     except Exception as e:
         log.error(msg=f"Error while initializing database: {e}")
         pass
-
-
-def session():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-DbContext = Annotated[Session, Depends(session)]

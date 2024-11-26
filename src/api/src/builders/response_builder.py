@@ -3,7 +3,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from typing import Any, Optional
 
-from src.common.config import is_development, refresh_token_ttl_in_days
+from src.common.config import refresh_token_ttl_in_days
 
 
 class ResponseBuilder:
@@ -23,8 +23,8 @@ class ResponseBuilder:
                 response.set_cookie(
                     key=key,
                     value=value,
-                    httponly=is_development,
-                    secure=is_development,
+                    httponly=True,
+                    secure=True,
                     samesite="none",
                     max_age=86400 * refresh_token_ttl_in_days
                 )

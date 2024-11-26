@@ -4,11 +4,11 @@ from typing import Literal
 from src.common.models import UserDto, UserBaseDto, Role
 
 from src.api.src.builders.response_builder import ResponseBuilder
+from src.api.src.contexts.db_contex import DbContext
+from src.api.src.contexts.user_context import UserContext
 from src.api.src.database.crud.user_crud import UserCRUD
 from src.api.src.database.crud.user_requests_crud import UserRequestCRUD
-from src.api.src.database.db_setup import DbContext
 from src.api.src.routers.api_enpoints import APIEndpoints
-from src.api.src.utils.token_utils import UserContext
 
 
 router = APIRouter()

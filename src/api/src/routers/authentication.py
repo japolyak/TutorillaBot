@@ -5,9 +5,10 @@ from src.common.telegram_init_data import TelegramInitData
 
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.database.crud.user_crud import UserCRUD
-from src.api.src.database.db_setup import DbContext
+from src.api.src.contexts.db_contex import DbContext
+from src.api.src.contexts.refresh_user_context import RefreshUserContext
 from src.api.src.routers.api_enpoints import APIEndpoints
-from src.api.src.utils.token_utils import TokenUtils, RefreshUserContext, TokenPayload
+from src.api.src.utils.token_utils import TokenUtils, TokenPayload
 
 
 router = APIRouter()

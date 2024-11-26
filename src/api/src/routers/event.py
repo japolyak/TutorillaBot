@@ -6,12 +6,12 @@ from src.common.models import ScheduleEventDto, NewClassDto, ItemsDto, ScheduleE
 
 from src.api.src.bot_client.message_sender import send_notification_about_new_class
 from src.api.src.builders.response_builder import ResponseBuilder
+from src.api.src.contexts.db_contex import DbContext
+from src.api.src.contexts.user_context import UserContext
 from src.api.src.database.crud.events_crud import EventCRUD
 from src.api.src.database.crud.private_courses_crud import PrivateCourseCRUD
-from src.api.src.database.db_setup import DbContext
 from src.api.src.functions.time_transformator import transform_class_time
 from src.api.src.routers.api_enpoints import APIEndpoints
-from src.api.src.utils.token_utils import UserContext
 
 
 router = APIRouter()

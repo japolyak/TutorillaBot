@@ -64,3 +64,8 @@ class Storage:
             names.append(f"sessionKey:{session_key}")
 
         self.__r.delete(*names)
+
+    def delete_old_session(self, user_id: int, session_key: str):
+        names = [f"sessionKey:{user_id}", f"sessionKey:{session_key}"]
+
+        self.__r.delete(*names)
