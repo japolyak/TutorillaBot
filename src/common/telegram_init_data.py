@@ -8,7 +8,7 @@ from telebot.types import CallbackQuery, Message
 
 from src.common.config import bot_token
 from src.common.models import BaseDto
-from src.api.src.utils.string_utils import StringUtils
+from src.common.string_utils import StringUtils
 
 
 class TelegramUser(BaseDto):
