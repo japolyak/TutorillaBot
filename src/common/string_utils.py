@@ -4,6 +4,10 @@ from traceback import FrameSummary
 
 class StringUtils:
     @classmethod
+    def is_none_or_empty(cls, val) -> bool:
+        return True if val else False
+
+    @classmethod
     def create_error_message(cls, exc: Exception) -> str:
         exception_details = str(exc)
         exception_type = type(exc).__name__
