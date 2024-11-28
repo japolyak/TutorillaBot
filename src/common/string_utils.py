@@ -5,7 +5,10 @@ from traceback import FrameSummary
 class StringUtils:
     @classmethod
     def is_none_or_empty(cls, val) -> bool:
-        return True if val else False
+        if val is None or len(val) == 0:
+            return True
+
+        return False
 
     @classmethod
     def create_error_message(cls, exc: Exception) -> str:
