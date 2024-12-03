@@ -1,48 +1,53 @@
-# TutorillaBot
+# Tutorilla
 
-**TutorillaBot** is an online Telegram-based language learning platform, designed to facilitate language learning.
-By connecting learners with experienced tutors, the platform provides a seamless and interactive platform where users can find
-and book personalised language lessons.
+**Tutorilla** is an interactive, Telegram-based language learning platform designed to connect learners with
+tutors for personalized language lessons. The platform prioritizes convenience and seamless interaction, enabling users
+to book and manage lessons directly through Telegram or via a dedicated web application.
 
-From a technical perspective, the platform is powered by three different microservices and virtual machine with **Redis** and **PostgreSQL** databases.
-All components are deployed in **Google Cloud Platform** and each plays a critical role in the overall system:
+The platform is powered by 3 interconnected applications: **Telegram Bot**, **API** and **Web App**,
+supported by 2 data storage systems: **Redis** and **PostgreSQL**.
+These components work together to deliver a smooth, reliable user experience.
 
-* **Telegram Bot** - Acts as the primary interface for users, providing direct interaction through the Telegram API.
-It connects to both the API and the Web App to facilitate real-time communication.
-It also integrates with **Redis** for caching and fast data retrieval.
-* **Redis** - Acts as an in-memory data store, providing caching and quick access to frequently requested user data.
-* **Web App** - Allows users to schedule lessons and manage their bookings.
-* **API** - Handles the communication between the Telegram Bot, Web App and the database.
-It handles data processing, storage, and retrieval, ensuring seamless integration and operation across the platform.
+---
 
-Due to the chosen cloud technologies and the location of the virtual machines, the initial interaction with the bot can
-take up to 10 seconds. This latency is a trade-off for current setup, which accommodates a small initial user base.
-As the project scales and the number of users increases, it's planned to adjust the deployment strategy to improve performance and reduce latency.
+## System overview
 
-## Used technologies
+The **Telegram Bot** serves as the primary interface, enabling users to communicate directly with the platform through Telegram. It connects to the
+**API** for data processing and to the **Web App** for scheduling and managing lessons, ensuring real-time interaction.
 
-# Deployment and Infrastructure
+The **Web App** provides an intuitive interface for users to schedule lessons, manage bookings, and view their progress.
 
-* **Docker**
-* **Google Cloud Platform**
-  * **Cloud Run**
-  * **Cloud Build**
-  * **Compute Engine**
+The **API** is the backbone of the system, facilitating communication between the **Telegram Bot**, **Web App** and the database.
+It handles data processing, storage operations, and integration to ensure consistent functionality across the platform.
 
-# Bot
+**Redis** is used as an in-memory data store, offering access to frequently used data, improving responsiveness for both the **Telegram Bot** and the **API**.
 
-* **Python 3.12**
-* **pyTelegramBotAPI**
-* **Redis**
-* **FastAPI**
+## Technologies and Infrastructure
 
-# API
+### Server and Deployment
 
-* **Python 3.12**
-* **FastAPI**
-* **PostgreSQL**
-* **SQLAlchemy** and **Alembic**
+* **Hetzner Cloud** for hosting
+* **Debian 12** operating system
+* **Nginx** for reverse proxy and load balancing
+* **DNS** configuration for domain management
+* **Docker** for containerization
 
-# WebApp
-* **TypeScript**
-* **Vue.js (v3)**, **Vuetify** and **Pinia**
+### Data Storage
+
+* **Redis 7.4.1**: In-memory caching for real-time performance
+* **PostgreSQL 16.5**: Reliable relational database
+
+### Bot
+
+* Built with **Python**
+* Uses **pyTelegramBotAPI** for Telegram integration
+
+### API
+
+* Built with **Python** and **FastAPI** for high-performance web services
+* Utilizes **SQLAlchemy** for ORM and **Alembic** for database migrations
+
+### WebApp
+* Developed with **TypeScript**
+* Frontend powered by **Vue 3**, **Vue Router** and managed via **Pinia**
+* Styled with **Vuetify** and **QCalendar** for **Quazar**
