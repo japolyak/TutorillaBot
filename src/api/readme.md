@@ -6,9 +6,7 @@ It's built using `FastAPI` for creating endpoints, `Pydantic` for data validatio
 
 ## Database
 
-The application uses a `PostgreSQL` database hosted on a `Google Cloud` virtual machine located in the North America region.
-This choice was based on financial considerations. Due to the database's location, requests to the database may take slightly longer than usual.
-To mitigate this, some requests are made (and others will be rewritten) as transactions and functions to reduce the number of database requests.
+The application uses a `PostgreSQL` database.
 
 ## Environment variables
 
