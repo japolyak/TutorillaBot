@@ -1,18 +1,4 @@
-# TutorillaAPI
-
-This API connects `BOT` and `Telegram WebApp` applications with database.
-
-It's built using `FastAPI` for creating endpoints, `Pydantic` for data validation and settings management, and `SQLAlchemy` for ORM  and database operations.
-
-## Database
-
-The application uses a `PostgreSQL` database.
-
 ## Environment variables
-
-In development, the app uses a `.env` file to store environment variables. The file should be located in the root directory of the project.
-In production app runs on Docker containers and uses Google Cloud Platform for reliability and scalability.
-Application requires the following environment variables for service configuration:
 
 Environment variables:
 * `ALLOWED_ORIGINS` - list of divided by `&` allowed origins for CORS. **Required** for `production`

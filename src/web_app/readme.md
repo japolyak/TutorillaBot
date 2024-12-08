@@ -1,16 +1,11 @@
-# WebApp
-
-The WebApp is an integral part of the **Tutorilla** project, designed to operate exclusively through Telegram.
-Its primary functions include scheduling classes, managing schedules, setting homework, and providing a user-friendly interface for various tasks.
-
-## Development Setup for Telegram Web App Debugging
+# Development Setup for Telegram Web App Debugging
 
 To debug the WebApp within the Telegram environment, follow one of the testing methods outlined on this [page](https://docs.ton.org/develop/dapps/telegram-apps/testing-apps).
 
 Telegram requires web apps to be served over https, making it impossible to test a locally running web app directly through Telegram.
 To facilitate debugging and development, you need to deploy the application to `Netlify` and retrieve the `WebAppInitData` object that Telegram provides.
 
-### Steps to Set Up Development Environment:
+## Steps to Set Up Development Environment:
 
 1. **Deploy the Application on Netlify**:
     - Choose the repository that contains your WebApp and branch for deployment in `Netlify`.
@@ -35,9 +30,8 @@ To be able to debug application with Telegram WebApp API, do first of above step
 Add url to `API` as `VITE_APP_API_LINK` environment variable on `netlify`.
 At this point local database should be the same as remote.
 
-## Production
+# Production
 
-The production environment uses **Docker** containers and is deployed on **Google Cloud Platform** to ensure reliability and scalability.
 The following environment variables are required for configuring the services:
 
 * `WEB_APP_PORT` - Port used by `nginx` to run the application.
