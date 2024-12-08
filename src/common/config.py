@@ -33,6 +33,5 @@ connection_string = f"postgresql+psycopg2://{_database_username}:{_database_pass
 
 # REDIS
 redis_host = os.getenv("REDIS_HOST", "localhost")
-redis_db = int(os.getenv("REDIS_DB", 0))
-redis_password = os.getenv("REDIS_PASSWORD", "redis")
-redis_username = os.getenv("REDIS_USERNAME", "redis")
+redis_db = 0
+redis_username = "default"

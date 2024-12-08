@@ -60,12 +60,12 @@ class TelegramInitData:
         init_data_dict = dict()
 
         if type(tg_data) == Message:
-            init_data_dict['message_id'] = tg_data.message_id
+            init_data_dict['message_id'] = f'{tg_data.message_id}'
         elif type(tg_data) == CallbackQuery:
-            init_data_dict['inline_message_id'] = tg_data.inline_message_id
+            init_data_dict['inline_message_id'] = f'{tg_data.inline_message_id}'
 
         init_data_dict['user'] = f'{{"id":{user.id},"first_name":"{user.first_name}","last_name":"{user.last_name}","language_code":"{user.language_code}"}}'
-        init_data_dict['auth_date'] = int(time.time())
+        init_data_dict['auth_date'] = f'{int(time.time())}'
 
         init_data = "&".join(f"{key}={quote(str(value))}" for key, value in init_data_dict.items())
 

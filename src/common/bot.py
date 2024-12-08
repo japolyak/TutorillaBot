@@ -2,7 +2,7 @@ import logging
 from telebot import ExceptionHandler, TeleBot, apihelper
 from telebot.storage import StateRedisStorage
 
-from .config import admin_tg_id, is_development, bot_token, redis_host, redis_db, redis_password, redis_username
+from .config import admin_tg_id, is_development, bot_token, redis_host, redis_db, redis_username
 from .string_utils import StringUtils
 
 log = logging.getLogger(__name__)
@@ -24,8 +24,7 @@ if is_development:
 
 state_storage = StateRedisStorage(
     host=redis_host,
-    db=redis_db,
-    password=redis_password
+    db=redis_db
 ) if redis_username is not None else None
 
 bot = TeleBot(

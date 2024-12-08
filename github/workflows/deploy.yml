@@ -1,0 +1,17 @@
+name: Docker Deplot tests
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      - name: Run Database Container
+        run: docker start tutorilla-database

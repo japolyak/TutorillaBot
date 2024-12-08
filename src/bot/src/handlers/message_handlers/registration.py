@@ -17,7 +17,7 @@ class RegistrationContext:
     def start_function(message: Message, redis: Redis, *args, **kwargs):
         chat_id = message.from_user.id
 
-        response = UserClient.get_user(tg_data=message)
+        response = UserClient.get_me(tg_data=message)
 
         if response.is_successful():
             user = response.data

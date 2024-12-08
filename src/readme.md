@@ -8,8 +8,6 @@ to change the next settings in bot configuration:
 
 ## Authentication and Authorization
 
-
-
 ## Code style
 
 * `PascalCase` - Classes, Enum and `i18n` dictionaries keys

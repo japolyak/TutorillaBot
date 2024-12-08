@@ -1,9 +1,3 @@
-# Deployment
-
-* Redis 7.4.1
-* PostgreSQL 16.5-bookworm
-
-
 ## Deployment
 
 Structure of production version of `.env` file
@@ -18,7 +12,7 @@ DB_PORT=your_db_port
 DB_HOST=postgres
 
 #API
-ALLOWED_ORIGINS=allowed_origins_separated_by_&
+ALLOWED_ORIGINS=allowed_origins_separated_by_&_char
 API_PORT=your_api_port
 ALGORITHM=your_encryption_algorithm
 API_LINK=http://api_container_name:API_PORT
@@ -30,27 +24,15 @@ WEB_APP_LINK=your_web_app_link
 
 #Redis
 REDIS_HOST=redis
-REDIS_DB=your_redis_db
-REDIS_PASSWORD=your_redis_password
-REDIS_USERNAME=your_redis_username
 
 #WebApp
 WEB_APP_PORT=your_web_app_port
 VITE_APP_API_LINK=https://your.domain.com/api
 ```
 
-```
+```shell
 docker network create tutorilla-network
 
 docker compose -f docker-compose-storages.yml -p tutorilla up -d
-
 docker compose -f docker-compose-apps.yml -p tutorilla up -d
-```
-
-## Redis setup
-
-```sh
-
-#replace username, password and table_number (0-15)
-ACL SETUSER username on >password +@all -select +select|table_number ~*
 ```

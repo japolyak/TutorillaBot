@@ -7,7 +7,7 @@ class UserClient:
     client = HTTPClient("users")
 
     @classmethod
-    def get_user(cls, **kwargs) -> ApiResponse[UserDto]:
+    def get_me(cls, **kwargs) -> ApiResponse[UserDto]:
         url = "me/"
 
         return cls.client.check_session(**kwargs).get(url, UserDto)
