@@ -13,5 +13,5 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
-      - name: Run Database Container
+      - name: Run Database Container ts
         run: docker start tutorilla-database
