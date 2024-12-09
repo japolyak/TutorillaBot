@@ -6,7 +6,7 @@ on:
     types: [completed]
 
 jobs:
-  deploy:
+  on-success:
     runs-on: self-hosted
 
     steps:
