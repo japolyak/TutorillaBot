@@ -6,6 +6,7 @@ services:
     build:
       context: .
       dockerfile: api.Dockerfile
+    image: ghcr.io/japolyak/tutorilla-api:latest
     env_file:
       - .env
     ports:
@@ -18,6 +19,7 @@ services:
     build:
       context: .
       dockerfile: bot.Dockerfile
+    image: ghcr.io/japolyak/tutorilla-bot:latest
     env_file:
       - .env
     ports:
@@ -32,6 +34,7 @@ services:
     build:
       context: .
       dockerfile: webapp.Dockerfile
+    image: ghcr.io/japolyak/tutorilla-web-app:latest
     env_file:
       - .env
     ports:
