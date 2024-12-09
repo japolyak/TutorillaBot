@@ -1,11 +1,9 @@
-name: Deploy to Server
+name: Deploy
 
 on:
   workflow_run:
-    workflows:
-      - Build and Push Docker Images to GHCR
-    types:
-      - completed
+    workflows: [Build]
+    types: [completed]
 
 jobs:
   deploy:
