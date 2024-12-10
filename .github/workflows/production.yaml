@@ -13,4 +13,4 @@ jobs:
 
     steps:
       - name: Pull and Run Latest Images
-        run: docker compose -f /home/repos/Tutorilla/src/docker-compose-production.yaml tutorilla up -d
+        run: docker compose -f /home/repos/Tutorilla/src/docker-compose-production.yaml -p tutorilla up -d
