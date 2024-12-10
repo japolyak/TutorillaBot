@@ -4,6 +4,7 @@ services:
   api:
     container_name: tutorilla-api
     image: ghcr.io/japolyak/tutorilla-api:latest
+    platform: linux/amd64
     env_file:
       - .env
     ports:
@@ -14,6 +15,7 @@ services:
   bot:
     container_name: tutorilla-bot
     image: ghcr.io/japolyak/tutorilla-bot:latest
+    platform: linux/amd64
     env_file:
       - .env
     ports:
@@ -26,6 +28,7 @@ services:
   web-app:
     container_name: tutorilla-web-app
     image: ghcr.io/japolyak/tutorilla-web-app:latest
+    platform: linux/amd64
     env_file:
       - .env
     ports:

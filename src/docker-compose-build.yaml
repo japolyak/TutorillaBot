@@ -5,13 +5,16 @@ services:
     build:
       context: .
       dockerfile: api.Dockerfile
+    platform: linux/amd64
 
   bot:
     build:
       context: .
       dockerfile: bot.Dockerfile
+    platform: linux/amd64
 
   web-app:
     build:
       context: .
       dockerfile: webapp.Dockerfile
+    platform: linux/amd64
