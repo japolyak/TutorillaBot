@@ -33,6 +33,5 @@ VITE_APP_API_LINK=https://your.domain.com/api
 ```shell
 docker network create tutorilla-network
 
-docker compose -f docker-compose-storages.yml -p tutorilla up -d
-docker compose -f docker-compose-apps.yml -p tutorilla up -d
+docker compose -f docker-compose-storages.yaml -p tutorilla up -d
 ```

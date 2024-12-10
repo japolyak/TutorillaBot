@@ -3,7 +3,7 @@ name: Build
 on:
   push:
     branches:
-      - main
+      - development
 
 jobs:
   build-and-push:
@@ -26,5 +26,5 @@ jobs:
 
       - name: Build and Push Docker Images
         run: |
-          docker-compose -f src/docker-compose-apps.yml build
-          docker-compose -f src/docker-compose-apps.yml push
+          docker-compose -f src/docker-compose-build.yaml build
+          docker-compose -f src/docker-compose-build.yaml push

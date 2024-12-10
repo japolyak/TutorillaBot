@@ -13,7 +13,4 @@
 #
 #    steps:
 #      - name: Pull and Run Latest Images
-#        run: |
-#          docker pull ghcr.io/japolyak/tutorilla-api:latest
-#          docker pull ghcr.io/japolyak/tutorilla-bot:latest
-#          docker pull ghcr.io/japolyak/tutorilla-web-app:latest
+#        run: docker-compose -f /home/repos/Tutorilla/src/docker-compose-production.yaml tutorilla up -d
