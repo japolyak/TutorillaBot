@@ -21,15 +21,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y docker-compose
 
-      - name: Create .env File
-        run: |
-          echo "API_KEY=TESTkey >> src/.env
-          echo "DB_PASSWORD=TESTPSWD >> src/.env
-
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build and Push Docker Images
         run: |
-          docker-compose -f src/docker-compose-apps.yml build
-          docker-compose -f src/docker-compose-apps.yml push
+          docker-compose -f src/docker-compose-build.yaml build --platform
+          docker-compose -f src/docker-compose-build.yaml push
