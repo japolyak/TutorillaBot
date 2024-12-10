@@ -2,48 +2,16 @@ version: '3.8'
 
 services:
   api:
-    container_name: tutorilla-api
     build:
       context: .
       dockerfile: api.Dockerfile
-    image: ghcr.io/japolyak/tutorilla-api:latest
-    env_file:
-      - .env
-    ports:
-      - '8000:8000'
-    networks:
-      - tutorilla-network
 
   bot:
-    container_name: tutorilla-bot
     build:
       context: .
       dockerfile: bot.Dockerfile
-    image: ghcr.io/japolyak/tutorilla-bot:latest
-    env_file:
-      - .env
-    ports:
-      - '88:88'
-    depends_on:
-      - api
-    networks:
-      - tutorilla-network
 
   web-app:
-    container_name: tutorilla-web-app
     build:
       context: .
       dockerfile: webapp.Dockerfile
-    image: ghcr.io/japolyak/tutorilla-web-app:latest
-    env_file:
-      - .env
-    ports:
-      - '3021:3021'
-    depends_on:
-      - api
-    networks:
-      - tutorilla-network
-
-networks:
-  tutorilla-network:
-    external: true

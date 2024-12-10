@@ -1,19 +1,19 @@
-name: Deploy
-
-on:
-  workflow_run:
-    workflows:
-      - Build
-    types:
-      - completed
-
-jobs:
-  on-success:
-    runs-on: self-hosted
-
-    steps:
-      - name: Pull and Run Latest Images
-        run: |
-          docker pull ghcr.io/japolyak/tutorilla-api:latest
-          docker pull ghcr.io/japolyak/tutorilla-bot:latest
-          docker pull ghcr.io/japolyak/tutorilla-web-app:latest
+#name: Deploy
+#
+#on:
+#  workflow_run:
+#    workflows:
+#      - Build
+#    types:
+#      - completed
+#
+#jobs:
+#  on-success:
+#    runs-on: self-hosted
+#
+#    steps:
+#      - name: Pull and Run Latest Images
+#        run: |
+#          docker pull ghcr.io/japolyak/tutorilla-api:latest
+#          docker pull ghcr.io/japolyak/tutorilla-bot:latest
+#          docker pull ghcr.io/japolyak/tutorilla-web-app:latest
