@@ -30,7 +30,7 @@ class StringUtils:
             )
         else:
             message_parts = (
-                f"*{exception_type}* occurred\.",
+                f"*{exception_type}* occurred\\.",
                 "Details:",
                 f"{cls.__replace_characters_in_telegram_rule(exception_details)}"
             )

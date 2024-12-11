@@ -24,13 +24,18 @@ It handles data processing, storage operations, and integration to ensure consis
 
 ## Technologies and Infrastructure
 
+### CI/CD
+
+* **GitHub Actions** for automated continuous integration and deployment pipelines
+* **Docker** and **Docker Compose** for containerization
+* **GitHub Container Registry (GHCR)** storage for Docker images
+
 ### Server and Deployment
 
 * **Hetzner Cloud** for hosting
 * **Debian 12** operating system
 * **Nginx** for reverse proxy and load balancing
 * **DNS** configuration for domain management
-* **Docker** for containerization
 
 ### Data Storage
 

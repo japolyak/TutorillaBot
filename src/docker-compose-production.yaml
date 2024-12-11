@@ -7,7 +7,7 @@ services:
     env_file:
       - .env
     ports:
-      - '8000:8000'
+      - '${API_PORT}:${API_PORT}'
     networks:
       - tutorilla-network
 
@@ -17,7 +17,7 @@ services:
     env_file:
       - .env
     ports:
-      - '88:88'
+      - '${BOT_PORT}:${BOT_PORT}'
     depends_on:
       - api
     networks:
@@ -29,7 +29,7 @@ services:
     env_file:
       - .env
     ports:
-      - '3021:3021'
+      - '${WEB_APP_PORT}:${WEB_APP_PORT}'
     depends_on:
       - api
     networks:
