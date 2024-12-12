@@ -85,8 +85,11 @@ class HTTPClient:
 
         result, cookies = self.__response(response, TokenDto)
 
-        if not result.is_successful() or result.data is None:
-            raise Exception('No tokens:(')
+        if not result.is_successful():
+            raise Exception('Unauthorized')
+
+        if result.data is None:
+            raise Exception('No data')
 
         return result.data.access_token, cookies.get("sessionKey")
 
