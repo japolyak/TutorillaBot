@@ -1,9 +1,10 @@
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 
+dot_env_path = Path(__file__).resolve().parent.parent / ".env"
 
-load_dotenv()
-
+load_dotenv(dot_env_path)
 
 log_level = os.getenv("LOG_LEVEL", "DEBUG")
 is_development = os.getenv("IS_DEVELOPMENT", "0") == "1"
@@ -13,12 +14,10 @@ refresh_token_ttl_in_days = 7
 
 # API
 allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split('&')
-algorithm = os.getenv("ALGORITHM")
+algorithm = os.getenv("ALGORITHM", "HS256")
 
 # Telegram
 bot_token = os.getenv("BOT_TOKEN", "")
-use_webhook = os.getenv("USE_WEBHOOK", "True") == "True"
-webhook_url = os.getenv("WEBHOOK_URL", "")
 web_app_link = os.getenv("WEB_APP_LINK")
 admin_tg_id = int(os.getenv("ADMIN_TG_ID"))
 
