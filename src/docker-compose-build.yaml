@@ -5,13 +5,16 @@ services:
     build:
       context: .
       dockerfile: api.Dockerfile
+    image: ghcr.io/japolyak/tutorilla-api:latest
 
   bot:
     build:
       context: .
       dockerfile: bot.Dockerfile
+    image: ghcr.io/japolyak/tutorilla-bot:latest
 
   web-app:
     build:
       context: .
       dockerfile: webapp.Dockerfile
+    image: ghcr.io/japolyak/tutorilla-web-app:latest
