@@ -12,5 +12,11 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Pull and Run Latest Images
-        run: docker compose -f /home/repos/Tutorilla/src/docker-compose-production.yaml -p tutorilla up -d
+      - name: Pull updated images
+        run: docker compose -f ${{ secrets.DOCKER_COMPOSE_PATH }}/docker-compose-production.yaml -p tutorilla pull
+
+      - name: Run latest containers
+        run: docker compose -f ${{ secrets.DOCKER_COMPOSE_PATH }}/docker-compose-production.yaml -p tutorilla up -d
+
+      - name: Prune unused docker data
+        run: docker system prune -af
