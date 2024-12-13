@@ -1,5 +1,6 @@
 from hashlib import sha256
 from time import time
+import logging
 from jwt import encode, decode, ExpiredSignatureError, InvalidTokenError
 from datetime import datetime, timedelta, timezone
 from fastapi import Depends, HTTPException, status, Cookie
@@ -12,6 +13,9 @@ from src.common.storage import Storage
 from src.common.telegram_init_data import TelegramUser
 
 from src.api.src.database.models import User
+
+
+log = logging.getLogger(__name__)
 
 
 class RefreshUserContextModel(BaseDto):
@@ -104,10 +108,10 @@ class TokenUtils:
         refresh_token = Storage().get_refresh_token(session_key)
 
         if not refresh_token:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Session has expired."
-            )
+            message = "Session has expired"
+
+            log.exception(msg=message)
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=message)
 
         payload = TokenUtils.decode_token(refresh_token)
 
@@ -122,15 +126,21 @@ class TokenUtils:
 
             return decoded_token
         except ExpiredSignatureError:
+            message = "Token has expired"
+
+            log.exception(msg=message)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token has expired.",
+                detail=message,
                 headers={"WWW-Authenticate": "Bearer"}
             )
         except InvalidTokenError:
+            message = "Invalid token"
+
+            log.exception(msg=message)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token.",
+                detail=message,
                 headers={"WWW-Authenticate": "Bearer"}
             )
 
