@@ -1,7 +1,7 @@
 from string import Template
 
 en = {
-    "Welcome": Template("Glad You are back, $name !"),
+    "Welcome": Template("Glad You are back, $name"),
     "email": Template("Email"),
     "ProvideYourEmail": Template("Provide your email"),
     "ChooseYourTimeZone": Template("Choose your time zone"),
