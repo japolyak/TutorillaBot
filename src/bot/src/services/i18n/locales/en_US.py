@@ -20,7 +20,6 @@ en = {
     "CourseAddedSuccessfully": Template("Course added successfully"),
     "SubscribeCourse": Template("Subject: $subject\nTutor: $tutor\nPrice: $price"),
     "NoCoursesFound": Template("No courses found"),
-    "TutorInCourse": Template("Tutor: <b>$tutor</b>"),
     "StudentInCourse": Template("Student: <b>$student</b>"),
     "SubjectAndRoleInCourse": Template("Subject: $subject\n$role: $name"),
     "AdminPanelIsHere": Template("Admin panel is here"),
@@ -71,4 +70,3 @@ en = {
     "TutorRequestsKBtn": Template("Tutor requests"),
     "StudentRequestsKBtn": Template("Student requests"),
 }
-
