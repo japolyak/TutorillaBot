@@ -1,5 +1,4 @@
 import os
-import logging
 from typing import Optional
 
 from alembic import command as alembic_command
@@ -12,80 +11,87 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.schema import CreateSchema
 from sqlalchemy_utils import database_exists, create_database
 
-from src.common.config import is_development, connection_string, schema_name
 from src.api.src.database.mockdata import insert_mock_data, create_admin
-
-
-log = logging.getLogger(__name__)
+from src.common.config import is_development, connection_string, schema_name
+from src.common.logger import log
 
 
 class DBManager:
-    __engine: Optional[Engine]
-    __session: Optional[sessionmaker]
+    _engine: Optional[Engine]
+    _session_factory: Optional[sessionmaker]
 
     @property
-    def session(self):
-        return self.__session()
+    def session(self) -> Optional[sessionmaker]:
+        """Returns a new session instance."""
 
-    @session.setter
-    def session(self, value):
-        self.__session = value
+        if not self._session_factory:
+            log.error("Session factory is not initialized.")
+            raise RuntimeError("Session factory is not initialized.")
+
+        return self._session_factory()
 
     def __init__(self):
-        self.__engine = create_engine(connection_string, echo=is_development)
-        self.session = sessionmaker(autocommit=False, autoflush=False, bind=self.__engine)
+        self._engine = create_engine(connection_string, echo=is_development)
+        self._session_factory = sessionmaker(autocommit=False, autoflush=False, bind=self._engine)
 
     def initialize_database(self):
-        if not self.__engine:
-            log.warning(msg="Engine was not created")
+        """Initialize the database by creating schema, running migrations, and populating data."""
+
+        if not self._engine:
+            log.warning(msg="Engine was not created.")
             return self
 
         try:
             if database_exists(connection_string):
-                schema_created = self.__create_schema()
-                self.__migrate()
+                schema_created = self._create_schema()
+                self._run_migrations()
 
                 if schema_created: return self
             else:
-                log.warning(msg="Database does not exist, attempting to create it.")
+                log.warning(msg="Database does not exist. Creating database...")
                 create_database(connection_string)
-                log.info(msg="Database successfully created.")
+                log.info(msg="Database created successfully.")
 
-                self.__create_schema()
-                self.__migrate()
+                self._create_schema()
+                self._run_migrations()
 
-            create_admin(self.__engine, is_development)
-            log.info(msg="Admin successfully created.")
+            create_admin(self._engine, is_development)
+            log.info(msg="Admin account created.")
 
             if is_development:
-                insert_mock_data(self.__engine)
-                log.info(msg="Mock data inserted.")
+                insert_mock_data(self._engine)
+                log.info(msg="Mock data inserted successfully.")
+
             return self
         except Exception as e:
-            log.error(msg=f"Error while initializing database: {e}")
-            pass
+            log.error(msg="Error while initializing database.", exc_info=True)
+        finally:
+            return self
 
     #region Private methods
-    def __create_schema(self) -> bool:
-        conn = self.__engine.connect()
+    def _create_schema(self) -> bool:
+        log.info("already exists.")
+        with self._engine.connect() as conn:
+            if conn.dialect.has_schema(conn, schema_name):
+                log.info(f"Schema '{schema_name}' already exists.")
+                return True
 
-        if conn.dialect.has_schema(conn, schema_name): return True
+            conn.execute(CreateSchema(schema_name))
+            conn.commit()
+            print("created successfully")
+            log.info(f"Schema '{schema_name}' created successfully.")
+            return False
 
-        conn.execute(CreateSchema(schema_name))
-        conn.commit()
-        log.info(msg="Schema successfully created.")
-
-        return False
-
-    def __is_migration_pending(self, config: Config) -> bool:
-        with self.__engine.begin() as conn:
+    def _is_migration_pending(self, config: Config) -> bool:
+        """Checks if there are pending migrations."""
+        with self._engine.begin() as conn:
             last_applied_version = migration.MigrationContext.configure(conn).get_current_revision()
             latest_version = ScriptDirectory.from_config(config).get_current_head()
 
             return last_applied_version != latest_version
 
-    def __migrate(self):
-        """Applies alembic migrations."""
+    def _run_migrations(self):
+        """Applies Alembic migrations if there are any pending."""
 
         alembic_ini_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         script_location = alembic_ini_path + "/database/migrations"
@@ -93,9 +99,11 @@ class DBManager:
         alembic_cfg = Config(alembic_ini_path)
         alembic_cfg.set_main_option("script_location", script_location)
 
-        if not self.__is_migration_pending(alembic_cfg):
+        if not self._is_migration_pending(alembic_cfg):
+            log.info("No pending migrations.")
             return
 
+        log.info("Applying migrations...")
         alembic_command.upgrade(alembic_cfg, "head")
     #endregion
 

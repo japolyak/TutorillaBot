@@ -27,3 +27,6 @@ def configure_logger():
         return
 
     logging.basicConfig(level=log_level)
+
+log = logging.getLogger(__name__)
+configure_logger()
