@@ -42,8 +42,12 @@ class TokenPayload(BaseDto):
     def from_db_model(cls, user: User):
         if user.is_admin:
             role = Role.Admin
+        elif user.is_student:
+            role = Role.Student
+        elif user.is_tutor:
+            role = Role.Tutor
         else:
-            role = Role.Tutor if user.is_tutor else Role.Student
+            role = None
 
         return cls(id=user.id, first_name=user.first_name, last_name=user.last_name, role=role, registered=True)
 
