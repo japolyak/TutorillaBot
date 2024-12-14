@@ -9,6 +9,9 @@ from src.common.redis_configuration import redis_instance
 
 class Storage:
     __r: Redis = redis_instance
+    access_token_key = "accessToken"
+    refresh_token_key = "refreshToken"
+    refresh_token_id_key = "refreshTokenId"
 
     def add_user(self, user_id: int, user: UserDto):
         user_id = str(user_id)
@@ -35,37 +38,33 @@ class Storage:
             case _:
                 return False
 
-    def set_user_session(self, user_id: int, access_token: str, refresh_token: str):
-        access_token_ttl = timedelta(minutes=access_token_ttl_in_minutes)
-        refresh_token_ttl = timedelta(days=refresh_token_ttl_in_days)
-
-        self.__r.setex(f"accessToken:{user_id}", access_token_ttl, access_token)
-        self.__r.setex(f"sessionKey:{user_id}", refresh_token_ttl, refresh_token)
-
     def get_access_token(self, user_id: int) -> Optional[str]:
-        return self.__r.getex(f"accessToken:{user_id}")
+        return self.__r.getex(f"{self.access_token_key}:{user_id}")
 
-    def get_session_key(self, user_id: int) -> Optional[str]:
-        return self.__r.getex(f"sessionKey:{user_id}")
+    def set_access_token(self, user_id: int, access_token: str):
+        access_token_ttl = timedelta(minutes=access_token_ttl_in_minutes)
+        self.__r.setex(f"{self.access_token_key}:{user_id}", access_token_ttl, access_token)
 
-    def set_user_refresh_token(self, key: str, token: str):
+    def get_refresh_token_id(self, user_id: int) -> Optional[str]:
+        return self.__r.getex(f"{self.refresh_token_id_key}:{user_id}")
+
+    def set_refresh_token_id(self, user_id: int, refresh_token_id: str):
+        refresh_token_ttl = timedelta(days=refresh_token_ttl_in_days)
+        self.__r.setex(f"{self.refresh_token_id_key}:{user_id}", refresh_token_ttl, refresh_token_id)
+
+    def set_refresh_token(self, key: str, token: str):
         refresh_token_ttl = timedelta(days=refresh_token_ttl_in_days)
 
-        self.__r.setex(f"sessionKey:{key}", refresh_token_ttl, token)
+        self.__r.setex(f"{self.refresh_token_key}:{key}", refresh_token_ttl, token)
 
-    def get_refresh_token(self, session_key: str) -> Optional[str]:
-        return self.__r.getex(f"sessionKey:{session_key}")
+    def get_refresh_token(self, refresh_token_id: str) -> Optional[str]:
+        return self.__r.getex(f"{self.refresh_token_key}:{refresh_token_id}")
 
     def delete_session(self, user_id: int):
-        names = [f"accessToken:{user_id}", f"sessionKey:{user_id}"]
-        session_key = self.get_session_key(user_id)
+        names = [f"{self.access_token_key}:{user_id}", f"{self.refresh_token_id_key}:{user_id}"]
+        refresh_token_id = self.get_refresh_token_id(user_id)
 
-        if session_key:
-            names.append(f"sessionKey:{session_key}")
-
-        self.__r.delete(*names)
-
-    def delete_old_session(self, user_id: int, session_key: str):
-        names = [f"sessionKey:{user_id}", f"sessionKey:{session_key}"]
+        if refresh_token_id:
+            names.append(f"{self.refresh_token_key}:{refresh_token_id}")
 
         self.__r.delete(*names)

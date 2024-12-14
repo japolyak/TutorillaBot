@@ -48,10 +48,7 @@ export class AuthenticationClient {
     private static async refreshSessionRequest(): Promise<TokenDto | null> {
 		const url = `${import.meta.env.VITE_APP_API_LINK}/auth/refresh/`;
 
-		const request = ky.get(
-			url,
-			{ cache: 'no-store', credentials: 'include' },
-		).json<TokenDto>();
+		const request = ky.get(url, { cache: 'no-store', credentials: 'include' }).json<TokenDto>();
 		const apiResponse = await ApiUtils.createApiResponse(request);
 
 		return apiResponse.isSuccess ? apiResponse.data : null;

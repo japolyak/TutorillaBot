@@ -3,10 +3,11 @@ from requests.cookies import RequestsCookieJar
 from typing import Optional, Union, Generic, Type, Any, Tuple
 from telebot.types import Message, CallbackQuery
 
-from src.common.models import T, ErrorDto, TokenDto
 from src.common.config import api_link
-from src.common.telegram_init_data import TelegramInitData
+from src.common.logger import log
+from src.common.models import T, ErrorDto, TokenDto
 from src.common.storage import Storage
+from src.common.telegram_init_data import TelegramInitData
 
 
 class ApiResponse(Generic[T]):
@@ -20,85 +21,41 @@ class ApiResponse(Generic[T]):
 
 
 class HTTPClient:
-    __base_url = api_link
-    access_token: Optional[str] = None
+    _base_url = api_link
+    _access_token: Optional[str] = None
 
     def __init__(self, url: str):
-        self.module_url = f"{self.__base_url}/{url}/"
+        self.module_url = f"{self._base_url}/{url}/"
         self.session = Session()
 
     def check_session(self, **kwargs):
-        if kwargs["tg_data"] is None:
-            raise Exception('No TG data was passed')
+        if kwargs["tg_data"] is None: self._log_bad_request('No TG data was passed')
 
         tg_data: Optional[Union[Message, CallbackQuery]] = kwargs["tg_data"]
 
         access_token = Storage().get_access_token(tg_data.from_user.id)
+        refresh_token_id = Storage().get_refresh_token_id(tg_data.from_user.id)
 
-        if access_token is None:
-            session_key = Storage().get_session_key(tg_data.from_user.id)
+        if access_token and refresh_token_id: return self._set_current_session(access_token, refresh_token_id)
 
-            if session_key is None:
-                init_data = TelegramInitData().create_str_init_data(tg_data, {"from_bot": True})
+        if refresh_token_id is None:
+            init_data = TelegramInitData().create_str_init_data(tg_data, {"from_bot": True})
 
-                access_token, session_key = self.__authenticate(init_data)
-            else:
-                access_token, session_key = self.__refresh_access_token(session_key)
-                Storage().delete_old_session(tg_data.from_user.id, session_key)
+            access_token, refresh_token_id = self._authenticate(init_data)
+            Storage().set_refresh_token_id(tg_data.from_user.id, refresh_token_id)
+        else:
+            access_token = self._refresh_access_token(refresh_token_id)
 
-            if session_key:
-                Storage().set_user_session(tg_data.from_user.id, access_token, session_key)
-                self.session.cookies.set("sessionKey", session_key)
+        Storage().set_access_token(tg_data.from_user.id, access_token)
 
-        self.access_token = access_token
-
-        return self
-
-    def __authenticate(self, init_data: str) -> Tuple[str, Optional[str]]:
-        headers = {
-            "Init-Data": init_data,
-        }
-
-        response = self.session.request(
-            method="GET",
-            url=self.__base_url + "/auth/me/",
-            headers=headers
-        )
-
-        result, cookies = self.__response(response, TokenDto)
-
-        if not result.is_successful() or result.data is None:
-            raise Exception('No tokens:(')
-
-        return result.data.access_token, cookies.get("sessionKey")
-
-    def __refresh_access_token(self, session_key: str) -> Tuple[str, str]:
-        headers = {
-            "SessionKey": session_key
-        }
-
-        response = self.session.request(
-            method="GET",
-            url=self.__base_url + "/auth/refresh/",
-            headers=headers
-        )
-
-        result, cookies = self.__response(response, TokenDto)
-
-        if not result.is_successful():
-            raise Exception('Unauthorized')
-
-        if result.data is None:
-            raise Exception('No data')
-
-        return result.data.access_token, cookies.get("sessionKey")
+        return self._set_current_session(access_token, refresh_token_id)
 
     def request(self, method, url, model_class: Type[T], **kwargs):
         data = kwargs.get("data")
         passed_headers: Optional[dict] = kwargs.get("headers")
 
         headers = {
-            "Authorization": f"Bearer {self.access_token}"
+            "Authorization": f"Bearer {self._access_token}"
         }
 
         if passed_headers is not None:
@@ -111,10 +68,23 @@ class HTTPClient:
             headers=headers
         )
 
-        return self.__response(response, model_class)[0]
+        return self._response(response, model_class)[0]
 
+    def get(self, url, model_class: Type[T], **kwargs):
+        return self.request("GET", url, model_class, **kwargs)
+
+    def post(self, url, model_class: Type[T], **kwargs):
+        return self.request("POST", url, model_class, **kwargs)
+
+    def put(self, url, model_class: Type[T], **kwargs):
+        return self.request("PUT", url, model_class, **kwargs)
+
+    def delete(self, model_class: Type[T], url, **kwargs):
+        return self.request("DELETE", url, model_class, **kwargs)
+
+    #region Private methods
     @classmethod
-    def __response(cls, response: Response, model_class: Type[T]) ->Tuple[ApiResponse[T], Optional[RequestsCookieJar]]:
+    def _response(cls, response: Response, model_class: Type[T]) ->Tuple[ApiResponse[T], Optional[RequestsCookieJar]]:
         if not response.ok:
             error = ErrorDto(**response.json())
             return ApiResponse[T](error=error), None
@@ -128,14 +98,48 @@ class HTTPClient:
 
         return ApiResponse[T](data=data), response.cookies
 
-    def get(self, url, model_class: Type[T], **kwargs):
-        return self.request("GET", url, model_class, **kwargs)
+    def _set_current_session(self, access_token, refresh_token_id):
+        self._access_token = access_token
+        self.session.cookies.set("refreshTokenId", refresh_token_id)
+        return self
 
-    def post(self, url, model_class: Type[T], **kwargs):
-        return self.request("POST", url, model_class, **kwargs)
+    def _authenticate(self, init_data: str) -> Tuple[str, str]:
+        response = self.session.request(
+            method="GET",
+            url=self._base_url + "/auth/me/",
+            headers={
+                "Init-Data": init_data,
+            }
+        )
 
-    def put(self, url, model_class: Type[T], **kwargs):
-        return self.request("PUT", url, model_class, **kwargs)
+        result, cookies = self._response(response, TokenDto)
 
-    def delete(self, model_class: Type[T], url, **kwargs):
-        return self.request("DELETE", url, model_class, **kwargs)
+        if not result.is_successful() or result.data is None: self._log_bad_request('No access token')
+
+        session_key = cookies.get("refreshTokenId")
+
+        if not session_key: self._log_bad_request('No refresh token id')
+
+        return result.data.access_token, session_key
+
+    def _refresh_access_token(self, refresh_token_id: str) -> str:
+        response = self.session.request(
+            method="GET",
+            url=self._base_url + "/auth/refresh/",
+            cookies={
+                'refreshTokenId': refresh_token_id
+            }
+        )
+
+        result, _ = self._response(response, TokenDto)
+
+        if not result.is_successful(): self._log_bad_request('User is unauthorized')
+
+        if result.data is None: self._log_bad_request('No access token')
+
+        return result.data.access_token
+
+    def _log_bad_request(self, msg: str):
+        log.info(msg)
+        raise Exception(msg)
+    #endregion

@@ -35,27 +35,27 @@ async def validate_bot_user(request: Request, db: DbContext):
     else:
         payload = TokenPayload.from_db_model(db_user)
 
-    access_token, session_key = TokenUtils.create_token_pair(payload)
+    access_token, refresh_token_id = TokenUtils.create_token_pair(payload)
 
     result = TokenDto(access_token=access_token)
 
-    return ResponseBuilder.success_response(content=result, cookies={ 'sessionKey': session_key })
+    return ResponseBuilder.success_response(content=result, cookies={ 'refreshTokenId': refresh_token_id })
 
 
-@router.get(path=APIEndpoints.Authentication.Prolong, status_code=status.HTTP_200_OK, response_model=TokenDto,
+@router.get(path=APIEndpoints.Authentication.Refresh, status_code=status.HTTP_200_OK, response_model=TokenDto,
             summary="Refreshes access token")
 async def refresh_access_token(user: RefreshUserContext, db: DbContext):
     if user.registered:
         db_user = UserCRUD.get_user(user.id, db)
 
-        if db_user is None:
-            return ResponseBuilder.error_response(message='User was not found')
+        if db_user is None: return ResponseBuilder.error_response(message='User was not found')
+
         payload = TokenPayload.from_db_model(db_user)
     else:
         payload = TokenPayload.from_user_context(user)
 
-    access_token, session_key = TokenUtils.create_token_pair(payload)
+    access_token = TokenUtils.create_access_token(payload)
 
     result = TokenDto(access_token=access_token)
 
-    return ResponseBuilder.success_response(content=result, cookies={ 'sessionKey': session_key })
+    return ResponseBuilder.success_response(content=result)

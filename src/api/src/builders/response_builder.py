@@ -1,13 +1,10 @@
-import logging
 from fastapi import Response, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from typing import Any, Optional
 
 from src.common.config import refresh_token_ttl_in_days
-
-
-log = logging.getLogger(__name__)
+from src.common.logger import log
 
 
 class ResponseBuilder:

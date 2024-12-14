@@ -1,6 +1,5 @@
 from hashlib import sha256
 from time import time
-import logging
 from jwt import encode, decode, ExpiredSignatureError, InvalidTokenError
 from datetime import datetime, timedelta, timezone
 from fastapi import Depends, HTTPException, status, Cookie
@@ -10,12 +9,10 @@ from typing import Annotated, Optional, Tuple
 from src.common.config import bot_token, algorithm, access_token_ttl_in_minutes, refresh_token_ttl_in_days
 from src.common.models import BaseDto, Role
 from src.common.storage import Storage
+from src.common.logger import log
 from src.common.telegram_init_data import TelegramUser
 
 from src.api.src.database.models import User
-
-
-log = logging.getLogger(__name__)
 
 
 class RefreshUserContextModel(BaseDto):
@@ -64,37 +61,21 @@ class TokenUtils:
 
     @classmethod
     def create_token_pair(cls, payload: TokenPayload) -> Tuple[str, str]:
-        access_token = cls.__create_token(payload.model_dump(), minutes=access_token_ttl_in_minutes)
-        refresh_token = cls.__create_token(payload.model_dump(exclude={"role"}), days=refresh_token_ttl_in_days)
-        session_key = cls.__create_refresh_key(payload.id)
+        access_token = cls.create_access_token(payload)
+        refresh_token = cls._create_token(payload.model_dump(exclude={"role"}), days=refresh_token_ttl_in_days)
+        refresh_token_id = cls._create_refresh_key(payload.id)
 
-        Storage().set_user_refresh_token(session_key, refresh_token)
+        Storage().set_refresh_token(refresh_token_id, refresh_token)
 
-        return access_token, session_key
-
-    @classmethod
-    def __create_token(cls, data: dict, days=0, minutes=0):
-        to_encode = data.copy()
-
-        token_ttl = timedelta(days=days, minutes=minutes)
-        expires = datetime.now(timezone.utc) + token_ttl
-
-        to_encode.update({"exp": expires})
-        encoded_jwt = encode(to_encode, cls.__get_secret_key(), algorithm=algorithm)
-
-        return encoded_jwt
+        return access_token, refresh_token_id
 
     @classmethod
-    def __create_refresh_key(cls, user_id: int) -> str:
-        timestamp = time()
-        raw_data = f"{user_id}:{timestamp}"
-
-        session_key = sha256(raw_data.encode()).hexdigest()
-        return session_key
+    def create_access_token(cls, payload: TokenPayload) -> str:
+        return cls._create_token(payload.model_dump(), minutes=access_token_ttl_in_minutes)
 
     @classmethod
     async def get_current_user(cls, token: Annotated[str, Depends(oauth2_scheme)]) -> UserContextModel:
-        payload = TokenUtils.decode_token(token)
+        payload = TokenUtils._decode_token(token)
 
         user = UserContextModel.model_validate(payload)
 
@@ -103,7 +84,7 @@ class TokenUtils:
     @classmethod
     async def get_refresh_user(
             cls,
-            session_key: Annotated[str | None, Cookie(alias="sessionKey")] = None
+            session_key: Annotated[str | None, Cookie(alias="refreshTokenId")] = None
     ) -> RefreshUserContextModel:
         refresh_token = Storage().get_refresh_token(session_key)
 
@@ -113,16 +94,41 @@ class TokenUtils:
             log.exception(msg=message)
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=message)
 
-        payload = TokenUtils.decode_token(refresh_token)
+        payload = TokenUtils._decode_token(refresh_token)
 
         user = RefreshUserContextModel.model_validate(payload)
 
         return user
 
+    #region Private methods
     @classmethod
-    def decode_token(cls, token: str) -> dict:
+    def _create_token(cls, data: dict, days=0, minutes=0):
+        to_encode = data.copy()
+
+        token_ttl = timedelta(days=days, minutes=minutes)
+        expires = datetime.now(timezone.utc) + token_ttl
+
+        to_encode.update({"exp": expires})
+        encoded_jwt = encode(to_encode, cls._get_secret_key(), algorithm=algorithm)
+
+        return encoded_jwt
+
+    @classmethod
+    def _create_refresh_key(cls, user_id: int) -> str:
+        timestamp = time()
+        raw_data = f"{user_id}:{timestamp}"
+
+        session_key = sha256(raw_data.encode()).hexdigest()
+        return session_key
+
+    @classmethod
+    def _get_secret_key(cls) -> bytes:
+        return sha256(bot_token.encode()).digest()
+
+    @classmethod
+    def _decode_token(cls, token: str) -> dict:
         try:
-            decoded_token = decode(token, cls.__get_secret_key(), algorithms=[algorithm, ])
+            decoded_token = decode(token, cls._get_secret_key(), algorithms=[algorithm, ])
 
             return decoded_token
         except ExpiredSignatureError:
@@ -143,7 +149,4 @@ class TokenUtils:
                 detail=message,
                 headers={"WWW-Authenticate": "Bearer"}
             )
-
-    @classmethod
-    def __get_secret_key(cls) -> bytes:
-        return sha256(bot_token.encode()).digest()
+    #endregion
