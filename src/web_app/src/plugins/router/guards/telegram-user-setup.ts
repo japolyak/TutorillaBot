@@ -1,17 +1,33 @@
 import { useSessionStore } from '@/modules/core/store/session-store';
 import { useRouterStore } from '@/modules/core/store/router-store';
 import { useUserStore } from '@/modules/core/store/user-store';
+import { type NavigationGuardWithThis } from 'vue-router';
+import { View } from '@/plugins/router/view-definitions';
 
-export async function setupTelegramUser(): Promise<void> {
+const telegramUserSetup: NavigationGuardWithThis<undefined> = async (to, from, next) => {
+	if (to.name === View.fallbackView) {
+		next();
+		return;
+	}
+
 	const userStore = useUserStore();
 
-	if (userStore.userInfo) return;
+	if (userStore.userInfo) {
+		next();
+		return;
+	}
 
 	const authStore = useSessionStore();
 
 	const allowed = await authStore.initializeAuthentication();
 
-	if (allowed === 'forbidden') return;
+	if (allowed === 'forbidden') {
+		next({ name: View.fallbackView, replace: true });
+		return;
+	}
 
 	useRouterStore().notifyAppInitialized();
-}
+	next();
+};
+
+export default telegramUserSetup;

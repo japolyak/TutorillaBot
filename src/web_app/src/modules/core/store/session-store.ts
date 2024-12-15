@@ -10,7 +10,6 @@ export const useSessionStore = defineStore(
 	() => {
 		const isAuthorized = ref<boolean>(false);
 		const telegramInitData = ref<string>();
-		const token = ref<string>('adad');
 
 		const isTelegramUser = computed(() => StringUtils.isNotEmpty(telegramInitData.value));
 

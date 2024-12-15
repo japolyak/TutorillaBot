@@ -47,4 +47,22 @@ export const viewBreadcrumbDefinitions: Record<View, null | ViewBreadcrumbs> = {
 			disabled: false,
 		},
 	],
+	[View.adminRequestsRoleView]: [
+		{
+			title: 'RoleRequests',
+			disabled: false,
+		},
+	],
+	[View.fallbackView]: [
+		{
+			title: 'Error',
+			disabled: false,
+		},
+	],
+	[View.adminUserView]: [
+		{
+			title: 'AllUsers',
+			disabled: false,
+		},
+	],
 }

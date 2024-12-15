@@ -30,6 +30,8 @@
 	"Next": "Next",
 	"Accept": "Accept",
 	"Decline": "Decline",
+	"RoleRequests": "Role requests",
+	"AllUsers": "All users",
 	"Validators": {
 		"RequireDigitValidator": "At least one digit is required.",
 		"RequireNonAlphanumericValidator": "At least one special character is required.",
