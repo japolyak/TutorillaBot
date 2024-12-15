@@ -12,16 +12,29 @@ class EventCRUD:
     EventType =  Tuple[CompareInt, CompareInt]
 
     @classmethod
-    def event_has_collisions(cls, db: Session, private_course_id: int, start: int, duration: int) -> bool:
+    def event_has_collisions(cls, db: Session, student_id: int, tutor_id: int, start: int, duration: int) -> bool:
         hour_in_ms = 60000
 
         new_class = (start, start + duration * hour_in_ms)
         old_class = (PrivateClass.start_time_unix, PrivateClass.start_time_unix + PrivateClass.duration * hour_in_ms)
 
-        rows = db.query(PrivateClass).where(
-            and_(
-                PrivateClass.private_course_id == private_course_id,
-                or_(cls._overlaps(new_class, old_class), cls._overlaps(old_class, new_class))
+        rows = (
+            db
+            .query(PrivateClass)
+            .join(PrivateClass.private_course)
+            .join(PrivateCourse.tutor_course)
+            .where(
+                or_(
+                    PrivateCourse.student_id == student_id,
+                    TutorCourse.tutor_id == tutor_id
+                )
+            )
+            .where(
+                or_(
+                    cls._overlaps(new_class, old_class),
+                    cls._overlaps(old_class, new_class),
+                    and_(new_class[0] == old_class[0], new_class[1] == old_class[1])
+                )
             )
         )
 

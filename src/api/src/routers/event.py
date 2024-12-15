@@ -56,7 +56,9 @@ async def add_new_class(private_course_id: int, new_class: NewClassDto, user: Us
     if private_course_info is None:
         return ResponseBuilder.error_response(message="Course does not exist!")
 
-    has_collisions = EventCRUD.event_has_collisions(db, private_course_id, new_class.time, new_class.duration)
+    student_id, tutor_id = itemgetter(1, 4)(private_course_info)
+
+    has_collisions = EventCRUD.event_has_collisions(db, student_id, tutor_id, new_class.time, new_class.duration)
 
     if has_collisions:
         return ResponseBuilder.error_response(message="Class has collisions!")
@@ -64,9 +66,12 @@ async def add_new_class(private_course_id: int, new_class: NewClassDto, user: Us
     EventCRUD.create_class_event(db, private_course_id, new_class.time, new_class.duration)
 
     if user.role is Role.Tutor:
-        subject, sender_name, recipient_id, recipient_timezone = itemgetter(0, 5, 1, 3)(private_course_info)
+        recipient_id = student_id
+        subject, sender_name, recipient_timezone = itemgetter(0, 5, 3)(private_course_info)
     else:
         subject, sender_name, recipient_id, recipient_timezone = itemgetter(0, 2, 4, 6)(private_course_info)
+        recipient_id = tutor_id
+        subject, sender_name, recipient_timezone = itemgetter(0, 2, 6)(private_course_info)
 
     class_date = transform_class_time(new_class.time, recipient_timezone)
 
