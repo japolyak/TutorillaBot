@@ -56,7 +56,7 @@ async def add_new_class(private_course_id: int, new_class: NewClassDto, user: Us
     if private_course_info is None:
         return ResponseBuilder.error_response(message="Course does not exist!")
 
-    has_collisions = EventCRUD.class_has_collisions(db, private_course_id, new_class.time, new_class.duration)
+    has_collisions = EventCRUD.event_has_collisions(db, private_course_id, new_class.time, new_class.duration)
 
     if has_collisions:
         return ResponseBuilder.error_response(message="Class has collisions!")

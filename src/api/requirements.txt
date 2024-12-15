@@ -18,7 +18,7 @@ psycopg2-binary==2.9.9
 pydantic==2.6.1
 pydantic_core==2.16.2
 pyjwt==2.9.0
-pyTelegramBotAPI==4.23.0
+pyTelegramBotAPI==4.25.0
 python-dotenv==1.0.1
 PyYAML==6.0.1
 redis==5.1.0b3

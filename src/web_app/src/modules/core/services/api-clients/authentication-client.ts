@@ -9,12 +9,8 @@ export class AuthenticationClient {
 	public static async authenticateMe(): Promise<TokenDto | null> {
 		let initData: string | undefined;
 
-		if (import.meta.env.VITE_APP_IS_DEV === '1') {
-			initData = import.meta.env.VITE_APP_WEB_APP_INIT_DATA;
-		} else {
-			const { getInitData } = useTelegramWebApp();
-			initData = getInitData();
-		}
+		const { getInitData } = useTelegramWebApp();
+		initData = getInitData();
 
 		if (StringUtils.isEmpty(initData)) return null;
 
