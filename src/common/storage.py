@@ -52,10 +52,10 @@ class Storage:
         refresh_token_ttl = timedelta(days=refresh_token_ttl_in_days)
         self.__r.setex(f"{self.refresh_token_id_key}:{user_id}", refresh_token_ttl, refresh_token_id)
 
-    def set_refresh_token(self, key: str, token: str):
+    def set_refresh_token(self, refresh_token_id: str, token: str):
         refresh_token_ttl = timedelta(days=refresh_token_ttl_in_days)
 
-        self.__r.setex(f"{self.refresh_token_key}:{key}", refresh_token_ttl, token)
+        self.__r.setex(f"{self.refresh_token_key}:{refresh_token_id}", refresh_token_ttl, token)
 
     def get_refresh_token(self, refresh_token_id: str) -> Optional[str]:
         return self.__r.getex(f"{self.refresh_token_key}:{refresh_token_id}")

@@ -28,6 +28,11 @@ class Role(StrEnum):
     Admin = 'Admin'
 
 
+class Scope(StrEnum):
+    Bot = 'Bot'
+    WebApp = 'WebApp'
+
+
 class PaginatedList(BaseModel, Generic[T]):
     items: List[T]
     total: int

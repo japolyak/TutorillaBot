@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, status
 
-from src.common.models import TokenDto
+from src.common.models import TokenDto, Scope
 from src.common.telegram_init_data import TelegramInitData
 
 from src.api.src.builders.response_builder import ResponseBuilder
@@ -35,7 +35,9 @@ async def validate_bot_user(request: Request, db: DbContext):
     else:
         payload = TokenPayload.from_db_model(db_user)
 
-    access_token, refresh_token_id = TokenUtils.create_token_pair(payload)
+    scope = Scope.Bot if init_data.from_bot else Scope.WebApp
+
+    access_token, refresh_token_id = TokenUtils.create_token_pair(payload, scope)
 
     result = TokenDto(access_token=access_token)
 

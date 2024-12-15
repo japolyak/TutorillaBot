@@ -12,6 +12,12 @@ export class AuthenticationClient {
 		const { getInitData } = useTelegramWebApp();
 		initData = getInitData();
 
+		if (import.meta.env.VITE_APP_IS_DEV === '1') {
+			// For tests in classic browser
+			const dotEnvInitData = import.meta.env.VITE_APP_WEB_APP_INIT_DATA;
+			if (StringUtils.isNotEmpty(dotEnvInitData)) initData = import.meta.env.VITE_APP_WEB_APP_INIT_DATA;
+		}
+
 		if (StringUtils.isEmpty(initData)) return null;
 
 		const response = await AuthenticationClient.getSession(initData);

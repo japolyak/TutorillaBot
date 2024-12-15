@@ -4,10 +4,10 @@ from jwt import encode, decode, ExpiredSignatureError, InvalidTokenError
 from datetime import datetime, timedelta, timezone
 from fastapi import Depends, HTTPException, status, Cookie
 from fastapi.security import OAuth2PasswordBearer
-from typing import Annotated, Optional, Tuple
+from typing import Annotated, Optional, Tuple, Literal
 
 from src.common.config import bot_token, algorithm, access_token_ttl_in_minutes, refresh_token_ttl_in_days
-from src.common.models import BaseDto, Role
+from src.common.models import BaseDto, Role, Scope
 from src.common.storage import Storage
 from src.common.logger import log
 from src.common.telegram_init_data import TelegramUser
@@ -64,12 +64,18 @@ class TokenUtils:
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
     @classmethod
-    def create_token_pair(cls, payload: TokenPayload) -> Tuple[str, str]:
-        access_token = cls.create_access_token(payload)
-        refresh_token = cls._create_token(payload.model_dump(exclude={"role"}), days=refresh_token_ttl_in_days)
-        refresh_token_id = cls._create_refresh_key(payload.id)
+    def create_token_pair(cls, payload: TokenPayload, scope: Literal[Scope.Bot, Scope.WebApp]) -> Tuple[str, str]:
+        refresh_token_id = Storage().get_refresh_token_id(payload.id)
 
-        Storage().set_refresh_token(refresh_token_id, refresh_token)
+        if not refresh_token_id:
+            refresh_token = cls._create_token(payload.model_dump(exclude={"role"}), days=refresh_token_ttl_in_days)
+            refresh_token_id = cls._create_refresh_key(payload.id)
+            Storage().set_refresh_token(refresh_token_id, refresh_token)
+
+            if scope == Scope.WebApp:
+                Storage().set_refresh_token_id(payload.id, refresh_token_id)
+
+        access_token = cls.create_access_token(payload)
 
         return access_token, refresh_token_id
 
