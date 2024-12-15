@@ -6,9 +6,8 @@ import {
 	isBetweenDates,
 	parsed,
 	parseTime,
-	parseTimestamp,
 } from '@quasar/quasar-ui-qcalendar/src/index.js'
-import type { CourseModel } from '@/modules/schedule/models';
+import type { CourseModel, ScheduleEventModel } from '@/modules/schedule/models';
 import type { ScheduleEventDto } from '@/modules/core/services/api/api.models';
 import { ScheduleUtils } from '@/modules/schedule/services/mappers';
 
@@ -20,31 +19,20 @@ export const useScheduleStore = defineStore('schedule-store', () => {
 	const eventsMap = computed(() => {
 		if (!weekEvents.value?.length) return {};
 
-		const map = {};
+		const map: Record<string, ScheduleEventModel[]> = {};
+
 		const mappedEvents = weekEvents.value.map(ScheduleUtils.eventMapper);
-		// this.events.forEach(event => (map[event.date] = map[event.date] || []).push(event))
+
 		mappedEvents.forEach(event => {
-			if (!map[event.date]) map[event.date] = [];
-
-			map[event.date].push(event);
-
-			if (event.days) {
-				let timestamp = parseTimestamp(event.date);
-				let days = event.days;
-				do {
-					timestamp = addToDate(timestamp, { day: 1 });
-					if (!map[timestamp.date]) map[timestamp.date] = [];
-					map[timestamp.date].push(event);
-				} while (--days > 0)
-			}
+			!map[event.date] ? map[event.date] = [] : map[event.date].push(event);
 		});
 
 		return map;
 	});
 
-	function getEvents(date: string) {
+	function getEvents(date: string): ScheduleEventModel[] {
 		// get all events for the specified date
-		const dateEvents = eventsMap.value[date] || [];
+		const dateEvents: ScheduleEventModel[] = eventsMap.value[date] || [];
 
 		if (dateEvents.length === 1) dateEvents[0].side = 'full';
 

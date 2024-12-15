@@ -12,6 +12,9 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      - name: Pull last changes of main branch
+        run: git -C ${{ secrets.DOCKER_COMPOSE_PATH }} pull origin main
+
       - name: Pull updated images
         run: docker compose -f ${{ secrets.DOCKER_COMPOSE_PATH }}/docker-compose-production.yaml -p tutorilla pull
 

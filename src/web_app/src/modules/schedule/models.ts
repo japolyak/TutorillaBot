@@ -20,4 +20,5 @@ export interface ScheduleEventModel {
 	time: string;
 	duration: number;
 	type: EventType;
+	side?: 'left' | 'right' | 'full';
 }

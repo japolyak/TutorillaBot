@@ -1,7 +1,7 @@
 <template>
 	<div
-		v-if="event.time !== undefined"
-		class="my-event"
+		v-if="timePersists"
+		class="my-event text-white bg-blue rounded-border"
 		:class="badgeClasses(event)"
 		:style="badgeStyles(event, timeStartPos, timeDurationHeight)"
 	>
@@ -12,41 +12,42 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
+import { type PropType, computed } from 'vue';
+import type { ScheduleEventModel } from '@/modules/schedule/models';
+import { StringUtils } from '@/utils/string.utils';
+import type { TimeDurationHeightFn, TimeStartPosFn } from '@/plugins/quazar/qcalendar/types';
+
+const props = defineProps({
 	event: {
-		type: Object,
+		type: Object as PropType<ScheduleEventModel>,
 		required: true,
 	},
 	timeStartPos: {
-		type: Function,
+		type: Function as PropType<TimeStartPosFn>,
 		required: true,
 	},
 	timeDurationHeight: {
-		type: Function,
+		type: Function as PropType<TimeDurationHeightFn>,
 		required: true,
 	}
 });
 
-function badgeClasses(event) {
+const timePersists = computed(() => StringUtils.isNotEmpty(props.event.time));
+
+function badgeClasses(event: ScheduleEventModel) {
 	return {
-		['text-white bg-blue']: true,
 		'full-width': (!event.side || event.side === 'full'),
 		'left-side': event.side === 'left',
 		'right-side': event.side === 'right',
-		'rounded-border': true,
 	};
 }
 
-function badgeStyles(event, timeStartPos: (time: string) => string, timeDurationHeight: (time: string) => string) {
-	const s = {};
-
-	if (timeStartPos && timeDurationHeight) {
-		s.top = timeStartPos(event.time) + 'px';
-		s.height = timeDurationHeight(event.duration) + 'px';
-	}
-
-	s[ 'align-items' ] = 'flex-start';
-	return s;
+function badgeStyles(event: ScheduleEventModel, timeStartPos: TimeStartPosFn, timeDurationHeight: TimeDurationHeightFn) {
+	return {
+		alignItems: 'flex-start',
+		top: timeStartPos ? timeStartPos(event.time) + 'px' : undefined,
+		height: timeDurationHeight ? timeDurationHeight(event.duration) - 5 + 'px' : undefined
+	};
 }
 </script>
 
@@ -55,7 +56,7 @@ function badgeStyles(event, timeStartPos: (time: string) => string, timeDuration
 	position: absolute;
 	font-size: 12px;
 	justify-content: center;
-	margin: 0 1px;
+	margin: 3px 1px 0;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	cursor: pointer;
@@ -66,7 +67,7 @@ function badgeStyles(event, timeStartPos: (time: string) => string, timeDuration
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	height: 100%;
+	height: 90%;
 }
 
 .text-white {
@@ -75,30 +76,6 @@ function badgeStyles(event, timeStartPos: (time: string) => string, timeDuration
 
 .bg-blue {
 	background: blue;
-}
-
-.bg-green {
-	background: green;
-}
-
-.bg-orange {
-	background: orange;
-}
-
-.bg-red {
-	background: red;
-}
-
-.bg-teal {
-	background: teal;
-}
-
-.bg-grey {
-	background: grey;
-}
-
-.bg-purple {
-	background: purple;
 }
 
 .full-width {

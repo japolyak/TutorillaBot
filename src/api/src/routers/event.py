@@ -69,7 +69,6 @@ async def add_new_class(private_course_id: int, new_class: NewClassDto, user: Us
         recipient_id = student_id
         subject, sender_name, recipient_timezone = itemgetter(0, 5, 3)(private_course_info)
     else:
-        subject, sender_name, recipient_id, recipient_timezone = itemgetter(0, 2, 4, 6)(private_course_info)
         recipient_id = tutor_id
         subject, sender_name, recipient_timezone = itemgetter(0, 2, 6)(private_course_info)
 
