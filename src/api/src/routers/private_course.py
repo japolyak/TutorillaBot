@@ -52,10 +52,12 @@ router = APIRouter()
 @router.get(path=APIEndpoints.PrivateCourses.Get, status_code=status.HTTP_200_OK,
             response_model=ItemsDto[ScheduleCourseDto], summary="Get private courses for user.")
 async def get_private_courses(user: UserContext, db: DbContext):
-    if user.role not in [Role.Tutor, Role.Student]:
+    if not user.has_any_role([Role.Tutor, Role.Student]):
         return ResponseBuilder.error_response(status.HTTP_403_FORBIDDEN, message="Access denied!")
 
-    db_courses = PrivateCourseCRUD.get_private_courses(user.id, user.role, db)
+    role = Role.Student if user.has_role(Role.Student) else Role.Tutor
+
+    db_courses = PrivateCourseCRUD.get_private_courses(user.id, role, db)
 
     if not db_courses:
         return ResponseBuilder.success_response(content=ItemsDto(items=[]))

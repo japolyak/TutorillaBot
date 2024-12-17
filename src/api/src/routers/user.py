@@ -32,11 +32,11 @@ async def get_me(user_context: UserContext, db: DbContext):
 
 
 @router.post(path=APIEndpoints.Users.Post, status_code=status.HTTP_201_CREATED, summary="Adds a new user")
-async def register_user(user: UserBaseDto, user_context: UserContext, db: DbContext):
-    if user_context.registered or user_context.role in [Role.Student, Role.Tutor]:
+async def register_user(dto: UserBaseDto, user: UserContext, db: DbContext):
+    if user.registered or user.has_any_role([Role.Tutor, Role.Student]):
         return ResponseBuilder.error_response(message='User was already registered')
 
-    user_created = UserCRUD.create_user(user, db)
+    user_created = UserCRUD.create_user(dto, db)
 
     if not user_created:
         return ResponseBuilder.error_response(message='User was not created')
@@ -46,14 +46,14 @@ async def register_user(user: UserBaseDto, user_context: UserContext, db: DbCont
 
 @router.post(path=APIEndpoints.Users.ApplyRole, status_code=status.HTTP_201_CREATED,
              summary="Applies user's request for a role")
-async def apply_for_role(role: Literal[Role.Student, Role.Tutor], user_context: UserContext, db: DbContext):
-    if not user_context.registered:
+async def apply_for_role(role: Literal[Role.Student, Role.Tutor], user: UserContext, db: DbContext):
+    if not user.registered:
         return ResponseBuilder.error_response(message='User is not registered')
 
-    if user_context.role in [Role.Student, Role.Tutor]:
+    if user.has_any_role([Role.Tutor, Role.Student]):
         return ResponseBuilder.error_response(message='User already has roles')
 
-    request_created = UserRequestCRUD.create_user_request(user_context.id, role, db)
+    request_created = UserRequestCRUD.create_user_request(user.id, role, db)
 
     if not request_created:
         return ResponseBuilder.error_response(message='Role application was not successful')

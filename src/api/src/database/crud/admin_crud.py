@@ -12,8 +12,11 @@ class AdminCRUD:
         requested_role = case((2 == UserRequest.role, literal_column(f"'{Role.Student}'")),
                               else_=literal_column(f"'{Role.Tutor}'"))
 
-        query = (db.query(UserRequest.id, User.id, User.first_name, User.last_name, User.email, requested_role)
-                 .join(UserRequest.user))
+        query = (
+            db
+            .query(UserRequest.id, User.id, User.first_name, User.last_name, User.email, requested_role)
+            .join(UserRequest.user)
+        )
 
         if role == Role.Tutor:
             query = query.filter(UserRequest.role == 1)

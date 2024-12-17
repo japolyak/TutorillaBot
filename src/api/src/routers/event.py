@@ -20,10 +20,12 @@ router = APIRouter()
 @router.get(path=APIEndpoints.Events.Range, status_code=status.HTTP_200_OK,
             response_model=ItemsDto[ScheduleEventDto])
 async def get_events_in_range(start: int, end: int, user: UserContext, db: DbContext):
-    if user.role not in [Role.Tutor, Role.Student]:
+    if not user.has_any_role((Role.Tutor, Role.Student)):
         return ResponseBuilder.error_response(status.HTTP_403_FORBIDDEN, message="Access denied!")
 
-    db_events = EventCRUD.get_events_between_dates(user.id, user.role, start, end, db)
+    role = Role.Student if user.has_role(Role.Student) else Role.Tutor
+
+    db_events = EventCRUD.get_events_between_dates(user.id, role, start, end, db)
 
     events = [
         ScheduleEventDto(
@@ -43,7 +45,7 @@ async def get_events_in_range(start: int, end: int, user: UserContext, db: DbCon
 @router.post(path=APIEndpoints.Events.CreateClass, status_code=status.HTTP_201_CREATED,
              summary="Add new class for private course")
 async def add_new_class(private_course_id: int, new_class: NewClassDto, user: UserContext, db: DbContext):
-    if user.role not in [Role.Tutor, Role.Student]:
+    if not user.has_any_role((Role.Tutor, Role.Student)):
         return ResponseBuilder.error_response(status.HTTP_403_FORBIDDEN, message="Access denied!")
 
     current_timestamp = int(time.time()) * 1000
@@ -65,7 +67,7 @@ async def add_new_class(private_course_id: int, new_class: NewClassDto, user: Us
 
     EventCRUD.create_class_event(db, private_course_id, new_class.time, new_class.duration)
 
-    if user.role is Role.Tutor:
+    if user.has_role(Role.Tutor):
         recipient_id = student_id
         subject, sender_name, recipient_timezone = itemgetter(0, 5, 3)(private_course_info)
     else:

@@ -73,8 +73,7 @@ function selectGroupItemView(view: MainMenuGroupViewModel) {
 function hasAccessToView(view: View) {
 	const currentView = routes.find(x => x.name === view);
 
-	// For tests purposes
-	if (!currentView || currentView.name !== 'ScheduleView') return false;
+	if (!currentView) return false;
 
 	return currentView.meta.authGuard.isAuthenticated();
 }

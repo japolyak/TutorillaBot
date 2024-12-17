@@ -4,7 +4,7 @@ from jwt import encode, decode, ExpiredSignatureError, InvalidTokenError
 from datetime import datetime, timedelta, timezone
 from fastapi import Depends, HTTPException, status, Cookie
 from fastapi.security import OAuth2PasswordBearer
-from typing import Annotated, Optional, Tuple, Literal
+from typing import Annotated, Optional, Tuple, Literal, List
 
 from src.common.config import bot_token, algorithm, access_token_ttl_in_minutes, refresh_token_ttl_in_days
 from src.common.models import BaseDto, Role, Scope
@@ -26,30 +26,33 @@ class UserContextModel(BaseDto):
     id: int
     first_name: str
     last_name: str
-    role: Optional[Role] = None
+    roles: List[Role] = []
     exp: int
     registered: Optional[bool] = False
+
+    def has_any_role(self, roles: Tuple[Role]) -> bool:
+        return any(role in self.roles for role in roles)
+
+    def has_role(self, role: Role) -> bool:
+        return role in self.roles
 
 
 class TokenPayload(BaseDto):
     id: int
     first_name: str
     last_name: str
-    role: Optional[Role] = None
+    roles: List[Role] = []
     registered: Optional[bool] = False
 
     @classmethod
     def from_db_model(cls, user: User):
-        if user.is_admin:
-            role = Role.Admin
-        elif user.is_student:
-            role = Role.Student
-        elif user.is_tutor:
-            role = Role.Tutor
-        else:
-            role = None
+        roles: List[Role] = []
 
-        return cls(id=user.id, first_name=user.first_name, last_name=user.last_name, role=role, registered=True)
+        if user.is_admin: roles.append(Role.Admin)
+        if user.is_student: roles.append(Role.Student)
+        if user.is_tutor: roles.append(Role.Tutor)
+
+        return cls(id=user.id, first_name=user.first_name, last_name=user.last_name, registered=True, roles=roles)
 
     @classmethod
     def from_user_context(cls, user: RefreshUserContextModel):
