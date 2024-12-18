@@ -1,7 +1,7 @@
 from telebot.types import CallbackQuery
 from telebot.states.sync.context import StateContext
 
-from src.core.bot import bot
+from src.core.bot.bot import bot
 
 from src.bot.src.handlers.callback_query_handler.actions.registration_actions import RegistrationActions
 from src.bot.src.handlers.callback_query_handler.actions.shared_actions import SharedActions

@@ -1,7 +1,7 @@
 from redis import Redis
 from telebot.types import Message
 
-from src.core.bot import bot
+from src.core.bot.bot import bot
 from src.core.models import Role
 
 from src.bot.src.handlers.message_handlers.contexts.i_context_base import IContextBase

@@ -1,15 +1,15 @@
 from telebot.types import Message
 from redis import Redis
 
-from src.core.bot import bot
+from src.core.bot.bot import bot
 from src.core.redis_configuration import redis_instance as r
+from src.core.storage import Storage
 
 from src.bot.src.handlers.shared import Shared
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.services.api.clients.user_client import UserClient
 from src.bot.src.services.i18n.i18n import t
 from src.bot.src.validators import Validator
-from src.core.storage import Storage
 
 
 class RegistrationContext:

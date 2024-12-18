@@ -2,7 +2,7 @@ from telebot.types import CallbackQuery, Message, ReplyKeyboardRemove
 from typing import Any, List, Optional
 from telebot.states.sync.context import StateContext
 
-from src.core.bot import bot
+from src.core.bot.bot import bot
 from src.core.models import NewTutorCourseDto, ItemsDto
 
 from src.bot.src.handlers.shared import Shared

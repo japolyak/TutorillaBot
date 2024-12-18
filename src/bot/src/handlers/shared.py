@@ -1,6 +1,6 @@
 from typing import Literal, Callable, Optional
 
-from src.core.bot import bot
+from src.core.bot.bot import bot
 from src.core.redis_configuration import redis_instance as r
 from src.core.models import Role
 

@@ -1,4 +1,4 @@
-from src.core.bot import bot
+from src.core.bot.bot import bot
 from src.core.logger import log
 
 

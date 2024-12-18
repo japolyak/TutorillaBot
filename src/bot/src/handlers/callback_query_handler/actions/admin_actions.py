@@ -1,4 +1,4 @@
-from src.core.bot import bot
+from src.core.bot.bot import bot
 from src.core.models import UserDto
 
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator

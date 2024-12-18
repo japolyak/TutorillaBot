@@ -2,14 +2,14 @@ from redis import Redis
 from telebot.types import InputTextMessageContent, InlineQuery, InlineQueryResultArticle
 from typing import Literal, List, Optional
 
-from src.core.bot import bot
+from src.core.bot.bot import bot
 from src.core.models import Role, PrivateCourseInlineDto
+from src.core.storage import Storage
 
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.services.api.clients.private_course_client import PrivateCourseClient
 from src.bot.src.services.api.clients.tutor_course_client import TutorCourseClient
 from src.bot.src.services.i18n.i18n import t
-from src.core.storage import Storage
 
 
 def inline_handler_guard(query: InlineQuery, command: Optional[str], role: Optional[str]):

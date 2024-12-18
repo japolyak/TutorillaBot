@@ -1,11 +1,9 @@
-import logging
 from telebot import ExceptionHandler, TeleBot, apihelper
 from telebot.storage import StateRedisStorage
 
-from .config import admin_tg_id, is_development, bot_token, redis_host, redis_db, redis_username
-from .string_utils import StringUtils
-
-log = logging.getLogger(__name__)
+from src.core.config import admin_tg_id, is_development, bot_token, redis_host, redis_db, redis_username
+from src.core.string_utils import StringUtils
+from src.core.logger import log
 
 
 class BotExceptionHandler(ExceptionHandler):
