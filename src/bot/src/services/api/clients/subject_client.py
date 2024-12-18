@@ -1,8 +1,8 @@
 import requests
 from typing import Literal
 
-from src.common.config import api_link
-from src.common.models import Role, ItemsDto, SubjectDto
+from src.core.config import api_link
+from src.core.models import Role, ItemsDto, SubjectDto
 
 from src.bot.src.services.api.api_utils import ApiUtils, ApiResponse
 

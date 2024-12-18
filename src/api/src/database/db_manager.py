@@ -12,8 +12,8 @@ from sqlalchemy.schema import CreateSchema
 from sqlalchemy_utils import database_exists, create_database
 
 from src.api.src.database.mockdata import insert_mock_data, create_admin
-from src.common.config import is_development, connection_string, schema_name
-from src.common.logger import log
+from src.core.config import is_development, connection_string, schema_name
+from src.core.logger import log
 
 
 class DBManager:

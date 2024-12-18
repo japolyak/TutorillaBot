@@ -2,7 +2,7 @@ from fastapi import status, APIRouter
 import time
 from operator import itemgetter
 
-from src.common.models import ScheduleEventDto, NewClassDto, ItemsDto, ScheduleEventType, Role
+from src.core.models import ScheduleEventDto, NewClassDto, ItemsDto, ScheduleEventType, Role
 
 from src.api.src.bot_client.message_sender import send_notification_about_new_class
 from src.api.src.builders.response_builder import ResponseBuilder

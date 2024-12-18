@@ -3,11 +3,11 @@ from requests.cookies import RequestsCookieJar
 from typing import Optional, Union, Generic, Type, Any, Tuple
 from telebot.types import Message, CallbackQuery
 
-from src.common.config import api_link
-from src.common.logger import log
-from src.common.models import T, ErrorDto, TokenDto
-from src.common.storage import Storage
-from src.common.telegram_init_data import TelegramInitData
+from src.core.config import api_link
+from src.core.logger import log
+from src.core.models import T, ErrorDto, TokenDto
+from src.core.storage import Storage
+from src.core.telegram_init_data import TelegramInitData
 
 
 class ApiResponse(Generic[T]):

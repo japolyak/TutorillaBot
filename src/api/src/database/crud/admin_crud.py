@@ -2,7 +2,7 @@ from sqlalchemy import case, literal_column, func, select
 from sqlalchemy.orm import Session
 from typing import Literal
 
-from src.common.models import Role
+from src.core.models import Role
 
 from src.api.src.database.models import UserRequest, User
 

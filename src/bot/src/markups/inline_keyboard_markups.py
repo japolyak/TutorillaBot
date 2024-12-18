@@ -2,13 +2,13 @@ from telebot import service_utils
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from typing import Literal, List
 
-from src.common.config import web_app_link
-from src.common.models import PaginatedList, SubjectDto, Role, PrivateClassDto, ClassStatus, BlaTutorCourseDto
+from src.core.config import web_app_link
+from src.core.models import PaginatedList, SubjectDto, Role, PrivateClassDto, ClassStatus, BlaTutorCourseDto
 
 from src.bot.src.enums import Emoji
 from src.bot.src.handlers.callback_query_handler.callback_prefix import CallBackPrefix
 from src.bot.src.services.i18n.i18n import t
-from src.common.redis_configuration import redis_instance as r
+from src.core.redis_configuration import redis_instance as r
 
 
 class InlineKeyboardMarkupCreator:

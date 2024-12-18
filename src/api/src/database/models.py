@@ -1,7 +1,7 @@
 from sqlalchemy import String, BigInteger, Boolean, ForeignKey, UniqueConstraint, Integer, Float
 from sqlalchemy.orm import DeclarativeBase, mapped_column, relationship, Mapped, MappedColumn
 from typing import List
-from src.common.config import schema_name
+from src.core.config import schema_name
 
 
 class Base(DeclarativeBase):

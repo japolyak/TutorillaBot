@@ -2,7 +2,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session, aliased
 from typing import Literal
 
-from src.common.models import Role
+from src.core.models import Role
 
 from src.api.src.database.models import TutorCourse, Subject, PrivateCourse, User, PrivateClass
 

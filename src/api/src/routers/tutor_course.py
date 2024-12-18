@@ -1,6 +1,6 @@
 from fastapi import status, APIRouter
 
-from src.common.models import TutorCourseDto, NewTutorCourseDto, TutorCourseInlineDto, ItemsDto, UserDto, BlaTutorCourseDto
+from src.core.models import TutorCourseDto, NewTutorCourseDto, TutorCourseInlineDto, ItemsDto, UserDto, BlaTutorCourseDto
 
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.contexts.db_contex import DbContext

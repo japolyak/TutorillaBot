@@ -1,5 +1,5 @@
-from src.common.bot import bot
-from src.common.logger import log
+from src.core.bot import bot
+from src.core.logger import log
 
 
 def send_error_message(tg_user_id, message):

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from src.common.models import NewTutorCourseDto
+from src.core.models import NewTutorCourseDto
 
 from src.api.src.database.models import TutorCourse, Subject, User
 

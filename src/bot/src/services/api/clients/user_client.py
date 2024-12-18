@@ -1,6 +1,6 @@
 from ..http_client import HTTPClient, ApiResponse
 
-from src.common.models import UserDto
+from src.core.models import UserDto
 
 
 class UserClient:

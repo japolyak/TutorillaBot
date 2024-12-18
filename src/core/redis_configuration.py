@@ -1,6 +1,6 @@
 from redis import Redis
 
-from src.common.config import redis_host, redis_db, redis_username
+from src.core.config import redis_host, redis_db, redis_username
 
 redis_instance = Redis(
     host=redis_host,

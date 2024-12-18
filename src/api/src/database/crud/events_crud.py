@@ -4,7 +4,7 @@ from sqlalchemy import and_, or_
 from typing import Literal, Tuple, Union
 
 from src.api.src.database.models import PrivateClass, PrivateCourse, TutorCourse, Subject, User
-from src.common.models import Role
+from src.core.models import Role
 
 
 class EventCRUD:

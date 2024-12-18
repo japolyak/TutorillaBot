@@ -3,8 +3,8 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from typing import Any, Optional
 
-from src.common.config import refresh_token_ttl_in_days
-from src.common.logger import log
+from src.core.config import refresh_token_ttl_in_days
+from src.core.logger import log
 
 
 class ResponseBuilder:

@@ -1,8 +1,8 @@
 from typing import Literal, Callable, Optional
 
-from src.common.bot import bot
-from src.common.redis_configuration import redis_instance as r
-from src.common.models import Role
+from src.core.bot import bot
+from src.core.redis_configuration import redis_instance as r
+from src.core.models import Role
 
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.services.api.clients.subject_client import SubjectClient

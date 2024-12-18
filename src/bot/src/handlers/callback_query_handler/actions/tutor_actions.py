@@ -2,8 +2,8 @@ from telebot.types import CallbackQuery, Message, ReplyKeyboardRemove
 from typing import Any, List, Optional
 from telebot.states.sync.context import StateContext
 
-from src.common.bot import bot
-from src.common.models import NewTutorCourseDto, ItemsDto
+from src.core.bot import bot
+from src.core.models import NewTutorCourseDto, ItemsDto
 
 from src.bot.src.handlers.shared import Shared
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator

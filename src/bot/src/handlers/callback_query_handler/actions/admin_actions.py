@@ -1,5 +1,5 @@
-from src.common.bot import bot
-from src.common.models import UserDto
+from src.core.bot import bot
+from src.core.models import UserDto
 
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.services.i18n.i18n import t

@@ -2,9 +2,9 @@ from redis import Redis
 from typing import Literal, Optional
 from datetime import timedelta
 
-from src.common.config import access_token_ttl_in_minutes, refresh_token_ttl_in_days
-from src.common.models import UserDto, Role
-from src.common.redis_configuration import redis_instance
+from src.core.config import access_token_ttl_in_minutes, refresh_token_ttl_in_days
+from src.core.models import UserDto, Role
+from src.core.redis_configuration import redis_instance
 
 
 class Storage:

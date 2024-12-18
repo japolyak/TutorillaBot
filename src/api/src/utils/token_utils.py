@@ -6,11 +6,11 @@ from fastapi import Depends, HTTPException, status, Cookie
 from fastapi.security import OAuth2PasswordBearer
 from typing import Annotated, Optional, Tuple, Literal, List
 
-from src.common.config import bot_token, algorithm, access_token_ttl_in_minutes, refresh_token_ttl_in_days
-from src.common.models import BaseDto, Role, Scope
-from src.common.storage import Storage
-from src.common.logger import log
-from src.common.telegram_init_data import TelegramUser
+from src.core.config import bot_token, algorithm, access_token_ttl_in_minutes, refresh_token_ttl_in_days
+from src.core.models import BaseDto, Role, Scope
+from src.core.storage import Storage
+from src.core.logger import log
+from src.core.telegram_init_data import TelegramUser
 
 from src.api.src.database.models import User
 

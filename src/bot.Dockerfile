@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED True
 WORKDIR /src
 
 COPY bot /src/bot
-COPY common /src/common
+COPY core /src/core
 
 WORKDIR /src/bot
 

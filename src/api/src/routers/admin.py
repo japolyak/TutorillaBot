@@ -1,8 +1,8 @@
 from fastapi import status, APIRouter
 from typing import Literal
 
-from src.common.models import UserRequestDto, Role, ItemsDto, StatisticsDto
-from src.common.storage import Storage
+from src.core.models import UserRequestDto, Role, ItemsDto, StatisticsDto
+from src.core.storage import Storage
 
 from src.api.src.bot_client.message_sender import send_decline_message, send_test_message
 from src.api.src.contexts.db_contex import DbContext

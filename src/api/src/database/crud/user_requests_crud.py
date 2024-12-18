@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 import time
 
 from src.api.src.database.models import UserRequest
-from src.common.models import Role
+from src.core.models import Role
 
 
 class UserRequestCRUD:

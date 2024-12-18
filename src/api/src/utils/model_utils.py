@@ -1,7 +1,7 @@
 from itertools import groupby
 from operator import attrgetter
 
-from src.common.models import ScheduleCoursePersonDto, ScheduleCourseDto
+from src.core.models import ScheduleCoursePersonDto, ScheduleCourseDto
 
 
 class ModelUtils:

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Request
 from telebot.types import Update
 
-from src.common.bot import bot
+from src.core.bot import bot
 
 
 app = FastAPI()

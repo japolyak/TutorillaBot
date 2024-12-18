@@ -1,7 +1,7 @@
 from fastapi import status, APIRouter
 from typing import Literal
 
-from src.common.models import UserDto, UserBaseDto, Role
+from src.core.models import UserDto, UserBaseDto, Role
 
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.contexts.db_contex import DbContext

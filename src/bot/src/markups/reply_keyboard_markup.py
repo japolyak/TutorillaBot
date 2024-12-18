@@ -2,8 +2,8 @@ from telebot import service_utils
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 from typing import List
 
-from src.common.config import web_app_link
-from src.common.redis_configuration import redis_instance as r
+from src.core.config import web_app_link
+from src.core.redis_configuration import redis_instance as r
 
 from src.bot.src.services.i18n.i18n import t
 

@@ -6,8 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
-from src.common.logger import log
-from src.common.config import allowed_origins
+from src.core.logger import log
+from src.core.config import allowed_origins
 
 from src.api.src.router import api_router
 from src.api.src.exception_handlers import apply_exception_handlers

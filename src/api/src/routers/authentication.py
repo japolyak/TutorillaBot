@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, status
 
-from src.common.models import TokenDto, Scope
-from src.common.telegram_init_data import TelegramInitData
+from src.core.models import TokenDto, Scope
+from src.core.telegram_init_data import TelegramInitData
 
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.database.crud.user_crud import UserCRUD

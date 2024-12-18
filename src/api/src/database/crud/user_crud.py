@@ -2,7 +2,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from src.api.src.database.models import User, UserRequest
-from src.common.models import UserBaseDto
+from src.core.models import UserBaseDto
 
 
 class UserCRUD:

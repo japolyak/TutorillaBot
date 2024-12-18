@@ -1,7 +1,7 @@
 from requests import Response
 from typing import Generic, Type, Optional, Any
 
-from src.common.models import T, ErrorDto
+from src.core.models import T, ErrorDto
 
 
 class ApiResponse(Generic[T]):

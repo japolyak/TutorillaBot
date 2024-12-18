@@ -1,8 +1,8 @@
 from redis import Redis
 from telebot.types import Message
 
-from src.common.bot import bot
-from src.common.models import Role
+from src.core.bot import bot
+from src.core.models import Role
 
 from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
 from src.bot.src.handlers.message_handlers.contexts.i_context_base import IContextBase

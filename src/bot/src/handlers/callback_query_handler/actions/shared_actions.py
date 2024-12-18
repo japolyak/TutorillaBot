@@ -1,7 +1,7 @@
 from telebot.types import CallbackQuery
 from typing import Any, List
 
-from src.common.bot import bot
+from src.core.bot import bot
 
 from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.services.api.clients.private_course_client import PrivateCourseClient
