@@ -69,7 +69,17 @@ async def accept_role(request_id: int, user: UserContext, db: DbContext):
     if not db_user_request:
         return ResponseBuilder.error_response(message='Role request was not found')
 
-    return ResponseBuilder.success_response(content=response_model)
+    success_response = send_test_message(db_user.id)
+
+    if not success_response:
+        return ResponseBuilder.error_response(status_code=status.HTTP_400_BAD_REQUEST, message=f"Could not accept user's role request due to Telegram error.")
+
+    db.delete(db_user_request)
+    db.commit()
+    db.refresh(db_user)
+    Storage().delete_session(db_user.id)
+
+    return ResponseBuilder.success_response(status.HTTP_204_NO_CONTENT)
 
 
 @router.put(path=APIEndpoints.Admin.DeclineRole, status_code=status.HTTP_200_OK, summary="Decline user role request")
