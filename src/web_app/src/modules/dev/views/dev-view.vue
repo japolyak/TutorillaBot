@@ -2,7 +2,7 @@
 	<v-container>
 		<v-row>
 			<v-col>
-				{{ theme }}
+				Must be hidden - {{ theme }}
 			</v-col>
 			<v-col>
 				<theme-toggle v-model="theme" />
