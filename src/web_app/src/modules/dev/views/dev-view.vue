@@ -5,6 +5,9 @@
 				Must be hidden - {{ theme }}
 			</v-col>
 			<v-col>
+				is dev - {{ import.meta.env.VITE_APP_IS_DEV }} - {{ typeof import.meta.env.VITE_APP_IS_DEV }}
+			</v-col>
+			<v-col>
 				<theme-toggle v-model="theme" />
 			</v-col>
 		</v-row>

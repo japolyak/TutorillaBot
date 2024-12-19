@@ -75,7 +75,9 @@ function hasAccessToView(view: View) {
 
 	if (!currentView) return false;
 
-	if (import.meta.env.VITE_APP_IS_DEV === '0' && currentView.meta.hidden) return false;
+	if (currentView.meta.hidden) {
+		if (import.meta.env.VITE_APP_IS_DEV === '0') return false;
+	}
 
 	return currentView.meta.authGuard.isAuthenticated();
 }
