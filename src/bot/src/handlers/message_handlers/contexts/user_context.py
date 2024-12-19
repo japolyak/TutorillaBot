@@ -4,12 +4,12 @@ from telebot.types import Message
 from src.bot.src.handlers.message_handlers.contexts.i_context_base import IContextBase
 
 from src.core.bot.bot import bot
-from src.core.bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.core.i18n.i18n import t
 from src.core.models import UserDto
+from src.core.config import support_nick
 
 
-class StudentContext(IContextBase):
+class UserContext(IContextBase):
     @staticmethod
     def __guard(func) -> callable:
         def wrapper(message: Message, redis: Redis, *args, **kwargs):
@@ -19,16 +19,20 @@ class StudentContext(IContextBase):
 
             user = UserDto.model_validate(user)
 
-            if user.is_student or user.is_tutor:
+            if user.is_active:
                 return func(user)
 
         return wrapper
 
     @staticmethod
     @__guard
-    def open_classroom(user: UserDto, *args, **kwargs):
-        markup = InlineKeyboardMarkupCreator.classroom_markup(user.id, user.locale, is_student=user.is_student, is_tutor=user.is_tutor)
+    def open_profile(user: UserDto, *args, **kwargs):
+        bot.send_message(
+            chat_id=user.id,
+            text=t(user.id, "ItsYourProfile", user.locale, first_name=user.first_name, last_name=user.last_name)
+        )
 
-        bot.send_message(chat_id=user.id,
-                         text=t(user.id, "YourClassroomIsHere", user.locale),
-                         reply_markup=markup)
+    @staticmethod
+    @__guard
+    def support(user: UserDto, *args, **kwargs):
+        bot.send_message(chat_id=user.id, text=t(user.id, "ContactSupportAccount", user.locale, support_nick=support_nick))
