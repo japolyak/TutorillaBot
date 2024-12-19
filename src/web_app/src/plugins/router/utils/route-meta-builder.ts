@@ -11,6 +11,7 @@ export class RouteMetaBuilder {
 	private module: Module | null = null;
 	private readonly requiredRoles: Role[] = [];
 	private useDashboardLayoutFlag = true;
+	private hidden = false;
 
 	public build(): RouteMeta {
 		return {
@@ -22,6 +23,7 @@ export class RouteMetaBuilder {
 				this.requiredRoles,
 			),
 			useDashboardLayout: this.useDashboardLayoutFlag,
+			hidden: this.hidden,
 		}
 	}
 
@@ -52,6 +54,11 @@ export class RouteMetaBuilder {
 
 	public hideDashboardLayout(): this {
 		this.useDashboardLayoutFlag = false;
+		return this;
+	}
+
+	public hide(): this {
+		this.hidden = true;
 		return this;
 	}
 }

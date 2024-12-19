@@ -41,12 +41,6 @@ export const viewBreadcrumbDefinitions: Record<View, null | ViewBreadcrumbs> = {
 			disabled: false,
 		},
 	],
-	[View.classPlannerView]: [
-		{
-			title: 'ClassPlanner',
-			disabled: false,
-		},
-	],
 	[View.adminRequestsRoleView]: [
 		{
 			title: 'RoleRequests',
