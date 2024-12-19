@@ -5,12 +5,7 @@ import { Role } from '@/modules/core/services/api/api.models';
 
 export const viewMetaDefinitions: Record<View, RouteMeta> = {
 	[View.fallbackView]: new RouteMetaBuilder().allowAnonymous().hideDashboardLayout().build(),
-	[View.devView]: new RouteMetaBuilder().allowAnonymous().withTitle('DevPage').build(),
-	[View.classPlannerView]: new RouteMetaBuilder()
-		.withTitle('ClassPlanner')
-		.partOfModule(Module.classPlannerModule)
-		.withRoles(Role.Student, Role.Tutor)
-		.build(),
+	[View.devView]: new RouteMetaBuilder().allowAnonymous().withTitle('DevPage').hide().build(),
 	[View.scheduleView]: new RouteMetaBuilder()
 		.withTitle('Schedule')
 		.partOfModule(Module.scheduleModule)
@@ -40,10 +35,12 @@ export const viewMetaDefinitions: Record<View, RouteMeta> = {
 		.withTitle('TutorPage')
 		.partOfModule(Module.tutorModule)
 		.withRoles(Role.Tutor)
+		.hide()
 		.build(),
 	[View.studentView]: new RouteMetaBuilder()
 		.withTitle('StudentPage')
 		.partOfModule(Module.studentModule)
 		.withRoles(Role.Student)
+		.hide()
 		.build(),
 }
