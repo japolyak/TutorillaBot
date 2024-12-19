@@ -1,11 +1,12 @@
 from fastapi import status, APIRouter
 
-from src.core.models import TutorCourseDto, NewTutorCourseDto, TutorCourseInlineDto, ItemsDto, UserDto, BlaTutorCourseDto
+from src.core.models import TutorCourseDto, NewTutorCourseDto, TutorCourseInlineDto, ItemsDto, UserDto, BlaTutorCourseDto, Role
 
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.contexts.db_contex import DbContext
 from src.api.src.contexts.user_context import UserContext
-from src.api.src.database.crud import tutor_course_crud
+from src.api.src.database.crud.tutor_course_crud import TutorCourseCRUD
+from src.api.src.database.crud.private_courses_crud import PrivateCourseCRUD
 from src.api.src.routers.api_enpoints import APIEndpoints
 
 
@@ -16,7 +17,7 @@ router = APIRouter()
              response_model=TutorCourseDto[UserDto], description="Add course for tutor")
 async def add_course(new_tutor_course: NewTutorCourseDto, user_id: int, user: UserContext, db: DbContext):
     # TODO - rewrite
-    new_tutor_course = tutor_course_crud.add_course(db=db, user_id=user_id, course=new_tutor_course)
+    new_tutor_course = TutorCourseCRUD.add_course(db=db, user_id=user_id, course=new_tutor_course)
 
     new_tutor_course = TutorCourseDto[UserDto].model_validate(new_tutor_course)
 
@@ -26,7 +27,7 @@ async def add_course(new_tutor_course: NewTutorCourseDto, user_id: int, user: Us
 @router.get(path=APIEndpoints.TutorCourse.GetCourses, status_code=status.HTTP_200_OK,
              response_model=ItemsDto[BlaTutorCourseDto], description="Get tutor courses")
 async def get_courses_ids(user_id: int, user: UserContext, db: DbContext):
-    db_courses = tutor_course_crud.get_courses(db=db, user_id=user_id)
+    db_courses = TutorCourseCRUD.get_courses(db=db, user_id=user_id)
 
     if not db_courses:
         return ResponseBuilder.success_response(content=ItemsDto(items=[]))
@@ -38,10 +39,13 @@ async def get_courses_ids(user_id: int, user: UserContext, db: DbContext):
     return ResponseBuilder.success_response(content=response_model)
 
 
-@router.get(path=APIEndpoints.TutorCourse.AvailableCourses, status_code=status.HTTP_200_OK,
+@router.get(path=APIEndpoints.TutorCourse.GetBySubjectName, status_code=status.HTTP_200_OK,
             response_model=ItemsDto[TutorCourseInlineDto], description="Get available tutors")
-async def get_available_tutor_courses(user_id: int, subject_name: str, user: UserContext, db: DbContext):
-    db_tutor_courses = tutor_course_crud.get_available_courses_by_subject(db=db, user_id=user_id, subject_name=subject_name)
+async def get_available_tutor_courses(subject_name: str, user: UserContext, db: DbContext):
+    if not user.has_role(Role.Student):
+        return ResponseBuilder.error_response(status.HTTP_403_FORBIDDEN, message="Access denied!")
+
+    db_tutor_courses = TutorCourseCRUD.get_available_courses_by_subject(user.id, subject_name, db)
 
     if not db_tutor_courses:
         return ResponseBuilder.success_response(content=ItemsDto(items=[]))
@@ -53,3 +57,18 @@ async def get_available_tutor_courses(user_id: int, subject_name: str, user: Use
     response_model = ItemsDto[TutorCourseInlineDto](items=tutor_courses)
 
     return ResponseBuilder.success_response(content=response_model)
+
+
+@router.post(path=APIEndpoints.TutorCourse.Enroll, status_code=status.HTTP_201_CREATED,
+             summary="Enroll student to course")
+async def enroll_in_course(tutor_course_id: int, user: UserContext, db: DbContext):
+    if not user.has_role(Role.Student):
+        return ResponseBuilder.error_response(status.HTTP_403_FORBIDDEN, message="Access denied!")
+
+    private_course_exists = PrivateCourseCRUD.private_course_exists(tutor_course_id, user.id, db)
+    if private_course_exists:
+        return ResponseBuilder.error_response(message=f"User: {user.id} already enrolled in tutor course: {tutor_course_id}.")
+
+    TutorCourseCRUD.enroll_student_to_course(user.id, tutor_course_id, db)
+
+    return ResponseBuilder.success_response(status.HTTP_201_CREATED)

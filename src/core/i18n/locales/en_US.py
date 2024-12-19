@@ -1,6 +1,8 @@
 from string import Template
 
 en = {
+    "WelcomeWord": Template("Hi, it's TutorillaBot!\nMy mission is to help you to find a tutor for your needs."),
+    "SelectLanguage": Template("Please, select a language by clicking the button below to start the registration process."),
     "Welcome": Template("Glad You are back, $name"),
     "email": Template("Email"),
     "ProvideYourEmail": Template("Provide your email"),

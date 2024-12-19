@@ -3,7 +3,8 @@ class APIEndpoints:
         Prefix = "/tutor-courses"
         AddCourse = "/users/{user_id}/"
         GetCourses = "/users/{user_id}/"
-        AvailableCourses = "/users/{user_id}/subject-name/{subject_name}/"
+        GetBySubjectName = "/subject-name/{subject_name}/"
+        Enroll = "/{tutor_course_id}/"
 
     class Users:
         Prefix = "/users"
@@ -22,7 +23,6 @@ class APIEndpoints:
         GetPrivateCourse = "/{private_course_id}/"
         GetClasses = "/{course_id}/classes/"
         GetBySubjects = "/users/{user_id}/subjects/{subject_name}/"
-        Enroll = "/{private_course_id}/users/{user_id}/"
 
     class Admin:
         Prefix = "/admin"
@@ -33,7 +33,8 @@ class APIEndpoints:
 
     class Subjects:
         Prefix = "/subjects"
-        Get = "/users/{user_id}/available/{is_available}/"
+        Get = "/"
+        OldGet = "/users/{user_id}/available/{is_available}/"
 
     class Authentication:
         Prefix = "/auth"

@@ -1,10 +1,10 @@
 from fastapi import status, APIRouter
 from typing import Literal
 
-from src.core.models import UserRequestDto, Role, ItemsDto, StatisticsDto
+from src.core.models import UserRequestDto, Role, ItemsDto, StatisticsDto, UserDto
 from src.core.storage import Storage
 
-from src.api.src.bot_client.message_sender import send_decline_message, send_test_message
+from src.api.src.bot_client.message_sender import MessageSender
 from src.api.src.contexts.db_contex import DbContext
 from src.api.src.contexts.user_context import UserContext
 from src.api.src.builders.response_builder import ResponseBuilder
@@ -69,15 +69,17 @@ async def accept_role(request_id: int, user: UserContext, db: DbContext):
     if not db_user_request:
         return ResponseBuilder.error_response(message='Role request was not found')
 
-    success_response = send_test_message(db_user.id)
+    success_response = MessageSender.send_accept_role_message(db_user)
 
     if not success_response:
         return ResponseBuilder.error_response(status_code=status.HTTP_400_BAD_REQUEST, message=f"Could not accept user's role request due to Telegram error.")
 
+    user_model = UserDto.model_validate(db_user)
+    Storage().delete_session(db_user.id).add_user(user_model)
+
     db.delete(db_user_request)
     db.commit()
     db.refresh(db_user)
-    Storage().delete_session(db_user.id)
 
     return ResponseBuilder.success_response(status.HTTP_204_NO_CONTENT)
 
@@ -97,6 +99,6 @@ async def decline_student_role(request_id: int, user: UserContext, db: DbContext
     if not declination:
         return ResponseBuilder.error_response(message='Role request was not found')
 
-    send_decline_message(db_user.id)
+    MessageSender.send_decline_message(db_user.id)
 
     return ResponseBuilder.success_response()

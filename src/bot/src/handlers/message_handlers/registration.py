@@ -1,4 +1,4 @@
-from telebot.types import Message
+from telebot.types import Message, ReplyKeyboardRemove
 from redis import Redis
 
 from src.core.bot.bot import bot
@@ -32,11 +32,10 @@ class RegistrationContext:
 
         redis.hset(str(chat_id), "id", int(chat_id))
 
-        welcome_message = """
-        Hi, it's TutorillaBot!\nMy mission is to help you to find a tutor for your needs.\n\nPlease, select a language by clicking the button below to start the registration process.
-        """
+        bot.send_message(chat_id=chat_id, text=t(chat_id, "WelcomeWord"),
+                         reply_markup=ReplyKeyboardRemove())
 
-        bot.send_message(chat_id=chat_id, text=welcome_message,
+        bot.send_message(chat_id=chat_id, text=t(chat_id, "SelectLanguage"),
                          reply_markup=InlineKeyboardMarkupCreator.locale_markup())
 
 

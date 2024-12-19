@@ -1,4 +1,4 @@
-from sqlalchemy import func, select
+from sqlalchemy import func, select, and_
 from sqlalchemy.orm import Session, aliased
 from typing import Literal
 
@@ -88,17 +88,22 @@ class PrivateCourseCRUD:
     @staticmethod
     def get_private_course_by_course_id(db: Session, private_course_id: int) -> PrivateCourse | None:
         # TODO - find solution how load ONLY some fields for Tutor and Student relations
-        query = db.query(PrivateCourse).filter(private_course_id == PrivateCourse.id)
+        query = db.query(PrivateCourse).filter(PrivateCourse.id == private_course_id)
 
         return query.first()
 
     @staticmethod
-    def enroll_student_to_course(db: Session, user_id: int, course_id: int) -> PrivateCourse:
-        tutor_course = db.query(TutorCourse).filter(course_id == TutorCourse.id).first()
+    def private_course_exists(tutor_course_id: int, student_id, db: Session) -> bool:
+        course = (
+            db
+            .query(PrivateCourse)
+            .where(
+                and_(
+                    PrivateCourse.student_id == student_id,
+                    PrivateCourse.tutor_course_id == tutor_course_id
+                )
+            )
+            .first()
+        )
 
-        private_course = PrivateCourse(student_id=user_id, tutor_course_id=course_id, price=tutor_course.price)
-        db.add(private_course)
-        db.commit()
-        db.refresh(private_course)
-
-        return private_course
+        return course is not None

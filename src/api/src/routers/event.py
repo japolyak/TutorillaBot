@@ -4,7 +4,7 @@ from operator import itemgetter
 
 from src.core.models import ScheduleEventDto, NewClassDto, ItemsDto, ScheduleEventType, Role
 
-from src.api.src.bot_client.message_sender import send_notification_about_new_class
+from src.api.src.bot_client.message_sender import MessageSender
 from src.api.src.builders.response_builder import ResponseBuilder
 from src.api.src.contexts.db_contex import DbContext
 from src.api.src.contexts.user_context import UserContext
@@ -76,6 +76,6 @@ async def add_new_class(private_course_id: int, new_class: NewClassDto, user: Us
 
     class_date = transform_class_time(new_class.time, recipient_timezone)
 
-    send_notification_about_new_class(recipient_id, sender_name, subject, class_date)
+    MessageSender.send_notification_about_new_class(recipient_id, sender_name, subject, class_date)
 
     return ResponseBuilder.success_response(status.HTTP_201_CREATED)
