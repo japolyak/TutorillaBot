@@ -5,7 +5,7 @@
 				Must be hidden - {{ theme }}
 			</v-col>
 			<v-col>
-				is dev - {{ import.meta.env.VITE_APP_IS_DEV }} - {{ typeof import.meta.env.VITE_APP_IS_DEV }}
+				is dev - {{ isDev }} - {{ isDev }}
 			</v-col>
 			<v-col>
 				<theme-toggle v-model="theme" />
@@ -30,7 +30,7 @@ import ThemeToggle from "@/modules/core/components/theme-toggle.vue";
 import BasicToggle from "@/modules/core/components/basic-toggle.vue";
 
 const theme = ref(false);
-
+const isDev = import.meta.env.VITE_APP_IS_DEV;
 
 function testFn() {
 	alert("Wake up!");
