@@ -5,7 +5,7 @@
 				Must be hidden - {{ theme }}
 			</v-col>
 			<v-col>
-				is dev - {{ isDev }} - {{ isDev }}
+				is dev - {{ isDev }} - {{ typeof isDev }}
 			</v-col>
 			<v-col>
 				<theme-toggle v-model="theme" />
