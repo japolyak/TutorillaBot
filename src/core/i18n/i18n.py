@@ -1,8 +1,9 @@
 from string import Template
+from typing import Optional
 
 from src.core.redis_configuration import redis_instance as r
 
-from src.bot.src.services.i18n.locales.en_US import en
+from .locales.en_US import en
 
 
 locales = {
@@ -10,7 +11,7 @@ locales = {
 }
 
 
-def t(chat_id: int, key: str, locale: str | None = None, **kwargs) -> str:
+def t(chat_id: int, key: str, locale: Optional[str] = None, **kwargs) -> str:
     if not locale:
         locale = r.hget(chat_id, 'locale') or 'en-US'
 

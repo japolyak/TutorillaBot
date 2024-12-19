@@ -13,28 +13,34 @@ class Storage:
     refresh_token_key = "refreshToken"
     refresh_token_id_key = "refreshTokenId"
 
-    def add_user(self, user_id: int, user: UserDto):
-        user_id = str(user_id)
-        self.__r.hset(user_id, "id", user_id)
-        self.__r.hset(user_id, "first_name", user.first_name)
-        self.__r.hset(user_id, "last_name", user.last_name)
-        self.__r.hset(user_id, "email", user.email)
-        self.__r.hset(user_id, "time_zone", user.time_zone)
+    def add_user(self, user: UserDto):
+        converted_user = {
+            k: int(v) if isinstance(v, bool) else v for k, v in user.model_dump().items()
+        }
 
-        self.__r.hset(user_id, "locale", user.locale)
-        self.__r.hset(user_id, "is_active", int(user.is_active))
-        self.__r.hset(user_id, "is_student", int(user.is_student))
-        self.__r.hset(user_id, "is_tutor", int(user.is_tutor))
-        self.__r.hset(user_id, "is_admin", int(user.is_admin))
+        self.__r.hset(user.id, mapping=converted_user)
+
+        return self
+
+    def get_user(self, user_id: int) -> Optional[UserDto]:
+        user = self.__r.hgetall(user_id)
+
+        if not user: return None
+
+        return UserDto.model_validate(user)
 
     def has_role(self, user_id: str, role: Literal[Role.Tutor, Role.Student, Role.Admin]):
+        user = self.get_user(user_id)
+
+        if not user: return False
+
         match role:
             case Role.Tutor:
-                return self.__r.hget(user_id, "is_tutor") == "1"
+                return user.is_tutor
             case Role.Student:
-                return self.__r.hget(user_id, "is_student") == "1"
+                return user.is_student
             case Role.Admin:
-                return self.__r.hget(user_id, "is_admin") == "1"
+                return user.is_admin
             case _:
                 return False
 
@@ -68,3 +74,5 @@ class Storage:
             names.append(f"{self.refresh_token_key}:{refresh_token_id}")
 
         self.__r.delete(*names)
+
+        return self

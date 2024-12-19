@@ -39,6 +39,9 @@ en = {
     "CongratulationsYourRequestForRoleHasBeenAccepted": Template("Congratulations $name, Your request for $role role has been accepted"),
     "YouDontHaveClasses": Template("You dont have classes"),
     "RetrievingDataError": Template("An error occurred while retrieving your data. Please try again later. If the issue persists, contact support."),
+    "NoAvailableTutors": Template("No available tutors"),
+    "ItsYourProfile": Template("$first_name $last_name it's your profile."),
+    "ContactSupportAccount": Template("For support, please contact our $support_nick account."),
 
     "TeachIKBtn": Template("Teach"),
     "StudyIKBtn": Template("Study"),
@@ -55,6 +58,10 @@ en = {
     "BackToCourseIKBtn": Template("Back to course"),
     "BackToCoursesIKBtn": Template("Back to courses"),
     "TextbooksIKBtn": Template("Textbooks"),
+    "FindTutorIKBtn": Template("Find tutor"),
+    "UsersRequestsIKBtn": Template("User's requests"),
+    "ChooseSubjectIKBtn": Template("Choose subject"),
+    "ToClassroomIKBtn": Template("To classroom"),
 
     "ProfileKBtn": Template("Profile"),
     "SupportKBtn": Template("Support"),

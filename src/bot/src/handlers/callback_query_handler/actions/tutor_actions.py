@@ -6,11 +6,10 @@ from src.core.bot.bot import bot
 from src.core.models import NewTutorCourseDto, ItemsDto
 
 from src.bot.src.handlers.shared import Shared
-from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
-from src.bot.src.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
+from src.core.bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.services.api.clients.tutor_course_client import TutorCourseClient
 from src.bot.src.services.api.clients.textbook_client import TextbookClient
-from src.bot.src.services.i18n.i18n import t
+from src.core.i18n.i18n import t
 from src.bot.src.states import TextbookState
 from src.bot.src.validators import Validator
 
@@ -66,9 +65,7 @@ class TutorActions:
 
         bot.delete_message(chat_id=user_id, message_id=message_id)
 
-        markup = ReplyKeyboardMarkupCreator.tutor_office_markup(user_id, locale)
-        bot.send_message(chat_id=user_id, text=t(user_id, "OfficeIsHere", locale),
-                         reply_markup=markup)
+        bot.send_message(chat_id=user_id, text=t(user_id, "OfficeIsHere", locale))
 
     @classmethod
     def back_to_courses(cls, call: CallbackQuery, callback_data: List[Any], *args, **kwargs):

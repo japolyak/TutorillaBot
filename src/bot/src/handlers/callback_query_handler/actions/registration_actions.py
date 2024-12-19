@@ -7,11 +7,11 @@ from src.core.bot.bot import bot
 from src.core.models import Role
 from src.core.storage import Storage
 
-from src.bot.src.services.i18n.i18n import t
+from src.core.i18n.i18n import t
 from src.bot.src.services.api.http_client import ApiResponse
-from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
+from src.core.bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.services.api.clients.user_client import UserClient
-from src.bot.src.handlers.callback_query_handler.callback_prefix import CallBackPrefix
+from src.core.bot.enums import CallBackPrefix
 from src.bot.src.handlers.shared import Shared
 from src.bot.src.handlers.message_handlers.registration import registration_first_name
 

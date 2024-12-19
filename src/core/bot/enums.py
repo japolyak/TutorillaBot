@@ -1,5 +1,8 @@
 from enum import StrEnum
 
+class InlineQueryParam(StrEnum):
+    Tutors = "Tutors"
+
 
 class CallBackPrefix(StrEnum):
     """
@@ -27,6 +30,7 @@ class CallBackPrefix(StrEnum):
     CourseTextbooks = "c_t"
     DeclineRole = "d_r"
     EmptyCallback = "e_c"
+    FindTutor = "f_t"
     GetTutorCoursesForPanel = "g_t_c_f_p"
     InvoicesForTutor = "i_f_t"
     LoadPage = "l_p"
@@ -41,3 +45,4 @@ class CallBackPrefix(StrEnum):
     SetUserLocale = "s_u_l"
     ShowTextbook = "s_t"
     SubscribeCourse = "s_c"
+    ToClassroom = "t_c"

@@ -1,7 +1,7 @@
 from requests import Response, Session
 from requests.cookies import RequestsCookieJar
 from typing import Optional, Union, Generic, Type, Any, Tuple
-from telebot.types import Message, CallbackQuery
+from telebot.types import Message, CallbackQuery, InlineQuery
 
 from src.core.config import api_link
 from src.core.logger import log
@@ -31,7 +31,7 @@ class HTTPClient:
     def check_session(self, **kwargs):
         if kwargs["tg_data"] is None: self._log_bad_request('No TG data was passed')
 
-        tg_data: Optional[Union[Message, CallbackQuery]] = kwargs["tg_data"]
+        tg_data: Union[Message, CallbackQuery, InlineQuery] = kwargs["tg_data"]
 
         access_token = Storage().get_access_token(tg_data.from_user.id)
         refresh_token_id = Storage().get_refresh_token_id(tg_data.from_user.id)

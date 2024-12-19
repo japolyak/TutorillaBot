@@ -4,10 +4,10 @@ from src.core.bot.bot import bot
 from src.core.redis_configuration import redis_instance as r
 from src.core.models import Role
 
-from src.bot.src.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
+from src.core.bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.bot.src.services.api.clients.subject_client import SubjectClient
 from src.bot.src.services.api.clients.tutor_course_client import TutorCourseClient
-from src.bot.src.services.i18n.i18n import t
+from src.core.i18n.i18n import t
 
 
 class Shared:

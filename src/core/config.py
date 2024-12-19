@@ -20,6 +20,7 @@ algorithm = os.getenv("ALGORITHM", "HS256")
 bot_token = os.getenv("BOT_TOKEN", "")
 web_app_link = os.getenv("WEB_APP_LINK")
 admin_tg_id = int(os.getenv("ADMIN_TG_ID"))
+support_nick = os.getenv("SUPPORT_NICK")
 
 # Database
 _database_username = os.getenv(f"DB_USER", "postgres")
