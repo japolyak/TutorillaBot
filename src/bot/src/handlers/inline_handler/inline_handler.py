@@ -1,14 +1,11 @@
-from redis import Redis
 from telebot.types import InputTextMessageContent, InlineQuery, InlineQueryResultArticle
-from typing import Literal, List, Optional
+from typing import Optional
 
 from src.core.bot.bot import bot
-from src.core.models import Role, PrivateCourseInlineDto
 from src.core.storage import Storage
 from src.core.bot.enums import InlineQueryParam
 
 from src.core.bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
-from src.bot.src.services.api.clients.private_course_client import PrivateCourseClient
 from src.bot.src.services.api.clients.tutor_course_client import TutorCourseClient
 from src.core.i18n.i18n import t
 from src.core.models import UserDto
@@ -37,7 +34,7 @@ def query_text(
     user = Storage().get_user(query.from_user.id)
     if not user: return
 
-    if not inline_handler_guard(user, command, role): return
+    if not inline_handler_guard(user, command): return
 
     match command:
         case InlineQueryParam.Tutors:

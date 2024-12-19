@@ -1,7 +1,7 @@
 from telebot.types import CallbackQuery
 from typing import Any, List
 
-from src.bot.src.services.api.clients.private_course_client import PrivateCourseClient
+from src.bot.src.services.api.clients.tutor_course_client import TutorCourseClient
 from src.bot.src.services.api.clients.subject_client import SubjectClient
 
 from src.core.bot.bot import bot
@@ -57,7 +57,7 @@ class StudentActions:
         chat_id = call.from_user.id
         course_id, locale = callback_data
 
-        response = PrivateCourseClient.enroll_in_course(course_id, tg_data=call)
+        response = TutorCourseClient.enroll_in_course(course_id, tg_data=call)
 
         if not response.is_successful():
             bot.send_message(chat_id=chat_id, text=t(chat_id, "RetrievingDataError", locale))
