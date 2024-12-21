@@ -1,52 +1,7 @@
 <template>
-    <div class="justify center">
-        <v-row dense class="mb-2">
-            <v-col cols="4">
-                <v-btn prepend-icon="mdi-chevron-left" :text="t('Previous')" slim min-width="100" @click="moveTo('prev')" />
-            </v-col>
-            <v-col cols="4">
-                <v-btn :text="t('Today')" block slim @click="moveTo" />
-            </v-col>
-            <v-col cols="4">
-                <v-btn append-icon="mdi-chevron-right" :text="t('Next')" min-width="100" @click="moveTo('next')" />
-            </v-col>
-        </v-row>
-
-        <div style="display: flex; max-width: 800px; width: 100%; height: 500px;">
-            <q-calendar-day
-                ref="calendar"
-                v-model="selectedDate"
-                view="week"
-                cell-width="120px"
-                weekday-align="right"
-				:weekdays="weekdays"
-                date-align="left"
-                date-header="inline"
-                short-weekday-label
-				transition-prev=""
-				transition-next=""
-                animated
-                bordered
-                hour24-format
-                @change="onChange"
-                @click-time="onClickTime"
-            >
-                <template #day-body="{ scope: { timestamp, timeStartPos, timeDurationHeight } }">
-                    <template v-for="(event, index) in getEvents(timestamp.date)" :key="`event-${index}`">
-                        <schedule-event
-                            :time-duration-height="timeDurationHeight"
-                            :time-start-pos="timeStartPos"
-                            :event="event"
-                            @click="console.log(event)"
-                        />
-                    </template>
-                </template>
-            </q-calendar-day>
-        </div>
-    </div>
 	<div class="d-flex flex-column mt-1 schedule">
 		<div class="d-flex justify-space-between align-center schedule-header py-2">
-			<v-btn :text="t('Today')" variant="outlined" slim @click="moveTo" class="today-btn" />
+			<v-btn :text="t('Today')" variant="outlined" slim class="today-btn text-none" @click="moveTo" />
 			{{ currentMonthPosition }}
 			<v-btn-group variant="outlined" divided density="compact" class="nav-group">
 				<v-btn icon="mdi-chevron-left" class="nav-btn" @click="moveTo('prev')" />
@@ -81,6 +36,12 @@
 					/>
 				</template>
 			</template>
+			<template #day-container="{ scope: { days }}">
+				<template v-if="hasDate(days)">
+					<div class="day-view-current-time-indicator" :style="style" />
+					<div class="day-view-current-time-line" :style="style" />
+				</template>
+			</template>
 		</q-calendar-day>
 	</div>
 
@@ -88,11 +49,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick, onBeforeMount, computed } from 'vue';
+import { ref, onMounted, nextTick, onBeforeMount, onBeforeUnmount, computed } from 'vue';
 import { useDate } from 'vuetify';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
-import { type QCalendarDay, type Timestamp, today, getEndOfWeek, getStartOfWeek } from '@quasar/quasar-ui-qcalendar';
+import {
+	type QCalendarDay,
+	type Timestamp,
+	today,
+	getEndOfWeek,
+	getStartOfWeek,
+	parseDate,
+} from '@quasar/quasar-ui-qcalendar';
 import '@quasar/quasar-ui-qcalendar/src/QCalendarVariables.sass';
 import '@quasar/quasar-ui-qcalendar/src/QCalendarTransitions.sass';
 import '@quasar/quasar-ui-qcalendar/src/QCalendarDay.sass';
@@ -115,6 +83,13 @@ const adapter = useDate();
 
 const calendar = ref<QCalendarDay>();
 const isMounted = ref(false);
+
+let intervalId: number | undefined;
+const timeStartPos = ref(0);
+const currentDate = ref<string | null>(null);
+const currentTime = ref<string | null>(null);
+
+const style = computed(() => ({ top: `${timeStartPos.value}px` }));
 
 const currentMonthPosition = computed(() => {
 	const date = new Date(selectedDate.value);
@@ -189,6 +164,21 @@ function moveTo(when?: 'prev' | 'next') {
 	});
 }
 
+function adjustCurrentTime() {
+	const now = parseDate(new Date());
+	if (!now) return;
+
+	currentDate.value = now.date;
+	currentTime.value = now.time;
+	timeStartPos.value = calendar.value?.timeStartPos(currentTime.value, false) ?? 0;
+}
+
+function hasDate (days: Timestamp[]) {
+	return currentDate.value
+		? days.find(day => day.date === currentDate.value)
+		: false;
+}
+
 onBeforeMount(() => {
 	selectedDate.value = getWeekBorder(new Date(), 'start')?.date ?? today();
 });
@@ -208,7 +198,12 @@ onMounted(async () => {
 
 	isMounted.value = true;
 	await reload(dateNow.getTime());
+
+	adjustCurrentTime();
+	intervalId = setInterval(() => adjustCurrentTime(), 60000);
 });
+
+onBeforeUnmount(() => clearInterval(intervalId));
 </script>
 
 <style lang="scss">
@@ -225,6 +220,7 @@ onMounted(async () => {
 
 		.today-btn {
 			border: #e0e0e0 thin solid;
+			font-weight: 600;
 		}
 
 		.nav-group {
@@ -235,6 +231,23 @@ onMounted(async () => {
 				color: #606c71;
 			}
 		}
+	}
+
+	.day-view-current-time-indicator {
+		position: absolute;
+		left: -5px;
+		height: 10px;
+		width: 10px;
+		margin-top: -4px;
+		background-color: orange;
+		border-radius: 50%;
+	}
+
+	.day-view-current-time-line {
+		position: absolute;
+		left: 5px;
+		border-top: orange 2px solid;
+		width: calc(100% - 5px);
 	}
 }
 </style>
