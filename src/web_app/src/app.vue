@@ -5,11 +5,12 @@ import TopBar from '@/modules/core/components/top-bar.vue';
 import { ref } from 'vue';
 import { useI18nConfig } from '@/composables/i18n-config';
 import { provideDashboardLayout } from './modules/core/composables/dashboard-layout'
+import { LocaleCode } from '@/plugins/i18n/i18n-plugin';
 
 const { setLanguage } = useI18nConfig()
 const mainMenuVisible = ref(false);
 
-setLanguage('en-US')
+setLanguage(LocaleCode.enUs)
 
 const { enableDashboardLayout } = provideDashboardLayout();
 </script>

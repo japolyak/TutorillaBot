@@ -2,6 +2,7 @@ import { acceptHMRUpdate, defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import type { UserDto, ScheduleCourseDto } from '@/modules/core/services/api/api.models';
 import { Role } from '@/modules/core/services/api/api.models';
+import { LocaleCode } from '@/plugins/i18n/i18n-plugin';
 
 
 export const useUserStore = defineStore('user-store', () => {
@@ -32,7 +33,7 @@ export const useUserStore = defineStore('user-store', () => {
 
 	const userInfo = computed(() => user.value);
 	const userTimeZone = computed(() => user.value?.timeZone ?? null);
-	const locale = computed(() => user.value?.locale ?? 'en-US');
+	const locale = computed(() => user.value?.locale ?? LocaleCode.enUs);
 
 	const coursesLoaded = ref(false);
 

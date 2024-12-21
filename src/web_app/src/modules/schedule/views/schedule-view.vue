@@ -12,7 +12,7 @@
 			ref="calendar"
 			v-model="selectedDate"
 			view="week"
-			cell-width="120px"
+			:cell-width="`${cellWidth}px`"
 			weekday-align="right"
 			:weekdays="weekdays"
 			date-align="left"
@@ -38,8 +38,8 @@
 			</template>
 			<template #day-container="{ scope: { days }}">
 				<template v-if="hasDate(days)">
-					<div class="day-view-current-time-indicator" :style="style" />
-					<div class="day-view-current-time-line" :style="style" />
+					<div class="day-view-current-time-indicator" :style="currentTimeStyle" />
+					<div class="day-view-current-time-line" :style="{ width: cellWidth + 'px', ...currentTimeStyle }" />
 				</template>
 			</template>
 		</q-calendar-day>
@@ -76,20 +76,30 @@ import { useQCalendar } from '@/composables/q-calendar';
 const { t } = useI18n();
 const { openDialog, getEvents } = useScheduleStore();
 const { weekEvents, lastStartDay, lastEndDay, selectedDate } = storeToRefs(useScheduleStore());
-const { coursesLoaded, courses, getCourses } = storeToRefs(useUserStore());
+const { coursesLoaded, courses, getCourses, locale } = storeToRefs(useUserStore());
 const { weekdays, getWeekBorder, getStartOfNextWeek, getStartOfPrevWeek } = useQCalendar();
 
-const adapter = useDate();
-
-const calendar = ref<QCalendarDay>();
-const isMounted = ref(false);
-
+const cellWidth = 120;
 let intervalId: number | undefined;
+
+const adapter = useDate();
+const calendar = ref<QCalendarDay>();
+
+const isMounted = ref(false);
 const timeStartPos = ref(0);
 const currentDate = ref<string | null>(null);
 const currentTime = ref<string | null>(null);
+const weekDay = ref<number | null>(null);
 
-const style = computed(() => ({ top: `${timeStartPos.value}px` }));
+const currentTimeStyle = computed(() => {
+	if (!weekDay.value) return {};
+
+	const base = 56;
+	return {
+		top: `${timeStartPos.value}px`,
+		left: `${base + cellWidth * weekDay.value}px`,
+	};
+});
 
 const currentMonthPosition = computed(() => {
 	const date = adapter.date(selectedDate.value) as Date;
@@ -99,7 +109,7 @@ const currentMonthPosition = computed(() => {
 	const weekStart = getStartOfWeek(timeStamp, weekdays);
 	const weekEnd = getEndOfWeek(timeStamp, weekdays);
 
-	const month = date.toLocaleString('en-US', { month: 'short' });
+	const month = date.toLocaleString(locale.value, { month: 'short' });
 	return `${weekStart.day}-${weekEnd.day} ${month}. ${timeStamp.year}`;
 });
 
@@ -170,6 +180,7 @@ function adjustCurrentTime() {
 
 	currentDate.value = now.date;
 	currentTime.value = now.time;
+	weekDay.value = now.weekday - 1;
 	timeStartPos.value = calendar.value?.timeStartPos(currentTime.value, false) + 30 ?? 0;
 }
 
@@ -235,19 +246,18 @@ onBeforeUnmount(() => clearInterval(intervalId));
 
 	.day-view-current-time-indicator {
 		position: absolute;
-		left: -5px;
-		height: 10px;
-		width: 10px;
+		height: 0;
+		width: 0;
 		margin-top: -4px;
-		background-color: orange;
-		border-radius: 50%;
+		margin-left: -1px;
+		border-top: 5px solid transparent;
+		border-bottom: 5px solid transparent;
+		border-left: 5px solid orange;
 	}
 
 	.day-view-current-time-line {
 		position: absolute;
-		left: 5px;
 		border-top: orange 2px solid;
-		width: calc(100% - 5px);
 	}
 }
 </style>
