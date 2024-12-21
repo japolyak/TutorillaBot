@@ -99,7 +99,7 @@ const currentMonthPosition = computed(() => {
 	const weekStart = getStartOfWeek(timeStamp, weekdays);
 	const weekEnd = getEndOfWeek(timeStamp, weekdays);
 
-	const month = date.toLocaleString('default', { month: 'short' });
+	const month = date.toLocaleString('en-US', { month: 'short' });
 	return `${weekStart.day}-${weekEnd.day} ${month}. ${timeStamp.year}`;
 });
 
@@ -170,7 +170,7 @@ function adjustCurrentTime() {
 
 	currentDate.value = now.date;
 	currentTime.value = now.time;
-	timeStartPos.value = calendar.value?.timeStartPos(currentTime.value, false) ?? 0;
+	timeStartPos.value = calendar.value?.timeStartPos(currentTime.value, false) + 30 ?? 0;
 }
 
 function hasDate (days: Timestamp[]) {
