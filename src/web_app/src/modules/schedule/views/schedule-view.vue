@@ -44,16 +44,55 @@
             </q-calendar-day>
         </div>
     </div>
+	<div class="d-flex flex-column mt-1 schedule">
+		<div class="d-flex justify-space-between align-center schedule-header py-2">
+			<v-btn :text="t('Today')" variant="outlined" slim @click="moveTo" class="today-btn" />
+			{{ currentMonthPosition }}
+			<v-btn-group variant="outlined" divided density="compact" class="nav-group">
+				<v-btn icon="mdi-chevron-left" class="nav-btn" @click="moveTo('prev')" />
+				<v-btn icon="mdi-chevron-right" class="nav-btn" @click="moveTo('next')" />
+			</v-btn-group>
+		</div>
+		<q-calendar-day
+			ref="calendar"
+			v-model="selectedDate"
+			view="week"
+			cell-width="120px"
+			weekday-align="right"
+			:weekdays="weekdays"
+			date-align="left"
+			date-header="inline"
+			short-weekday-label
+			transition-prev=""
+			transition-next=""
+			animated
+			bordered
+			hour24-format
+			@change="onChange"
+			@click-time="onClickTime"
+		>
+			<template #day-body="{ scope: { timestamp, timeStartPos, timeDurationHeight } }">
+				<template v-for="(event, index) in getEvents(timestamp.date)" :key="`event-${index}`">
+					<schedule-event
+						:time-duration-height="timeDurationHeight"
+						:time-start-pos="timeStartPos"
+						:event="event"
+						@click="console.log(event)"
+					/>
+				</template>
+			</template>
+		</q-calendar-day>
+	</div>
 
     <planner-dialog @planned="reload" />
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick, onBeforeMount } from 'vue';
+import { ref, onMounted, nextTick, onBeforeMount, computed } from 'vue';
 import { useDate } from 'vuetify';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
-import { type QCalendarDay, today } from '@quasar/quasar-ui-qcalendar';
+import { type QCalendarDay, type Timestamp, today, getEndOfWeek, getStartOfWeek } from '@quasar/quasar-ui-qcalendar';
 import '@quasar/quasar-ui-qcalendar/src/QCalendarVariables.sass';
 import '@quasar/quasar-ui-qcalendar/src/QCalendarTransitions.sass';
 import '@quasar/quasar-ui-qcalendar/src/QCalendarDay.sass';
@@ -69,12 +108,25 @@ import { useQCalendar } from '@/composables/q-calendar';
 const { t } = useI18n();
 const { openDialog, getEvents } = useScheduleStore();
 const { weekEvents, lastStartDay, lastEndDay, selectedDate } = storeToRefs(useScheduleStore());
-const { userInfo, coursesLoaded, courses, getCourses } = storeToRefs(useUserStore());
-const { weekdays, getWeekBorder, getStartOfNextWeek, toTimestamp, getStartOfPrevWeek } = useQCalendar();
+const { coursesLoaded, courses, getCourses } = storeToRefs(useUserStore());
+const { weekdays, getWeekBorder, getStartOfNextWeek, getStartOfPrevWeek } = useQCalendar();
 
 const adapter = useDate();
 
 const calendar = ref<QCalendarDay>();
+const isMounted = ref(false);
+
+const currentMonthPosition = computed(() => {
+	const date = new Date(selectedDate.value);
+	const timeStamp = ScheduleUtils.toTimestamp(date);
+	if (!timeStamp) return '';
+
+	const weekStart = getStartOfWeek(timeStamp, weekdays);
+	const weekEnd = getEndOfWeek(timeStamp, weekdays);
+
+	const month = date.toLocaleString('default', { month: 'short' });
+	return `${weekStart.day}-${weekEnd.day} ${month}. ${timeStamp.year}`;
+});
 
 async function loadCourses() {
 	if (coursesLoaded.value) return;
@@ -87,7 +139,7 @@ async function loadCourses() {
 	}
 }
 
-async function onClickTime({ scope }) {
+async function onClickTime({ scope }: { scope: { timestamp: Timestamp } }) {
 	await loadCourses();
 
 	if (!getCourses.value.length) return;
@@ -96,14 +148,14 @@ async function onClickTime({ scope }) {
     openDialog(date, scope.timestamp.hour);
 }
 
-async function onChange({start, end}) {
-    if (!userInfo.value) return;
-
+async function onChange({ start, end }: { start: string; end: string }) {
     const startDay = adapter.date(start).getTime();
     const endDay = adapter.endOfDay(adapter.date(end)).getTime();
 
     lastStartDay.value = start;
     lastEndDay.value = end;
+
+	if (!isMounted.value) return;
 
     weekEvents.value = await EventsClient.loadEvents(startDay, endDay);
 }
@@ -141,14 +193,48 @@ onBeforeMount(() => {
 	selectedDate.value = getWeekBorder(new Date(), 'start')?.date ?? today();
 });
 
-onMounted(() => {
-	const now = toTimestamp(adapter.date() as Date);
+onMounted(async () => {
+	const dateNow = adapter.date() as Date;
+	const now = ScheduleUtils.toTimestamp(dateNow);
 	if (!now) return;
 
 	selectedDate.value = now.date
 
-	nextTick(() => {
-		setTimeout(() => (calendar.value?.scrollToTime(`${now.hour - 3}:${now.minute}`, 350)), 100);
+	await nextTick(() => {
+		setTimeout(() => {
+			calendar.value?.scrollToTime(`${now.hour - 3}:${now.minute}`, 350);
+		}, 100);
 	});
+
+	isMounted.value = true;
+	await reload(dateNow.getTime());
 });
 </script>
+
+<style lang="scss">
+.schedule {
+	max-width: 800px;
+	width: 100%;
+	height: 580px;
+
+	.schedule-header {
+		font-size: 1rem;
+		font-weight: 600;
+		color: #606c71;
+		padding-inline: 11px;
+
+		.today-btn {
+			border: #e0e0e0 thin solid;
+		}
+
+		.nav-group {
+			border-color: #e0e0e0;
+
+			.nav-btn {
+				width: 40px;
+				color: #606c71;
+			}
+		}
+	}
+}
+</style>

@@ -1,25 +1,13 @@
-import { prevDay, getStartOfWeek, parseTimestamp, nextDay, getEndOfWeek } from '@quasar/quasar-ui-qcalendar';
+import { prevDay, getStartOfWeek, nextDay, getEndOfWeek } from '@quasar/quasar-ui-qcalendar';
 import type { Timestamp, TimestampOrNull } from '@quasar/quasar-ui-qcalendar';
+import { ScheduleUtils } from '@/modules/schedule/services/mappers';
 
 
 export function useQCalendar() {
 	const weekdays = [1, 2, 3, 4, 5, 6, 0];
 
-	function toTimestampString(date: Date): string {
-		const isoDate = date.toISOString();
-		return `${isoDate.slice(0, 10)} ${isoDate.slice(11, 16)}`;
-	}
-
-	function toTimestamp(date: Date): TimestampOrNull {
-		const timestampString = toTimestampString(date);
-
-		return parseTimestamp(timestampString);
-	}
-
 	function getWeekBorder(date: Date | string, border: 'start' | 'end'): TimestampOrNull {
-		if (typeof date !== 'string') date = toTimestampString(date);
-
-		const timestamp = parseTimestamp(date);
+		const timestamp = ScheduleUtils.toTimestamp(date);
 		if (!timestamp) return null;
 
 		return border === 'start'
@@ -57,7 +45,6 @@ export function useQCalendar() {
 		weekdays,
 		getStartOfNextWeek,
 		getStartOfPrevWeek,
-		getWeekBorder,
-		toTimestamp
+		getWeekBorder
 	};
 }
