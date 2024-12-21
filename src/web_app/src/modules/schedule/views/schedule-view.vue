@@ -92,15 +92,17 @@ const currentTime = ref<string | null>(null);
 const style = computed(() => ({ top: `${timeStartPos.value}px` }));
 
 const currentMonthPosition = computed(() => {
-	const date = new Date(selectedDate.value);
-	const timeStamp = ScheduleUtils.toTimestamp(date);
-	if (!timeStamp) return '';
-
-	const weekStart = getStartOfWeek(timeStamp, weekdays);
-	const weekEnd = getEndOfWeek(timeStamp, weekdays);
-
-	const month = date.toLocaleString('default', { month: 'short' });
-	return `${weekStart.day}-${weekEnd.day} ${month}. ${timeStamp.year}`;
+	return selectedDate.value;
+	// const date = new Date(selectedDate.value);
+	// const timeStamp = ScheduleUtils.toTimestamp(date);
+	// if (!timeStamp) return '';
+	//
+	// console.log(timeStamp)
+	// const weekStart = getStartOfWeek(timeStamp, weekdays);
+	// const weekEnd = getEndOfWeek(timeStamp, weekdays);
+	//
+	// const month = date.toLocaleString('default', { month: 'short' });
+	// return `${weekStart.day}-${weekEnd.day} ${month}. ${timeStamp.year}`;
 });
 
 async function loadCourses() {
