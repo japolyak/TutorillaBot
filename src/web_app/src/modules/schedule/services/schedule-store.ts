@@ -18,7 +18,7 @@ export const useScheduleStore = defineStore('schedule-store', () => {
 		const mappedEvents = weekEvents.value.map(ScheduleUtils.eventMapper);
 
 		mappedEvents.forEach(event => {
-			!map[event.date] ? map[event.date] = [] : map[event.date].push(event);
+			!map[event.date] ? map[event.date] = [event] : map[event.date].push(event);
 		});
 
 		return map;
