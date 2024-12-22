@@ -1,3 +1,19 @@
 * {
     touch-action: manipulation;
 }
+
+:root {
+	--tg-header-height: 60px;
+}
+
+@media (width > 400px) {
+	.tg-header-placeholder {
+		height: var(--tg-header-height);
+		width: 100%;
+		background-color: #606c71;
+	}
+
+	.v-app-bar.top-bar {
+		margin-top: var(--tg-header-height);
+	}
+}

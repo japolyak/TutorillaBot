@@ -19,6 +19,7 @@ const { enableDashboardLayout } = provideDashboardLayout();
 	<v-app>
 		<main-menu v-if="enableDashboardLayout" v-model="mainMenuVisible" />
 		<top-bar v-if="enableDashboardLayout" @toggle-main-menu="mainMenuVisible = !mainMenuVisible"/>
+		<div class="tg-header-placeholder" />
 		<v-main>
 			<router-view />
 			<snackbar />
