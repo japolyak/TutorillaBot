@@ -10,6 +10,7 @@
 		:focused="menu"
 		hide-details
         :error="error"
+		:disabled="disabled"
     >
         <v-menu v-model="menu" activator="parent" min-width="0" :close-on-content-click="false">
             <v-confirm-edit v-model="classDate" @save="menu = false">
@@ -36,6 +37,10 @@ import { useScheduleStore } from '@/modules/schedule/services/schedule-store';
 import { storeToRefs } from 'pinia';
 
 defineProps({
+    disabled: {
+        type: Boolean,
+        default: false,
+    },
     error: {
         type: Boolean,
         default: false,

@@ -60,6 +60,7 @@ import {
 	getEndOfWeek,
 	getStartOfWeek,
 	parseDate,
+	diffTimestamp,
 } from '@quasar/quasar-ui-qcalendar';
 import '@quasar/quasar-ui-qcalendar/src/QCalendarVariables.sass';
 import '@quasar/quasar-ui-qcalendar/src/QCalendarTransitions.sass';
@@ -75,7 +76,7 @@ import { useQCalendar } from '@/composables/q-calendar';
 import type { ScheduleEventModel } from '@/modules/schedule/models';
 
 const { t } = useI18n();
-const { openDialog, openToEdit, getEvents } = useScheduleStore();
+const { openDialog, openToEdit, openToPreview, getEvents } = useScheduleStore();
 const { weekEvents, lastStartDay, lastEndDay, selectedDate } = storeToRefs(useScheduleStore());
 const { coursesLoaded, courses, getCourses, locale } = storeToRefs(useUserStore());
 const { weekdays, getWeekBorder, getStartOfNextWeek, getStartOfPrevWeek } = useQCalendar();
@@ -125,13 +126,20 @@ async function loadCourses() {
 	}
 }
 
-async function onEventClick(event:  ScheduleEventModel) {
+async function onEventClick(event: ScheduleEventModel) {
+	const now = adapter.date() as Date;
+
+	const nowTimestamp = ScheduleUtils.toTimestamp(now);
+	const eventTimestamp = ScheduleUtils.toTimestamp(`${event.date} ${event.time}`);
+
+	const result = diffTimestamp(nowTimestamp, eventTimestamp, false);
+
 	await loadCourses();
 
 	if (!getCourses.value.length) return;
 
     const date = adapter.parseISO(event.date) as Date;
-    openToEdit(date, event);
+    result > 0 ? openToEdit(date, event) : openToPreview(date, event);
 }
 
 async function onClickTime({ scope }: { scope: { timestamp: Timestamp } }) {

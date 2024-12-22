@@ -45,7 +45,7 @@
 					<v-col cols="12">
                         <v-select v-bind="selectDurationProps" v-model="classDuration" />
                         <div class="d-flex align-center">
-                            <date-picker :min="minStartOn" :error="dateIsNotValid" />
+                            <date-picker :disabled="isPreview" :min="minStartOn" :error="dateIsNotValid" />
                             <v-icon icon="mdi-arrow-right" class="mx-1" />
                             <v-select
                                 v-bind="selectTimeProps"
@@ -54,23 +54,26 @@
                                 :error="dateIsNotValid"
                             />
                         </div>
-                        <div v-if="forPersonIts" class="mt-4 d-flex align-end">
-                            <v-icon icon="mdi-information-outline" size="20" class="mr-2" />
-                            <div>{{ forPersonIts }}</div>
-                        </div>
-                        <div v-if="dateIsNotValid" class="mt-4 bg-red">
-                            {{ t('Validators.DateFromPast') }}
-                        </div>
+						<div v-if="!isPreview">
+							<div v-if="forPersonIts" class="mt-4 d-flex align-end">
+								<v-icon icon="mdi-information-outline" size="20" class="mr-2" />
+								<div>{{ forPersonIts }}</div>
+							</div>
+							<div v-if="dateIsNotValid" class="mt-4 bg-red">
+								{{ t('Validators.DateFromPast') }}
+							</div>
+						</div>
 					</v-col>
 				</v-row>
 			</v-card-text>
 
 			<v-card-actions class="flex-column">
-				<v-btn v-if="edition" :loading="isSaving" variant="flat" block color="red" @click="deleteClass">
+				<v-btn v-if="isEdition" :loading="isSaving" variant="flat" block color="red" @click="deleteClass">
 					{{ t('Cancel') }}
 				</v-btn>
 				<v-btn
-					:disabled="!selectedEventChanged"
+					v-if="!isPreview"
+					:disabled="isEdition && !selectedEventChanged"
 					:loading="isSaving"
 					variant="flat"
 					block
@@ -114,17 +117,18 @@ const {
     classDurations,
     classStartsOn,
     selectedPerson,
-	edition,
+	isEdition,
 	selectedEventChanged,
 	selectedEventId,
+	isPreview
 } = storeToRefs(useScheduleStore());
 
 const autocompleteRef = ref<VAutocomplete | null>(null);
 
 const role = computed(() => isTutor.value ? t('Student') : t('Tutor'));
-const planButtonActionFn = computed(() => edition.value ? rescheduleClass : planClass);
-const planButtonText = computed(() => edition.value ? t('Reschedule') : t('Plan'));
-const titleText = computed(() => edition.value ? t('RescheduleClass') : t('ScheduleClass'));
+const planButtonActionFn = computed(() => isEdition.value ? rescheduleClass : planClass);
+const planButtonText = computed(() => isEdition.value ? t('Reschedule') : t('Plan'));
+const titleText = computed(() => isEdition.value ? t('RescheduleClass') : t('ScheduleClass'));
 
 const classDateInUnix = computed(() => {
     if (!classStartsOn.value || !classDate.value) return undefined;
@@ -139,7 +143,11 @@ const classDateInUnix = computed(() => {
     return date.getTime();
 });
 
-const dateIsNotValid = computed(() => classDateInUnix.value < adapter.date()?.getTime());
+const dateIsNotValid = computed(() => {
+	if (isPreview.value) return true;
+
+	return classDateInUnix.value < adapter.date()?.getTime();
+});
 const minStartOn = computed(() => adapter.toISO(adapter.endOfDay(adapter.date())));
 
 const forPersonIts = computed(() => {
@@ -330,7 +338,8 @@ const selectDurationProps = computed(() => ({
 	items: classDurations.value,
     class: 'mb-2',
     returnObject: true,
-    itemTitle: durationTitle
+    itemTitle: durationTitle,
+	disabled: isPreview.value
 }));
 
 const selectTimeProps = computed(() => ({
@@ -340,7 +349,8 @@ const selectTimeProps = computed(() => ({
 	variant: 'outlined' as 'outlined',
     items: workHours.value,
     returnObject: true,
-    itemTitle: timeTitle
+    itemTitle: timeTitle,
+	disabled: isPreview.value
 }));
 
 const autocompleteProps = computed(() => ({
@@ -354,7 +364,7 @@ const autocompleteProps = computed(() => ({
     class: 'person-details',
 	itemValue: uniqueItemValue,
     rules: [required],
-	disabled: edition.value
+	disabled: isEdition.value || isPreview.value
 }));
 </script>
 

@@ -7,7 +7,12 @@ import { ScheduleUtils } from '@/modules/schedule/services/mappers';
 
 export const useScheduleStore = defineStore('schedule-store', () => {
 	const selectedDate = ref(today());
+
 	const edition = ref(false);
+	const isEdition = computed(() => edition.value);
+
+	const preview = ref(false);
+	const isPreview = computed(() => preview.value);
 
 	const selectedEventId = ref<number | null>(null);
 	const selectedEventDate = ref<Date | null>(null);
@@ -92,10 +97,17 @@ export const useScheduleStore = defineStore('schedule-store', () => {
 		classDuration.value = 60;
 
 		edition.value = false;
+		preview.value = false;
+
+		selectedEventId.value = null;
+		selectedEventDate.value = null;
+		selectedEventStartsOn.value = null;
+		selectedEventDuration.value = null;
+
 		showDialog.value = true;
 	}
 
-	function openToEdit(date: Date, event: ScheduleEventModel) {
+	function setEvent(date: Date, event: ScheduleEventModel) {
 		classDate.value = date;
 		selectedEventDate.value = date;
 
@@ -116,8 +128,21 @@ export const useScheduleStore = defineStore('schedule-store', () => {
 		};
 
 		selectedEventId.value = event.id;
+	}
+
+	function openToEdit(date: Date, event: ScheduleEventModel) {
+		setEvent(date, event);
 
 		edition.value = true;
+		preview.value = false;
+		showDialog.value = true;
+	}
+
+	function openToPreview(date: Date, event: ScheduleEventModel) {
+		setEvent(date, event);
+
+		edition.value = false;
+		preview.value = true;
 		showDialog.value = true;
 	}
 
@@ -143,9 +168,11 @@ export const useScheduleStore = defineStore('schedule-store', () => {
 		openDialog,
 		closeDialog,
 		openToEdit,
-		edition,
+		isEdition,
 		selectedEventChanged,
 		selectedEventId,
+		openToPreview,
+		isPreview
     };
 });
 
