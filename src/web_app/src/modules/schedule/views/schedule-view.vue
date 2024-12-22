@@ -199,7 +199,7 @@ function adjustCurrentTime() {
 	currentDate.value = now.date;
 	currentTime.value = now.time;
 	weekDay.value = !now.weekday ? 6 : now.weekday - 1;
-	timeStartPos.value = calendar.value?.timeStartPos(currentTime.value, false) + 30 ?? 0;
+	timeStartPos.value = (calendar.value?.timeStartPos(currentTime.value, false) ?? 0) + 30;
 }
 
 function hasDate (days: Timestamp[]) {
