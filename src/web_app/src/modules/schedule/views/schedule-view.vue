@@ -93,7 +93,7 @@ const currentTime = ref<string | null>(null);
 const weekDay = ref<number | null>(null);
 
 const currentTimeStyle = computed(() => {
-	if (!weekDay.value) return {};
+	if (weekDay.value == null) return {};
 
 	const base = 56;
 	return {
