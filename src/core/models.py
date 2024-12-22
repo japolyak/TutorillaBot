@@ -208,8 +208,10 @@ class ScheduleEventDto(BaseDto):
     duration: int
     date: int
     type: ScheduleEventType
-    person_name: str
     subject_name: str
+    person_name: str
+    person_timezone: float
+    private_course_id: int
 
 
 class ScheduleCoursePersonDto(BaseDto):

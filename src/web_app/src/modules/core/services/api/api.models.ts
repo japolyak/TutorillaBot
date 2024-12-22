@@ -63,10 +63,13 @@ export enum ScheduleEventType {
 export interface ScheduleEventDto {
 	id: number;
 	subjectName: string;
-	personName: string;
 	duration: number;
 	date: number;
 	type: ScheduleEventType;
+	personId: number;
+	personName: string;
+	personTimezone: number;
+	privateCourseId: number;
 }
 
 export interface ScheduleCoursePersonDto {

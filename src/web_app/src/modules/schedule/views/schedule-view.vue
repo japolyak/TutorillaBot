@@ -32,7 +32,7 @@
 						:time-duration-height="timeDurationHeight"
 						:time-start-pos="timeStartPos"
 						:event="event"
-						@click="console.log(event)"
+						@click="onEventClick(event)"
 					/>
 				</template>
 			</template>
@@ -72,9 +72,10 @@ import { useScheduleStore } from '@/modules/schedule/services/schedule-store';
 import { useUserStore } from '@/modules/core/store/user-store';
 import { ScheduleUtils } from '@/modules/schedule/services/mappers';
 import { useQCalendar } from '@/composables/q-calendar';
+import type { ScheduleEventModel } from '@/modules/schedule/models';
 
 const { t } = useI18n();
-const { openDialog, getEvents } = useScheduleStore();
+const { openDialog, openToEdit, getEvents } = useScheduleStore();
 const { weekEvents, lastStartDay, lastEndDay, selectedDate } = storeToRefs(useScheduleStore());
 const { coursesLoaded, courses, getCourses, locale } = storeToRefs(useUserStore());
 const { weekdays, getWeekBorder, getStartOfNextWeek, getStartOfPrevWeek } = useQCalendar();
@@ -122,6 +123,15 @@ async function loadCourses() {
 		courses.value = response.data.items;
 		coursesLoaded.value = true;
 	}
+}
+
+async function onEventClick(event:  ScheduleEventModel) {
+	await loadCourses();
+
+	if (!getCourses.value.length) return;
+
+    const date = adapter.parseISO(event.date) as Date;
+    openToEdit(date, event);
 }
 
 async function onClickTime({ scope }: { scope: { timestamp: Timestamp } }) {
@@ -203,7 +213,7 @@ onMounted(async () => {
 
 	await nextTick(() => {
 		setTimeout(() => {
-			calendar.value?.scrollToTime(`${now.hour - 3}:${now.minute}`, 350);
+			calendar.value?.scrollToTime('09:00', 350);
 		}, 100);
 	});
 
@@ -219,9 +229,13 @@ onBeforeUnmount(() => clearInterval(intervalId));
 
 <style lang="scss">
 .schedule {
-	max-width: 800px;
+	max-width: 908px;
 	width: 100%;
 	height: 580px;
+
+	.q-calendar {
+		max-width: 908px;
+	}
 
 	.schedule-header {
 		font-size: 1rem;

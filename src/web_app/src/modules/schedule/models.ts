@@ -1,3 +1,5 @@
+import { type ScheduleEventType } from '@/modules/core/services/api/api.models';
+
 export interface CourseModel {
 	id: number;
 	name: string;
@@ -8,17 +10,16 @@ export interface CourseModel {
     timezone?: number;
 }
 
-export enum EventType {
-	class = 'Class',
-	dayOff = 'DayOff'
-}
-
 export interface ScheduleEventModel {
 	id: number;
 	title: string;
 	date: string;
 	time: string;
+	subjectName: string;
 	duration: number;
-	type: EventType;
+	type: ScheduleEventType;
 	side?: 'left' | 'right' | 'full';
+	personName: string;
+	personTimezone: number;
+	privateCourseId: number;
 }

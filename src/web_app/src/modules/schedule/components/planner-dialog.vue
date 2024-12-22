@@ -2,7 +2,7 @@
 	<v-dialog v-model="showDialog" :max-width="400" class="align-start planner-dialog">
 		<v-card class="planner-dialog">
 			<v-card-title class="d-flex justify-space-between">
-				{{ t('ScheduleClass') }}
+				{{ titleText }}
 				<v-btn
 					icon="mdi-close"
 					size="small"
@@ -65,9 +65,19 @@
 				</v-row>
 			</v-card-text>
 
-			<v-card-actions>
-				<v-btn :loading="isSaving" variant="flat" block color="blue" @click="planClass">
-					{{ t('Plan') }}
+			<v-card-actions class="flex-column">
+				<v-btn v-if="edition" :loading="isSaving" variant="flat" block color="red" @click="deleteClass">
+					{{ t('Cancel') }}
+				</v-btn>
+				<v-btn
+					:disabled="!selectedEventChanged"
+					:loading="isSaving"
+					variant="flat"
+					block
+					color="blue"
+					@click="planButtonActionFn"
+				>
+					{{ planButtonText }}
 				</v-btn>
 			</v-card-actions>
 		</v-card>
@@ -104,11 +114,17 @@ const {
     classDurations,
     classStartsOn,
     selectedPerson,
+	edition,
+	selectedEventChanged,
+	selectedEventId,
 } = storeToRefs(useScheduleStore());
 
 const autocompleteRef = ref<VAutocomplete | null>(null);
 
 const role = computed(() => isTutor.value ? t('Student') : t('Tutor'));
+const planButtonActionFn = computed(() => edition.value ? rescheduleClass : planClass);
+const planButtonText = computed(() => edition.value ? t('Reschedule') : t('Plan'));
+const titleText = computed(() => edition.value ? t('RescheduleClass') : t('ScheduleClass'));
 
 const classDateInUnix = computed(() => {
     if (!classStartsOn.value || !classDate.value) return undefined;
@@ -184,6 +200,30 @@ const coursesFlatList = computed(() => {
 	})
 });
 
+async function deleteClass() {
+	if (!selectedEventId.value || !classDateInUnix.value) return;
+
+	isSaving.value = true;
+	const response = await EventsClient.deleteEvent(selectedEventId.value);
+	isSaving.value = false;
+
+	if (!response.isSuccess) {
+		showSnackbar({
+			message: 'Error occured:(',
+			status: 'error',
+		});
+		return;
+	}
+
+	showSnackbar({
+		message: 'Class deleted successfully!',
+		status: 'success',
+	});
+
+	closeDialog();
+	emit('planned', classDateInUnix.value);
+}
+
 async function planClass() {
     if (!selectedPerson.value || selectedPerson.value.id == null || !classDateInUnix.value || dateIsNotValid.value) {
         await autocompleteRef.value?.validate();
@@ -211,6 +251,40 @@ async function planClass() {
 
 	showSnackbar({
 		message: 'Class scheduled successfully!',
+		status: 'success',
+	});
+
+	closeDialog();
+	emit('planned', classDateInUnix.value);
+}
+
+async function rescheduleClass() {
+    if (!selectedPerson.value || !selectedEventId.value || !classDateInUnix.value || dateIsNotValid.value) {
+        await autocompleteRef.value?.validate();
+        return;
+    }
+
+    isSaving.value = true;
+
+    const payload = {
+        time: classDateInUnix.value,
+        duration: classDuration.value,
+    };
+
+    const response = await EventsClient.rescheduleClass(selectedEventId.value, payload);
+
+    isSaving.value = false;
+
+	if (!response.isSuccess) {
+		showSnackbar({
+			message: 'Error occured:(',
+			status: 'error',
+		});
+		return;
+	}
+
+	showSnackbar({
+		message: 'Class rescheduled successfully!',
 		status: 'success',
 	});
 
@@ -280,6 +354,7 @@ const autocompleteProps = computed(() => ({
     class: 'person-details',
 	itemValue: uniqueItemValue,
     rules: [required],
+	disabled: edition.value
 }));
 </script>
 

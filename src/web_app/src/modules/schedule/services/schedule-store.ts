@@ -7,6 +7,22 @@ import { ScheduleUtils } from '@/modules/schedule/services/mappers';
 
 export const useScheduleStore = defineStore('schedule-store', () => {
 	const selectedDate = ref(today());
+	const edition = ref(false);
+
+	const selectedEventId = ref<number | null>(null);
+	const selectedEventDate = ref<Date | null>(null);
+	const selectedEventStartsOn = ref<number | null>(null);
+	const selectedEventDuration = ref<number | null>(null);
+
+	const selectedEventChanged = computed(() => {
+		if (!selectedEventId.value) return false;
+
+		if (classDate.value?.getTime() !== selectedEventDate.value?.getTime()) return true;
+
+		if (classStartsOn.value !== selectedEventStartsOn.value) return true;
+
+		return classDuration.value !== selectedEventDuration.value;
+	});
 
 	const weekEvents = ref<ScheduleEventDto[]>([]);
 
@@ -75,6 +91,33 @@ export const useScheduleStore = defineStore('schedule-store', () => {
 		classStartsOn.value = hour;
 		classDuration.value = 60;
 
+		edition.value = false;
+		showDialog.value = true;
+	}
+
+	function openToEdit(date: Date, event: ScheduleEventModel) {
+		classDate.value = date;
+		selectedEventDate.value = date;
+
+		classStartsOn.value = parseTime(event.time) / 60;
+		selectedEventStartsOn.value = parseTime(event.time) / 60;
+
+		classDuration.value = event.duration;
+		selectedEventDuration.value = event.duration;
+
+		selectedPerson.value = {
+			id: event.privateCourseId,
+			name: event.personName,
+			selected: false,
+			subject: event.subjectName,
+			timezone: event.personTimezone,
+			disabled: false,
+			type: 'person'
+		};
+
+		selectedEventId.value = event.id;
+
+		edition.value = true;
 		showDialog.value = true;
 	}
 
@@ -99,6 +142,10 @@ export const useScheduleStore = defineStore('schedule-store', () => {
 		classDurations,
 		openDialog,
 		closeDialog,
+		openToEdit,
+		edition,
+		selectedEventChanged,
+		selectedEventId,
     };
 });
 

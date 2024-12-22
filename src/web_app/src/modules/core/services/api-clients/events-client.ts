@@ -20,4 +20,18 @@ export class EventsClient {
 		const request = httpClient.post(url, { json: payload });
 		return await ApiUtils.createApiResponse(request);
     }
+
+	public static async rescheduleClass(eventId: number, payload: NewClassDto): Promise<ApiResponse<any>> {
+		const url = `${this.urlBase}/${eventId}/`;
+
+		const request = httpClient.patch(url, { json: payload });
+		return await ApiUtils.createApiResponse(request);
+    }
+
+	public static async deleteEvent(eventId: number): Promise<ApiResponse<any>> {
+		const url = `${this.urlBase}/${eventId}/`;
+
+		const request = httpClient.delete(url);
+		return await ApiUtils.createApiResponse(request);
+    }
 }

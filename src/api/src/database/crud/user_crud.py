@@ -7,10 +7,8 @@ from src.core.models import UserBaseDto
 
 class UserCRUD:
     @staticmethod
-    def get_user(user_id: int, db: Session) -> User | None:
-        user = db.query(User).filter(User.id == user_id).first()
-
-        return user
+    def get_user(user_id: int, db: Session) -> Optional[User]:
+        return db.query(User).filter(User.id == user_id).one_or_none()
 
     @staticmethod
     def create_user(user: UserBaseDto, db: Session) -> bool:

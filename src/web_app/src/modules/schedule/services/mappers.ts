@@ -19,7 +19,11 @@ export class ScheduleUtils {
 			date: timestamp.date,
 			time: timestamp.time,
 			duration: event.duration,
+			subjectName: event.subjectName,
 			type: event.type,
+			personName: event.personName,
+			personTimezone: event.personTimezone,
+			privateCourseId: event.privateCourseId
 		}
 	}
 }

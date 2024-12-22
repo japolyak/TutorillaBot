@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy import and_, or_
-from typing import Literal, Tuple, Union
+from typing import Literal, Tuple, Union, Optional
 
 from src.api.src.database.models import PrivateClass, PrivateCourse, TutorCourse, Subject, User
 from src.core.models import Role
@@ -12,7 +12,11 @@ class EventCRUD:
     EventType =  Tuple[CompareInt, CompareInt]
 
     @classmethod
-    def event_has_collisions(cls, db: Session, student_id: int, tutor_id: int, start: int, duration: int) -> bool:
+    def get_event(cls, event_id: int, db: Session) -> Optional[PrivateClass]:
+        return db.query(PrivateClass).filter(PrivateClass.id == event_id).one_or_none()
+
+    @classmethod
+    def event_has_collisions(cls, student_id: int, tutor_id: int, start: int, duration: int, event_id: None | int, db: Session) -> bool:
         hour_in_ms = 60000
 
         new_class = (start, start + duration * hour_in_ms)
@@ -38,6 +42,8 @@ class EventCRUD:
             )
         )
 
+        if event_id is not None: rows = rows.where(PrivateClass.id != event_id)
+
         return rows.count() > 0
 
     @staticmethod
@@ -50,11 +56,25 @@ class EventCRUD:
 
         return new_class
 
+    @classmethod
+    def update_class_event(cls, event_id: int, start_time_unix: int, duration: int, db: Session) -> True:
+        event = cls.get_event(event_id, db)
+
+        if not event: return False
+
+        event.start_time_unix = start_time_unix
+        event.duration = duration
+
+        db.commit()
+        db.refresh(event)
+
+        return True
+
     @staticmethod
     def get_events_between_dates(user_id: int, role: Literal[Role.Tutor, Role.Student], start_time_unix: int, end_time_unix: int, db: Session):
         classes = (
             db
-            .query(PrivateClass.id, PrivateClass.duration, PrivateClass.start_time_unix, Subject.name, User.first_name)
+            .query(PrivateClass.id, PrivateClass.duration, PrivateClass.start_time_unix, Subject.name, User.first_name, User.time_zone, PrivateCourse.id)
             .join(PrivateClass.private_course)
             .join(PrivateCourse.tutor_course)
             .join(TutorCourse.subject)
@@ -78,6 +98,18 @@ class EventCRUD:
             )
 
         return classes.all()
+
+    @classmethod
+    def delete_event(cls, event_id: int, db: Session):
+        event = db.query(PrivateClass).filter(PrivateClass.id == event_id).first()
+
+        if event is None:
+            return False
+
+        db.delete(event)
+        db.commit()
+
+        return True
 
     @classmethod
     def _overlaps(cls, x: EventType, y: EventType):

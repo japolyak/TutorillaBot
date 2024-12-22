@@ -1,6 +1,6 @@
 from sqlalchemy import func, select, and_
-from sqlalchemy.orm import Session, aliased
-from typing import Literal
+from sqlalchemy.orm import Session, aliased, Mapped
+from typing import Literal, Optional, Tuple
 
 from src.core.models import Role
 
@@ -78,11 +78,21 @@ class PrivateCourseCRUD:
             .join(student, PrivateCourse.student)
             .join(TutorCourse.subject)
             .join(tutor, TutorCourse.tutor)
-            .filter(private_course_id == PrivateCourse.id)
+            .filter(PrivateCourse.id == private_course_id)
             .one_or_none()
         )
 
         return private_course
+
+    @staticmethod
+    def get_private_course_members(private_course_id: Mapped[int], db: Session) -> Optional[Tuple[int, int]]:
+        return (
+            db
+            .query(PrivateCourse.student_id, TutorCourse.tutor_id)
+            .join(PrivateCourse.tutor_course)
+            .filter(PrivateCourse.id == private_course_id)
+            .one_or_none()
+        )
 
 
     @staticmethod
