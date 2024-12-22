@@ -190,7 +190,7 @@ function adjustCurrentTime() {
 
 	currentDate.value = now.date;
 	currentTime.value = now.time;
-	weekDay.value = now.weekday - 1;
+	weekDay.value = !now.weekday ? 6 : now.weekday - 1;
 	timeStartPos.value = calendar.value?.timeStartPos(currentTime.value, false) + 30 ?? 0;
 }
 
