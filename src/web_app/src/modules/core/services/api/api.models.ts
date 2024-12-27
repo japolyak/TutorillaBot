@@ -66,10 +66,10 @@ export interface ScheduleEventDto {
 	duration: number;
 	date: number;
 	type: ScheduleEventType;
-	personId: number;
 	personName: string;
 	personTimezone: number;
 	privateCourseId: number;
+	status: ClassStatus;
 }
 
 export interface ScheduleCoursePersonDto {

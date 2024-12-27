@@ -205,13 +205,31 @@ class ScheduleEventType(StrEnum):
 
 class ScheduleEventDto(BaseDto):
     id: int
+    subject_name: str
     duration: int
     date: int
     type: ScheduleEventType
-    subject_name: str
     person_name: str
     person_timezone: float
     private_course_id: int
+    status: ClassStatus
+
+    @classmethod
+    def from_tuple(cls, values: Tuple[int, int, str, float], class_type: ScheduleEventType):
+        if len(values) != 8:
+            raise ValueError("List must contain exactly 8 elements.")
+
+        return cls(
+            id=values[0],
+            duration=values[1],
+            date=values[2],
+            type=ScheduleEventType.Class,
+            subject_name=values[3],
+            person_name=values[4],
+            person_timezone=values[5],
+            private_course_id=values[6],
+            status=values[7]
+        )
 
 
 class ScheduleCoursePersonDto(BaseDto):

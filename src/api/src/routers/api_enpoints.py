@@ -14,6 +14,7 @@ class APIEndpoints:
 
     class Events:
         Prefix = "/events"
+        Get = "/{event_id}/"
         Delete = "/{event_id}/"
         Patch = "/{event_id}/"
         Range = "/start/{start}/end/{end}/"

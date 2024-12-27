@@ -100,6 +100,7 @@ import { useUserStore } from '@/modules/core/store/user-store';
 import { EventsClient } from '@/modules/core/services/api-clients/events-client';
 import { useActionSnackbarStore } from '@/modules/core/store/snackbar-store';
 import { useValidators } from '@/composables/validators';
+import { ScheduleUtils } from '@/modules/schedule/services/mappers';
 
 const emit = defineEmits(['planned']);
 
@@ -133,15 +134,15 @@ const titleText = computed(() => isEdition.value ? t('RescheduleClass') : t('Sch
 const classDateInUnix = computed(() => {
     if (!classStartsOn.value || !classDate.value) return undefined;
 
-    const date = new Date(classDate.value);
-
     const hours = classStartsOn.value % 1 == 0 ? classStartsOn.value : Math.trunc(classStartsOn.value);
     const minutes = classStartsOn.value % 1 == 0 ? 0 : 30;
 
-    date.setHours(hours, minutes);
+    classDate.value.setHours(hours, minutes);
 
-    return date.getTime();
+    return classDate.value.getTime();
 });
+
+const classDateTimestamp = computed(() => ScheduleUtils.toTimestamp(classDate.value));
 
 const dateIsNotValid = computed(() => {
 	if (isPreview.value) return true;
@@ -229,7 +230,7 @@ async function deleteClass() {
 	});
 
 	closeDialog();
-	emit('planned', classDateInUnix.value);
+	emit('planned', classDateTimestamp.value?.date);
 }
 
 async function planClass() {
@@ -263,7 +264,8 @@ async function planClass() {
 	});
 
 	closeDialog();
-	emit('planned', classDateInUnix.value);
+
+	emit('planned', classDateTimestamp.value?.date);
 }
 
 async function rescheduleClass() {
@@ -279,7 +281,7 @@ async function rescheduleClass() {
         duration: classDuration.value,
     };
 
-    const response = await EventsClient.rescheduleClass(selectedEventId.value, payload);
+    const response = await EventsClient.rescheduleEvent(selectedEventId.value, payload);
 
     isSaving.value = false;
 
@@ -297,7 +299,7 @@ async function rescheduleClass() {
 	});
 
 	closeDialog();
-	emit('planned', classDateInUnix.value);
+	emit('planned', classDateTimestamp.value?.date);
 }
 
 function setPerson(person: CourseModel) {

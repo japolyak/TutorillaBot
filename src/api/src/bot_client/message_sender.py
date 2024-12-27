@@ -2,6 +2,7 @@ from src.api.src.database.models import User
 from src.core.config import support_nick
 from src.core.bot.bot import bot
 from src.core.bot.markups.reply_keyboard_markup import ReplyKeyboardMarkupCreator
+from src.core.bot.markups.inline_keyboard_markups import InlineKeyboardMarkupCreator
 from src.core.logger import log
 
 class MessageSender:
@@ -25,9 +26,11 @@ class MessageSender:
         bot.send_message(chat_id=tg_user_id, text=f"Your role request was declined. Please reach support {support_nick}")
 
     @staticmethod
-    def send_notification_about_new_class(tg_user_id: int, user_scheduler: str, subject_name: str, schedule_datetime: str):
-        message_text = f'<b>{user_scheduler}</b> has scheduled new <b>{subject_name}</b> class at <b>{schedule_datetime}</b>'
+    def send_notification_about_new_class(tg_user_id: int, user_scheduler: str, subject_name: str, event_id: int):
+        message_text = f'<b>{user_scheduler}</b> has scheduled new <b>{subject_name}</b> class'
+        markup = InlineKeyboardMarkupCreator.new_class(event_id)
         bot.send_message(
             chat_id=tg_user_id,
             text=message_text,
-            parse_mode="HTML")
+            parse_mode="HTML",
+            reply_markup=markup)

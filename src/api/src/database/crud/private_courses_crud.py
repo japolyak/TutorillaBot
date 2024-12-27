@@ -73,7 +73,7 @@ class PrivateCourseCRUD:
 
         private_course = (
             db
-            .query(Subject.name, student.id, student.first_name, student.time_zone, tutor.id, tutor.first_name, tutor.time_zone)
+            .query(Subject.name, student.id, student.first_name, tutor.id, tutor.first_name)
             .join(PrivateCourse.tutor_course)
             .join(student, PrivateCourse.student)
             .join(TutorCourse.subject)

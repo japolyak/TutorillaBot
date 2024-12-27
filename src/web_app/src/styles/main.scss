@@ -1,19 +1,31 @@
+$calendar-max-width: 908px;
+
+@import 'schedule';
+
 * {
-    touch-action: manipulation;
+	touch-action: manipulation;
 }
 
 :root {
 	--tg-header-height: 60px;
+	--q-calendar-max-width: #{$calendar-max-width};
+	--current-time-indicator-size: 5px;
+	--current-time-line-color: orange;
+	--calendar-border-color: #e0e0e0;
 }
 
 @media (width > 400px) {
 	.tg-header-placeholder {
 		height: var(--tg-header-height);
 		width: 100%;
-		background-color: #606c71;
+		background-color: var(--calendar-color);
 	}
 
 	.v-app-bar.top-bar {
+		margin-top: var(--tg-header-height);
+	}
+
+	.v-navigation-drawer {
 		margin-top: var(--tg-header-height);
 	}
 }

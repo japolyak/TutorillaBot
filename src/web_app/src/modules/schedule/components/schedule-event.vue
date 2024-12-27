@@ -1,21 +1,20 @@
 <template>
 	<div
 		v-if="timePersists"
-		class="my-event text-white bg-blue rounded-border"
-		:class="badgeClasses(event)"
+		class="event bg-blue px-1 d-flex justify-space-between align-center"
 		:style="badgeStyles(event, timeStartPos, timeDurationHeight)"
 	>
-		<span class="title q-calendar__ellipsis">
-			{{ event.title }}
-		</span>
+		{{ event.title }}
+		<v-icon :icon="eventStatusIcon" size="17" />
 	</div>
 </template>
 
 <script setup lang="ts">
-import { type PropType, computed } from 'vue';
+import { computed, type PropType } from 'vue';
 import type { ScheduleEventModel } from '@/modules/schedule/models';
 import { StringUtils } from '@/utils/string.utils';
 import type { TimeDurationHeightFn, TimeStartPosFn } from '@/plugins/quazar/qcalendar/types';
+import { ClassStatus } from '@/modules/core/services/api/api.models';
 
 const props = defineProps({
 	event: {
@@ -33,14 +32,11 @@ const props = defineProps({
 });
 
 const timePersists = computed(() => StringUtils.isNotEmpty(props.event.time));
-
-function badgeClasses(event: ScheduleEventModel) {
-	return {
-		'full-width': (!event.side || event.side === 'full'),
-		'left-side': event.side === 'left',
-		'right-side': event.side === 'right',
-	};
-}
+const eventStatusIcon = computed(() => {
+	if (props.event.status === ClassStatus.Paid) return 'mdi-cash-check';
+	if (props.event.status === ClassStatus.Occurred) return 'mdi-cash-clock';
+	return 'mdi-calendar-clock-outline';
+});
 
 function badgeStyles(event: ScheduleEventModel, timeStartPos: TimeStartPosFn, timeDurationHeight: TimeDurationHeightFn) {
 	return {
@@ -52,48 +48,16 @@ function badgeStyles(event: ScheduleEventModel, timeStartPos: TimeStartPosFn, ti
 </script>
 
 <style scoped lang="scss">
-.my-event {
+.event {
 	position: absolute;
-	font-size: 12px;
-	justify-content: center;
+	font-size: 0.75rem;
 	margin: 3px 1px 0;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	cursor: pointer;
-}
-
-.title {
-	position: relative;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 90%;
-}
-
-.text-white {
+	border-radius: 2px;
 	color: white;
-}
-
-.bg-blue {
-	background: blue;
-}
-
-.full-width {
 	left: 0;
 	width: calc(100% - 2px);
-}
-
-.left-side {
-	left: 0;
-	width: calc(50% - 3px);
-}
-
-.right-side {
-	left: 50%;
-	width: calc(50% - 3px);
-}
-
-.rounded-border {
-	border-radius: 2px;
 }
 </style>

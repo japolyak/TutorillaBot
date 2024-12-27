@@ -1,4 +1,4 @@
-import { type ScheduleEventType } from '@/modules/core/services/api/api.models';
+import type { ScheduleEventType, ClassStatus } from '@/modules/core/services/api/api.models';
 
 export interface CourseModel {
 	id: number;
@@ -22,4 +22,5 @@ export interface ScheduleEventModel {
 	personName: string;
 	personTimezone: number;
 	privateCourseId: number;
+	status: ClassStatus;
 }

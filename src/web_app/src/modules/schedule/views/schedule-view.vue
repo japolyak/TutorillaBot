@@ -1,11 +1,11 @@
 <template>
 	<div class="d-flex flex-column mt-1 schedule">
 		<div class="d-flex justify-space-between align-center schedule-header py-2">
-			<v-btn :text="t('Today')" variant="outlined" slim class="today-btn text-none" @click="moveTo" />
+			<v-btn :text="t('Today')" variant="outlined" slim class="text-none" @click="moveTo" />
 			{{ currentMonthPosition }}
-			<v-btn-group variant="outlined" divided density="compact" class="nav-group">
-				<v-btn icon="mdi-chevron-left" class="nav-btn" @click="moveTo('prev')" />
-				<v-btn icon="mdi-chevron-right" class="nav-btn" @click="moveTo('next')" />
+			<v-btn-group variant="outlined" divided density="compact">
+				<v-btn icon="mdi-chevron-left" @click="moveTo('prev')" />
+				<v-btn icon="mdi-chevron-right" @click="moveTo('next')" />
 			</v-btn-group>
 		</div>
 		<q-calendar-day
@@ -38,8 +38,8 @@
 			</template>
 			<template #day-container="{ scope: { days }}">
 				<template v-if="hasDate(days)">
-					<div class="day-view-current-time-indicator" :style="currentTimeStyle" />
-					<div class="day-view-current-time-line" :style="{ width: cellWidth + 'px', ...currentTimeStyle }" />
+					<div class="current-time-indicator" :style="currentTimeStyle" />
+					<div class="current-time-line" :style="{ width: cellWidth + 'px', ...currentTimeStyle }" />
 				</template>
 			</template>
 		</q-calendar-day>
@@ -53,6 +53,7 @@ import { ref, onMounted, nextTick, onBeforeMount, onBeforeUnmount, computed } fr
 import { useDate } from 'vuetify';
 import { useI18n } from 'vue-i18n';
 import { storeToRefs } from 'pinia';
+import { useRoute, useRouter } from 'vue-router'
 import {
 	type QCalendarDay,
 	type Timestamp,
@@ -76,6 +77,8 @@ import { useQCalendar } from '@/composables/q-calendar';
 import type { ScheduleEventModel } from '@/modules/schedule/models';
 
 const { t } = useI18n();
+const route = useRoute();
+const router = useRouter();
 const { openDialog, openToEdit, openToPreview, getEvents } = useScheduleStore();
 const { weekEvents, lastStartDay, lastEndDay, selectedDate } = storeToRefs(useScheduleStore());
 const { coursesLoaded, courses, getCourses, locale } = storeToRefs(useUserStore());
@@ -131,6 +134,7 @@ async function onEventClick(event: ScheduleEventModel) {
 
 	const nowTimestamp = ScheduleUtils.toTimestamp(now);
 	const eventTimestamp = ScheduleUtils.toTimestamp(`${event.date} ${event.time}`);
+	if (!nowTimestamp || !eventTimestamp) return;
 
 	const result = diffTimestamp(nowTimestamp, eventTimestamp, false);
 
@@ -147,7 +151,7 @@ async function onClickTime({ scope }: { scope: { timestamp: Timestamp } }) {
 
 	if (!getCourses.value.length) return;
 
-    const date = adapter.parseISO(scope.timestamp.date);
+    const date = adapter.parseISO(scope.timestamp.date) as Date;
     openDialog(date, scope.timestamp.hour);
 }
 
@@ -163,14 +167,19 @@ async function onChange({ start, end }: { start: string; end: string }) {
     weekEvents.value = await EventsClient.loadEvents(startDay, endDay);
 }
 
-async function reload(date: number) {
+async function reload(date?: string) {
     if (!lastStartDay.value || !lastEndDay.value) return;
 
-	selectedDate.value = ScheduleUtils.toTimestamp(date).date;
+	if (date) selectedDate.value = date;
+
 	await onChange({ start: lastStartDay.value, end: lastEndDay.value });
 }
 
-function moveTo(when?: 'prev' | 'next') {
+async function setDateDefaultPosition() {
+	await nextTick(() => setTimeout(() => calendar.value?.scrollToTime('09:00', 350), 100));
+}
+
+async function moveTo(when?: 'prev' | 'next') {
 	if (!calendar.value) return;
 
 	switch (when) {
@@ -187,9 +196,7 @@ function moveTo(when?: 'prev' | 'next') {
 			break;
 	}
 
-	nextTick(() => {
-		setTimeout(() => (calendar.value?.scrollToTime('09:00', 350)), 100);
-	});
+	await setDateDefaultPosition();
 }
 
 function adjustCurrentTime() {
@@ -202,10 +209,26 @@ function adjustCurrentTime() {
 	timeStartPos.value = (calendar.value?.timeStartPos(currentTime.value, false) ?? 0) + 30;
 }
 
+async function loadEvent(): Promise<string | undefined> {
+	const eventId = route.query.eventId as (string | null);
+	await router.replace({ path: route.path });
+
+	if (!eventId) return undefined;
+
+	const paramEventId = Number(eventId);
+	if (Number.isNaN(paramEventId)) return;
+
+
+	const response = await EventsClient.getEvent(paramEventId);
+	if (!response) return;
+	const event = ScheduleUtils.eventMapper(response);
+
+	await onEventClick(event);
+	return event.date;
+}
+
 function hasDate (days: Timestamp[]) {
-	return currentDate.value
-		? days.find(day => day.date === currentDate.value)
-		: false;
+	return currentDate.value ? days.find(day => day.date === currentDate.value) : false;
 }
 
 onBeforeMount(() => {
@@ -213,20 +236,23 @@ onBeforeMount(() => {
 });
 
 onMounted(async () => {
-	const dateNow = adapter.date() as Date;
-	const now = ScheduleUtils.toTimestamp(dateNow);
-	if (!now) return;
+	const loadEventDate = await loadEvent();
+	let reloadDate: string | undefined;
 
-	selectedDate.value = now.date
+	if (loadEventDate) {
+		reloadDate = loadEventDate;
+	} else {
+		const dateNow = adapter.date() as Date;
+		const now = ScheduleUtils.toTimestamp(dateNow);
+		if (!now) return;
 
-	await nextTick(() => {
-		setTimeout(() => {
-			calendar.value?.scrollToTime('09:00', 350);
-		}, 100);
-	});
+		reloadDate = now.date;
+	}
+
+	await setDateDefaultPosition();
 
 	isMounted.value = true;
-	await reload(dateNow.getTime());
+	await reload(reloadDate);
 
 	adjustCurrentTime();
 	intervalId = setInterval(() => adjustCurrentTime(), 60000);
@@ -234,52 +260,3 @@ onMounted(async () => {
 
 onBeforeUnmount(() => clearInterval(intervalId));
 </script>
-
-<style lang="scss">
-.schedule {
-	max-width: 908px;
-	width: 100%;
-	height: 580px;
-
-	.q-calendar {
-		max-width: 908px;
-	}
-
-	.schedule-header {
-		font-size: 1rem;
-		font-weight: 600;
-		color: #606c71;
-		padding-inline: 11px;
-
-		.today-btn {
-			border: #e0e0e0 thin solid;
-			font-weight: 600;
-		}
-
-		.nav-group {
-			border-color: #e0e0e0;
-
-			.nav-btn {
-				width: 40px;
-				color: #606c71;
-			}
-		}
-	}
-
-	.day-view-current-time-indicator {
-		position: absolute;
-		height: 0;
-		width: 0;
-		margin-top: -4px;
-		margin-left: -1px;
-		border-top: 5px solid transparent;
-		border-bottom: 5px solid transparent;
-		border-left: 5px solid orange;
-	}
-
-	.day-view-current-time-line {
-		position: absolute;
-		border-top: orange 2px solid;
-	}
-}
-</style>

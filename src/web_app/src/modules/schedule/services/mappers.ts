@@ -3,7 +3,9 @@ import type { ScheduleEventModel } from '@/modules/schedule/models';
 import { parseDate, parseTimestamp, type TimestampOrNull } from '@quasar/quasar-ui-qcalendar';
 
 export class ScheduleUtils {
-	public static toTimestamp(date: number | string | Date): TimestampOrNull {
+	public static toTimestamp(date?: number | string | Date): TimestampOrNull {
+		if (!date) return null;
+
 		if (date instanceof Date) return parseDate(date);
 		else if (typeof date === 'number') return parseDate(new Date(date));
 
@@ -23,7 +25,9 @@ export class ScheduleUtils {
 			type: event.type,
 			personName: event.personName,
 			personTimezone: event.personTimezone,
-			privateCourseId: event.privateCourseId
+			privateCourseId: event.privateCourseId,
+			status: event.status,
+			side: 'full'
 		}
 	}
 }

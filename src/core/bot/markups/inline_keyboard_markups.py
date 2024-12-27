@@ -10,6 +10,15 @@ from src.core.i18n.i18n import t
 
 class InlineKeyboardMarkupCreator:
     @staticmethod
+    def new_class(event_id: int, *args, **kwargs) -> InlineKeyboardMarkup:
+        markup = InlineKeyboardMarkup()
+
+        new_class = InlineKeyboardButton(text="View class", web_app=WebAppInfo(url=f"{web_app_link}/schedule?eventId={event_id}"))
+        markup.add(new_class)
+
+        return markup
+
+    @staticmethod
     def admin_panel(user_id: int, locale: Optional[str], *args, **kwargs) -> InlineKeyboardMarkup:
         markup = InlineKeyboardMarkup()
 

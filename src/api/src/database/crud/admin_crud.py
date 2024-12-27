@@ -6,10 +6,11 @@ from src.core.models import Role
 
 from src.api.src.database.models import UserRequest, User
 
+
 class AdminCRUD:
     @staticmethod
     def get_users_requests(db: Session, role: Literal[Role.Tutor, Role.Student]):
-        requested_role = case((2 == UserRequest.role, literal_column(f"'{Role.Student}'")),
+        requested_role = case((UserRequest.role == 2, literal_column(f"'{Role.Student}'")),
                               else_=literal_column(f"'{Role.Tutor}'"))
 
         query = (

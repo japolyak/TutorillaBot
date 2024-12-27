@@ -1,10 +1,10 @@
+from sqlalchemy import and_, or_, literal_column, case
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import InstrumentedAttribute
-from sqlalchemy import and_, or_
 from typing import Literal, Tuple, Union, Optional
 
 from src.api.src.database.models import PrivateClass, PrivateCourse, TutorCourse, Subject, User
-from src.core.models import Role
+from src.core.models import Role, ClassStatus
 
 
 class EventCRUD:
@@ -14,6 +14,41 @@ class EventCRUD:
     @classmethod
     def get_event(cls, event_id: int, db: Session) -> Optional[PrivateClass]:
         return db.query(PrivateClass).filter(PrivateClass.id == event_id).one_or_none()
+
+    @classmethod
+    def get_event_with_details(cls, user_id: int, event_id: int, role: Literal[Role.Tutor, Role.Student], db: Session):
+        classes = (
+            db
+            .query(
+                PrivateClass.id,
+                PrivateClass.duration,
+                PrivateClass.start_time_unix,
+                Subject.name,
+                User.first_name,
+                User.time_zone,
+                PrivateCourse.id,
+                cls._get_class_status()
+            )
+            .join(PrivateClass.private_course)
+            .join(PrivateCourse.tutor_course)
+            .join(TutorCourse.subject)
+            .filter(PrivateClass.id == event_id)
+        )
+
+        if role == Role.Tutor:
+            classes = (
+                classes
+                .join(PrivateCourse.student)
+                .filter(TutorCourse.tutor_id == user_id)
+            )
+        else:
+            classes = (
+                classes
+                .join(TutorCourse.tutor)
+                .filter(PrivateCourse.student_id == user_id)
+            )
+
+        return classes.one_or_none()
 
     @classmethod
     def event_has_collisions(cls, student_id: int, tutor_id: int, start: int, duration: int, event_id: None | int, db: Session) -> bool:
@@ -70,11 +105,20 @@ class EventCRUD:
 
         return True
 
-    @staticmethod
-    def get_events_between_dates(user_id: int, role: Literal[Role.Tutor, Role.Student], start_time_unix: int, end_time_unix: int, db: Session):
+    @classmethod
+    def get_events_between_dates(cls, user_id: int, role: Literal[Role.Tutor, Role.Student], start_time_unix: int, end_time_unix: int, db: Session):
         classes = (
             db
-            .query(PrivateClass.id, PrivateClass.duration, PrivateClass.start_time_unix, Subject.name, User.first_name, User.time_zone, PrivateCourse.id)
+            .query(
+                PrivateClass.id,
+                PrivateClass.duration,
+                PrivateClass.start_time_unix,
+                Subject.name,
+                User.first_name,
+                User.time_zone,
+                PrivateCourse.id,
+                cls._get_class_status()
+            )
             .join(PrivateClass.private_course)
             .join(PrivateCourse.tutor_course)
             .join(TutorCourse.subject)
@@ -129,3 +173,10 @@ class EventCRUD:
             and_(x[0] > y[0], x[0] < y[1]),
             and_(x[1] > y[0], x[1] < y[1])
         )
+
+    @classmethod
+    def _get_class_status(cls):
+        return case(
+            (PrivateClass.is_paid, literal_column(f"'{ClassStatus.Paid}'")),
+            (PrivateClass.has_occurred, literal_column(f"'{ClassStatus.Occurred}'")),
+            else_=literal_column(f"'{ClassStatus.Scheduled}'"))

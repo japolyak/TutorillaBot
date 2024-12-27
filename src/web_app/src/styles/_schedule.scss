@@ -1,0 +1,49 @@
+.schedule {
+	max-width: var(--q-calendar-max-width);
+	width: 100%;
+	height: 580px;
+
+	.q-calendar {
+		max-width: var(--q-calendar-max-width);
+	}
+
+	.schedule-header {
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--calendar-color);
+
+		@media (width <= #{$calendar-max-width}) {
+			padding-inline: 11px;
+		}
+
+		button {
+			border: var(--calendar-border-color) thin solid;
+			font-weight: 600;
+		}
+
+		.v-btn-group {
+			border-color: var(--calendar-border-color);
+		}
+
+		.v-btn-group button {
+			width: 40px;
+			color: var(--calendar-color);
+		}
+	}
+
+	.current-time-indicator {
+		position: absolute;
+		height: 0;
+		width: 0;
+		margin-top: -4px;
+		margin-left: -1px;
+		border-top: var(--current-time-indicator-size) solid transparent;
+		border-bottom: var(--current-time-indicator-size) solid transparent;
+		border-left: var(--current-time-indicator-size) solid var(--current-time-line-color);
+	}
+
+	.current-time-line {
+		position: absolute;
+		border-top: var(--current-time-line-color) 2px solid;
+	}
+}
