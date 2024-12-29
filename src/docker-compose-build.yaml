@@ -15,4 +15,6 @@ services:
     build:
       context: .
       dockerfile: webapp.Dockerfile
+      args:
+        VERSION: ${VERSION}
     image: ghcr.io/japolyak/tutorilla-web-app:latest

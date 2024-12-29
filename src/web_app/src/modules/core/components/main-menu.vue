@@ -1,5 +1,10 @@
 <template>
-    <v-navigation-drawer v-model="mainMenuVisible" location="right">
+    <v-navigation-drawer v-model="mainMenuVisible" location="right" :class="{ 'btns-placeholder-margin': isMacOs }">
+		<template v-if="appVersion" #append>
+			<div class="text-end px-4">
+				App Version: {{ appVersion }}
+			</div>
+		</template>
         <template #prepend>
 			<v-list-item
 				v-if="selectedParent"
@@ -40,8 +45,9 @@ import { mainMenuItems } from '@/modules/core/core.constants';
 import { viewMetaDefinitions } from '@/plugins/router/view-metas';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import {useUserStore} from "@/modules/core/store/user-store";
-import {storeToRefs} from "pinia";
+import { useUserStore } from '@/modules/core/store/user-store';
+import { storeToRefs } from "pinia";
+import { provideDashboardLayout } from '@/modules/core/composables/dashboard-layout';
 
 interface MainMenuGroupViewModel {
 	view: View;
@@ -53,9 +59,11 @@ interface MainMenuGroupViewModel {
 }
 
 const mainMenuVisible = defineModel<boolean>({ required: true, type: Boolean });
+const appVersion = computed(() => import.meta.env.VITE_APP_VERSION?.replace('v', ''));
 
 const { t } = useI18n();
 const { userFullName } = storeToRefs(useUserStore());
+const { isMacOs } = provideDashboardLayout();
 
 const router = useRouter();
 const routes = router.getRoutes();

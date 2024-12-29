@@ -7,6 +7,7 @@ interface DashboardLayoutInjectable {
 	setHideLayoutValue: (hide: boolean) => void;
 	resetStateOnRouteLeave: () => void;
 	enableDashboardLayout: ComputedRef<boolean>;
+	isMacOs: ComputedRef<boolean>;
 	initializing: ComputedRef<boolean>;
 }
 
@@ -35,6 +36,8 @@ export function provideDashboardLayout(): DashboardLayoutInjectable {
 		return router.currentRoute.value.meta?.useDashboardLayout ?? false;
 	});
 
+	const isMacOs = computed(() => window.Telegram.WebApp.platform === 'macos');
+
 	function setHideLayoutValue(hide: boolean) {
 		forceHideLayout.value = hide;
 	}
@@ -47,6 +50,7 @@ export function provideDashboardLayout(): DashboardLayoutInjectable {
 		setHideLayoutValue,
 		resetStateOnRouteLeave,
 		enableDashboardLayout,
+		isMacOs,
 		initializing: computed(() => initializing.value),
 	}
 
