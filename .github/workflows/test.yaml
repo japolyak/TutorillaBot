@@ -15,8 +15,8 @@ jobs:
         with:
           fetch-depth: 0
 
-#      - name: Fetch tags (if necessary)
-#        run: git fetch --tags
+      - name: Fetch tags (if necessary)
+        run: git fetch --tags
 
       - name: Get the latest version tag
         id: get_tag
