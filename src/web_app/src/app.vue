@@ -6,6 +6,7 @@ import { ref } from 'vue';
 import { useI18nConfig } from '@/composables/i18n-config';
 import { provideDashboardLayout } from './modules/core/composables/dashboard-layout'
 import { LocaleCode } from '@/plugins/i18n/i18n-plugin';
+import { useAppBehaviour } from '@/modules/core/composables/app-behaviour';
 
 const { setLanguage } = useI18nConfig()
 const mainMenuVisible = ref(false);
@@ -13,6 +14,9 @@ const mainMenuVisible = ref(false);
 setLanguage(LocaleCode.enUs)
 
 const { enableDashboardLayout, isMacOs } = provideDashboardLayout();
+const { handleVersion } = useAppBehaviour();
+
+handleVersion();
 </script>
 
 <template>

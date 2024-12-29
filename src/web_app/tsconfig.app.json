@@ -13,6 +13,8 @@
 			"intlify/unplugin-vue-i18n/messages",
 			"intlify/unplugin-vue-i18n",
 			"vue-i18n"
-		]
+		],
+        "target": "es2021",
+    	"lib": ["es2021", "dom"]
 	}
 }
