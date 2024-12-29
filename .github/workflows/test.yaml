@@ -18,6 +18,9 @@ jobs:
       - name: Fetch tags (if necessary)
         run: git fetch --tags
 
+      - name: List all tags
+        run: git tag -l
+
       - name: Get the latest version tag
         id: get_tag
         run: |
