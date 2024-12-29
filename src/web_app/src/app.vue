@@ -2,7 +2,7 @@
 import Snackbar from '@/modules/core/components/snackbar.vue';
 import MainMenu from '@/modules/core/components/main-menu.vue';
 import TopBar from '@/modules/core/components/top-bar.vue';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18nConfig } from '@/composables/i18n-config';
 import { provideDashboardLayout } from './modules/core/composables/dashboard-layout'
 import { LocaleCode } from '@/plugins/i18n/i18n-plugin';
@@ -13,13 +13,19 @@ const mainMenuVisible = ref(false);
 setLanguage(LocaleCode.enUs)
 
 const { enableDashboardLayout } = provideDashboardLayout();
+
+const isMacOs = computed(() => window.Telegram.WebApp.platform === 'macos');
 </script>
 
 <template>
 	<v-app>
 		<main-menu v-if="enableDashboardLayout" v-model="mainMenuVisible" />
-		<top-bar v-if="enableDashboardLayout" @toggle-main-menu="mainMenuVisible = !mainMenuVisible"/>
-		<div class="tg-header-placeholder" />
+		<top-bar
+			v-if="enableDashboardLayout"
+			:class="{ 'tg-btns-placeholder': isMacOs }"
+			@toggle-main-menu="mainMenuVisible = !mainMenuVisible"
+		/>
+		<div v-if="isMacOs" class="tg-header-placeholder" />
 		<v-main>
 			<router-view />
 			<snackbar />
