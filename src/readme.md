@@ -12,12 +12,12 @@ Below are key resources to help you navigate the setup and development workflows
     This document outlines the rules, practices, and strategies adopted to ensure smooth development and effective collaboration.
     It is essential reading for anyone contributing to the project.
 
-1. **[Development readme](./readme.server-configuration.md)**
+1. **[Server configuration readme](./readme.server-configuration.md)**
 
     A comprehensive step-by-step guide to configuring the Linux server.
     This includes all necessary settings and services required for a stable foundation.
 
-1. **[Development readme](./readme.production.md)**
+1. **[Production readme](./readme.production.md)**
 
    Details the final steps to prepare the project for deployment in a production environment.
    Follow this guide to ensure a seamless launch.

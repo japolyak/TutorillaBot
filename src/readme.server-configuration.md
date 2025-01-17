@@ -1,22 +1,20 @@
 # Server configuration
 
 This document describes the configuration steps for running the Tutorilla platform on a Debian 12 Hetzner Cloud server
-using a Duck DNS domain, secured by Let’s Encrypt SSL, served by Nginx as a reverse proxy, and optionally using Redis.
+using a Duck DNS domain, secured by Let’s Encrypt SSL, served by Nginx as a reverse proxy, and GitHub Actions Runner.
+
+---
 
 ## DNS
 
 Telegram requires that WebApps integrated via its Bot API must be served over `HTTPS`.
-If you do not have a permanent domain or static IP, Duck DNS provides a free and convenient way to obtain a domain name
-that dynamically maps to your server’s IP address.
+If you do not have a permanent domain or static IP, Duck DNS provides a free and convenient way to obtain a domain name.
 
-## Docker Configuration
+## Docker
 
-### Docker
+Follow the [official Docker documentation](https://docs.docker.com/engine/install/debian/) to install Docker on your server.
 
-```shell
-```
-
-## SSL configuration
+## SSL
 
 ### Certbot and Nginx Plugin
 
@@ -51,7 +49,7 @@ sudo nginx -t
 sudo systemctl reload nginx # or restart
 ```
 
-## Nginx Configuration
+## Nginx
 
 ### Location of Config Files:
 
@@ -104,12 +102,75 @@ server {
 * Run `sudo nginx -t` to test for syntax errors.
 * Run `sudo systemctl reload nginx` (or `restart`) to apply configuration changes.
 
-## Redis setup
+## GitHub Secrets
 
+1. Go to repository on GitHub.
+1. Navigate to **Settings** > **Secrets and variables** > **Actions**
+1. Click `New repository secret`
+1. Add a new secret:
+   * **Key** - `DOCKER_COMPOSE_PATH`
+   * **Value** - The full path to the directory containing your production Docker Compose file (e.g., `/path/to/dir/with/docker/compose/production/file`)
+1. Save the secret
+
+## GitHub Actions Runner
+
+1. Go to repository on GitHub.
+1. Navigate to **Settings** > **Actions** > **Runners**
+1. Add `New self-hosted runner`
+1. Select `Linux` as `Runner image` and `x64` as `Architecture` - ****Note*** configuration depends on your server
+1. Create and switch to `dev` user - Runner has to be run as not root user
+1. Follow the instructions to set up GitHub Actions Runner on server at `/home` directory
+
+After successful setup create service which runs `Actions runner` permanently
+
+Create service file for your runner
 ```shell
-sudo apt update
-sudo apt install redis-server -y
-redis-server --version
+sudo nano /etc/systemd/system/github-runner.service
 ```
 
-Installs Redis and confirms its version.
+Add the following content to the file
+```shell
+[Unit]
+Description=GitHub Actions Runner
+After=network.target
+
+[Service]
+ExecStart=/home/actions-runner/run.sh
+WorkingDirectory=/home/actions-runner
+User=dev
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Reload systemd configuration
+```shell
+sudo systemctl daemon-reload
+```
+
+Enable the service
+```shell
+sudo systemctl enable github-runner
+```
+
+Start the service
+```shell
+sudo systemctl start github-runner
+```
+
+Check the service status and ensure it’s connected and idle on GitHub **Settings** > **Actions** > **Runners**
+```shell
+sudo systemctl status github-runner
+```
+
+Logs for the service can be viewed using
+```shell
+sudo journalctl -u github-runner
+```
+
+Updating the runner
+```shell
+sudo systemctl stop github-runner
+```

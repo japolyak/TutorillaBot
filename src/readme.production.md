@@ -1,14 +1,14 @@
 # Production setup
 
-After the server is **properly** configured, follow these steps to configure the production environment for deployment.
+After the server is configured, follow these steps to configure the production environment for deployment.
 
 ---
 
 ## Setup steps
 
 1. Clone the Repository
-   * Clone the repository and switch to the `development` branch.
-   * Update the path in `.github/workflows/production.yaml`
+   * Switch to directory defined in [server configuration readme](./readme.server-configuration.md) `GitHub secrets` section
+   * Clone the repository and switch to the `main` branch.
 1. In the `src` directory, create a `.env` file with the following structure:
     ```
     IS_DEVELOPMENT=0
@@ -31,6 +31,7 @@ After the server is **properly** configured, follow these steps to configure the
     BOT_TOKEN=your_tg_bot_token
     ADMIN_TG_ID=your_tg_admin_id
     WEB_APP_LINK=your_web_app_link
+    SUPPORT_NICK=your_support_nick
     
     #Redis
     REDIS_HOST=redis
