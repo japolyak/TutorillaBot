@@ -1,5 +1,6 @@
 import os
 import sys
+import logging
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
@@ -22,5 +23,7 @@ bot.setup_middleware(RedisMiddleware(r))
 bot.setup_middleware(StateMiddleware(bot))
 
 log.info(msg='Starting polling')
+
+logging.getLogger("urllib3").setLevel(logging.CRITICAL)
 
 bot.infinity_polling()

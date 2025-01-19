@@ -5,8 +5,8 @@ Telegram requires web application to run under TSL, what is not development frie
 Because of that telegram provides test environment, where web apps can be used under HTTP links without TLS.
 To set up test environment follow next steps:
 
+1. Follow [instruction](https://core.telegram.org/bots/webapps#using-bots-in-the-test-environment) to set up your test account.
 1. Use [debug instruction](https://core.telegram.org/bots/webapps#debug-mode-for-mini-apps) to set up telegram debugging environment based on your preferences.
-1. Follow [instruction](https://core.telegram.org/bots/webapps#testing-mini-apps) to set up your test account.
 1. Using test account open chat with `@botfather`, create bot and get it's token.
 1. Using `@botfather` enable `/setprivacy` and `/setinline` in bot configuration.
 
