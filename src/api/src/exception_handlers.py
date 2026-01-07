@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from telebot.apihelper import ApiTelegramException
 
 from src.api.src.bot_client.message_sender import MessageSender
 from src.api.src.builders.response_builder import ResponseBuilder
@@ -12,6 +13,7 @@ def apply_exception_handlers(app: FastAPI) -> None:
     async def http_exception_handler(request: Request, exc: Exception):
         message = StringUtils.create_error_message(exc)
 
-        MessageSender.send_error_message(admin_tg_id, message)
+        disable_notification = isinstance(exc, ApiTelegramException)
+        MessageSender.send_error_message(admin_tg_id, message, disable_notification)
 
         return ResponseBuilder.error_response(500, message='An unexpected error occurred.')

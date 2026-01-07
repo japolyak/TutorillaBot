@@ -18,8 +18,8 @@ class MessageSender:
             return False
 
     @staticmethod
-    def send_error_message(tg_user_id, message):
-        bot.send_message(chat_id=tg_user_id, text=message, parse_mode="MarkdownV2")
+    def send_error_message(tg_user_id, message, disable_notification: bool):
+        bot.send_message(chat_id=tg_user_id, text=message, parse_mode="MarkdownV2", disable_notification=disable_notification)
 
     @staticmethod
     def send_decline_message(tg_user_id):
